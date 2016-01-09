@@ -3,7 +3,7 @@
 Text* Text_create(const SDL_Rect* destRect, SDL_Renderer* renderer, SDL_Color* color, TTF_Font*font, const char* text)
 {
 	Text* self = (Text*)malloc(sizeof(Text));
-	if(Text_init(self, destRect, color, font, text) == -1)
+	if(Text_init(self, destRect, renderer, color, font, text) == -1)
 	{
 		free(self);
 		return NULL;
@@ -12,20 +12,18 @@ Text* Text_create(const SDL_Rect* destRect, SDL_Renderer* renderer, SDL_Color* c
 	return self;
 }
 
-int Text_init(Text* self, const SDL_Rect* destRect, SDL_Renderer* renderer, SDL_Color* color, TTF_Font* font, const char* text)
+bool Text_init(Text* self, const SDL_Rect* destRect, SDL_Renderer* renderer, SDL_Color* color, TTF_Font* font, const char* text)
 {
 	Drawable_init((Drawable*)self, destRect);
 	self->color = color;
 	self->font  = font;
 
-	Text_setText(self, renderer, text);
-
-	self->base->draw = &Text_draw;	
+	self->base.draw = &Text_draw;	
 	char* t     = (char*)malloc(sizeof(char)*(1+strlen(text)));
 	strcpy(t, text);
 	self->text  = t;
 
-	return 0;
+	return Text_setText(self, renderer, text);
 }
 
 void Text_draw(Drawable* self, SDL_Renderer* renderer)
@@ -34,10 +32,10 @@ void Text_draw(Drawable* self, SDL_Renderer* renderer)
 	SDL_RenderCopy(renderer, text->texture, NULL, Drawable_getRect((Drawable*)text));
 }
 
-int Text_setText(Text* self, SDL_Renderer* renderer, const char* text)
+bool Text_setText(Text* self, SDL_Renderer* renderer, const char* text)
 {
 	SDL_Surface *textSurface;
-	if(!(textSurface = TTF_RenderText_Solid(self->font, text, self->color)))
+	if(!(textSurface = TTF_RenderText_Solid(self->font, text, *(self->color))))
 	{
 		printf("Couldn't create the text %s.\n", text);
 		return -1;

@@ -1,7 +1,14 @@
 #ifndef  WINDOW_INC
 #define  WINDOW_INC
 
+#define SCREEN_WIDTH  800
+#define SCREEN_HEIGHT 600
+#define FPS 60
+
 #include "SDL2/SDL.h"
+#include "SDL2/SDL_ttf.h"
+
+typedef char bool;
 
 typedef struct
 {
@@ -10,14 +17,15 @@ typedef struct
 	uint64_t timer;
 }Window;
 
-SDL_Window* Window_init(uint32_t width, uint32_t height, const char* title);
-void        Window_destroy(SDL_Window* window);
+Window* Window_init(uint32_t width, uint32_t height, const char* title);
+void        Window_destroy(Window* window);
 
-int  Window_initVideo(Window* window);
-void fpsManager(Window* window);
+bool Window_initSDL();
+bool Window_finishSDL();
+void Window_fpsManager(Window* window);
 
-void Window_clear(SDL_Window* window);
-void Window_display(SDL_Window* window);
+void Window_clear(Window* window);
+void Window_display(Window* window);
 
 
 #endif

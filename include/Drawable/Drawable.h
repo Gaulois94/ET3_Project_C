@@ -1,13 +1,14 @@
 #ifndef  DRAWABLE_INC
 #define  DRAWABLE_INC
 
+#include "SDL2/SDL.h"
 
 /* \struct Drawable
  * \brief Drawing things on the screen. Don't use this structure directly : use another which inherit from it.*/
-typedef struct
+typedef struct Drawable
 {
-	SDL_Rect destRect; /*!< Destination rect.*/
-	(void)(*draw)(Drawable*, SDL_Renderer*); /* !<Function which point to the correct draw function (use for inheritance) */
+	SDL_Rect rect; /*!< Destination rect.*/
+	void(*draw)(struct Drawable*, SDL_Renderer*); /* !<Function which point to the correct draw function (use for inheritance) */
 }Drawable;
 
 void Drawable_init(Drawable* self, const SDL_Rect* destRect);

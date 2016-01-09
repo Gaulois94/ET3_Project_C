@@ -1,4 +1,4 @@
-#include "Sprite.h"
+#include "Drawable/Sprite.h"
 
 Sprite* Sprite_create(const SDL_Rect* destRect, const SDL_Texture* texture, const SDL_Rect* subRect)
 {
@@ -6,10 +6,10 @@ Sprite* Sprite_create(const SDL_Rect* destRect, const SDL_Texture* texture, cons
 	Sprite_init(sprite, destRect, texture, subRect);
 }
 
-void Sprite_init(Sprite* self, const SDL_Rect* destRect, const SDL_Texture* texture, const SDL_Rect* subRect);
+void Sprite_init(Sprite* self, const SDL_Rect* destRect, const SDL_Texture* texture, const SDL_Rect* subRect)
 {
 	Drawable_init((Drawable*)self, destRect);
-	self->base->draw = &Sprite_draw;
+	self->base.draw = &Sprite_draw;
 	self->texture = texture;
 	copyRect(&(self->subRect), subRect);
 }

@@ -1,6 +1,6 @@
 #include "Game.h"
 
-Game* Game_new()
+Game* Game_create()
 {
 	Game* game = (Game*)malloc(sizeof(Game));
 	game->currentContext = NULL;

@@ -1,12 +1,10 @@
 #ifndef  GLOBARVAR_INC
 #define  GLOBARVAR_INC
 
-#define SCREEN_WIDTH  800
-#define SCREEN_HEIGHT 600
-#define FPS 60
-
 #include "Window.h"
 #include "ResourcesManager.h"
+
+typedef char bool;
 
 typedef enum
 {

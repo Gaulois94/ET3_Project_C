@@ -3,7 +3,7 @@
 
 #include "Drawable.h"
 
-typedef struct
+typedef struct Sprite
 {
 	Drawable base;
 	const SDL_Texture* texture;

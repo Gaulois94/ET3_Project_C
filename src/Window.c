@@ -1,8 +1,8 @@
 #include "Window.h"
 
-SDL_Window* Window_init(uint32_t width, uint32_t height, const char* title)
+Window* Window_init(uint32_t width, uint32_t height, const char* title)
 {
-	Window* window = (SDL_Window*)malloc(sizeof(Window));
+	Window* window = (Window*)malloc(sizeof(Window));
 	window->window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 	if(window->window == NULL)
 	{
@@ -10,8 +10,8 @@ SDL_Window* Window_init(uint32_t width, uint32_t height, const char* title)
 		free(window);
 		return NULL;
 	}
-	window->renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_TARGETTEXTURE);
-	if(window->render == NULL)
+	window->renderer = SDL_CreateRenderer(window->window, 0, SDL_RENDERER_TARGETTEXTURE);
+	if(window->renderer == NULL)
 	{
 		printf("Couldn't create the window renderer. SDL_ERROR :  %s\n", SDL_GetError());
 		free(window->window);
@@ -24,12 +24,12 @@ SDL_Window* Window_init(uint32_t width, uint32_t height, const char* title)
 	return window;
 }
 
-void Window_clear(SDL_Window* window)
+void Window_clear(Window* window)
 {
 	SDL_RenderClear(window->renderer);
 }
 
-void Window_display(SDL_Window* window)
+void Window_display(Window* window)
 {
 	SDL_RenderPresent(window->renderer);
 	Window_fpsManager(window);
@@ -61,7 +61,7 @@ int Window_initSDL()
 
 	return 1;
 }
-void Window_destroy(SDL_Window* window)
+void Window_destroy(Window* window)
 {
 	free(window->renderer);
 	free(window->window);

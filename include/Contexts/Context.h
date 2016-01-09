@@ -1,13 +1,13 @@
 #ifndef  CONTEXT_INC
 #define  CONTEXT_INC
 
-#include "GlobalVar.h"
+#include "globalVar.h"
 
 typedef struct
 {
-	(EnumContext)(*run)(GlobalVar*);
+	EnumContext(*run)(void);
 }Context;
 
-EnumContext Context_run(GlobalVar* globalVar);
+EnumContext Context_run();
 
 #endif
