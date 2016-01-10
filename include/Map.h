@@ -9,6 +9,7 @@
 #include "expat.h"
 #include "globalVar"
 #include "ResourcesManager.h"
+#include "Tiles/Tile.h"
 
 typedef struct
 {
@@ -21,19 +22,39 @@ typedef struct
 	uint32_t caseSizeX;
 	uint32_t caseSizeY;
 
+	List* files;
 	List* staticFiles;
 	List* dynamicFiles;
 }Map;
 
 typedef struct
 {
+	Tile(*createStaticTile)(const SDL_Rect*, const SDL_Rect*);
+}StaticTileDatas;
+
+typedef struct
+{
+	SDL_Texture* texture;
+}File;
+
+typedef struct
+{
+	File* file;
+
+	List* tileDatas;
 	uint32_t spacingX;
 	uint32_t spacingY;
 	uint32_t tileSizeX;
 	uint32_t tileSizeY;
+}StaticFile;
 
-	SDL_Texture* texture;
-}StaticFiles;
+typedef struct
+{
+	File* file;
+
+	List* tileRects;
+	Tile(*createDynamicTile)(const SDL_Rect*, const List*, int, int);
+}DynamicEntity;
 
 /* The xml format file are like this :
  * <map>
@@ -60,14 +81,16 @@ typedef struct
  *   </StaticTraces>
  *   <DynamicTrace name="name">
  *    <DynamicTile animName="name" animeTime="time" fileID="fileID" origin="axb" position="axb" tileID="tileID"/>
+ *    <StaticTile fileID="fileID" tileID="tileID" position="axb"/>
  *   </DynamicTrace>
  *  </Traces>
  * </map> 
  *
- * each fileID et tileID are represented in csv format. It earns us some time process and file spaces
+ * each fileID et tileID are represented in csv format for StaticTrace. It earns us some time process and file spaces
+ * axb = coordX . coordY
  * */
 
-Map* openMap(const char* filePath);
+Map* Map_create(const char* filePath);
 
 void parseFile(const char* name, const char** attrs);
 void parseObject(const char* name, const char** attrs);
@@ -80,6 +103,14 @@ void startElementTraces(void *map, const char* name, const char** attrs);
 void endElement(void *map, const char* name);
 
 void getXYFromStr(const char* str, uint32_t* x, uint32_t* y);
+
+void  Map_destroy(Map* map);
+
+File* File_create(const char* path);
+void  File_destroy(File* self);
+
+void  StaticFile_create(File* file);
+void  StaticFile_destroy(StaticTile* self);
 
 extern uint32_t XML_depth;
 
