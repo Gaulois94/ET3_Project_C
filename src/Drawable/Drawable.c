@@ -2,13 +2,16 @@
 
 void Drawable_init(Drawable* self, const SDL_Rect* destRect)
 {
-	self->draw = &Drawable_draw;
+	Active_init((Active*)self);
+	self->draw = NULL;
+	self->destroy = &Drawable_destroy;
 	copyRect(&(self->rect), destRect);
 }
 
 void Drawable_draw(Drawable* self, SDL_Renderer* renderer)
 {
-	return;
+	if(self->draw)
+		self->draw(self, renderer);
 }
 
 const SDL_Rect* Drawable_getRect(Drawable* self)
@@ -30,6 +33,12 @@ void Drawable_setPosition(Drawable* self, int32_t x, int32_t y)
 
 void copyRect(SDL_Rect* dest, const SDL_Rect* src)
 {
+	if(src == NULL)
+	{
+		dest->w = dest->h = 0;
+		return;
+	}
+
 	dest->x = src->x;
 	dest->y = src->y;
 	dest->w = src->w;
@@ -41,4 +50,9 @@ const SDL_Rect* evaluateRect(const SDL_Rect* rect)
 	if(rect->w == 0 && rect->h == 0)
 		return NULL;
 	return rect;
+}
+
+void Drawable_destroy(Drawable* self)
+{
+	free(self);
 }

@@ -9,7 +9,7 @@ Sprite* Sprite_create(const SDL_Rect* destRect, const SDL_Texture* texture, cons
 void Sprite_init(Sprite* self, const SDL_Rect* destRect, const SDL_Texture* texture, const SDL_Rect* subRect)
 {
 	Drawable_init((Drawable*)self, destRect);
-	self->base.draw = &Sprite_draw;
+	((Drawable*)self)->draw = &Sprite_draw;
 	self->texture = texture;
 	copyRect(&(self->subRect), subRect);
 }
@@ -28,9 +28,4 @@ const SDL_Rect* Sprite_getSubRect(Sprite* self)
 void Sprite_setSubRect(Sprite* self, SDL_Rect* subRect)
 {
 	copyRect(&(self->subRect), subRect);
-}
-
-void Sprite_destroy(Sprite* self)
-{
-	free(self);
 }
