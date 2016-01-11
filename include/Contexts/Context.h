@@ -3,11 +3,11 @@
 
 #include "globalVar.h"
 
-typedef struct
+typedef struct Context
 {
-	EnumContext(*run)(void);
+	EnumContext(*run)(struct Context*);
 }Context;
 
-EnumContext Context_run();
+EnumContext Context_run(Context* self);
 
 #endif
