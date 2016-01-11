@@ -4,6 +4,7 @@
 #include "Contexts/Context.h"
 #include "Ennemy.h"
 #include "Player.h"
+#include "Map.h"
 
 typedef struct
 {
@@ -15,7 +16,7 @@ typedef struct
 	Player*  player;
 
 	Map*     map;
-}InGame
+}InGame;
 
 InGame*     InGame_create();
 void        InGame_init(InGame* self);

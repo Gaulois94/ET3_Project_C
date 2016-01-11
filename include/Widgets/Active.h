@@ -4,18 +4,19 @@
 #include "SDL2/SDL.h"
 #include "typedefine.h"
 
-typedef struct
+typedef struct Active
 {
 	void(*activeCallback)(void* data);
 	void(*disactiveCallback)(void* data);
 	void* activeData;
 	void* disactiveData;
 
-	bool(*howActive)(Active*, const SDL_Event*);
-	bool(*howDisactive)(Active*, const SDL_Event*);
-	void(*activeIt)(Active*);
-	void(*disActiveIt)(Active*);
+	bool(*howActive)(struct Active*, const SDL_Event*);
+	bool(*howDisactive)(struct Active*, const SDL_Event*);
+	void(*activeIt)(struct Active*);
+	void(*disactiveIt)(struct Active*);
 	bool isActive;
+	bool permanentActivated;
 }Active;
 
 void Active_init(Active* self);

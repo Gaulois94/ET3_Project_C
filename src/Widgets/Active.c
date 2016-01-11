@@ -13,11 +13,11 @@ bool Active_update(Active* self, const SDL_Event* event)
 {
 	bool active = self->isActive;
 	if(active)
-		if(howDisactive())
+		if(!self->permanentActivated && self->howDisactive(self, event))
 			self->disactiveIt(self);
 
 	else
-		if(permanentActivated && (!self->isActive) || self->howActive(self, event))
+		if(self->permanentActivated && (!self->isActive) || self->howActive(self, event))
 			self->activeIt(self);
 
 	return active != self->isActive;
@@ -26,11 +26,15 @@ bool Active_update(Active* self, const SDL_Event* event)
 void Active_activeIt(Active* self)
 {
 	self->isActive = true;
+	if(self->activeCallback)
+		self->activeCallback(self->activeData);
 }
 
 void Active_disactiveIt(Active* self)
 {
 	self->isActive = false;
+	if(self->disactiveCallback)
+		self->disactiveCallback(self->disactiveData);
 }
 
 bool Active_howActive(Active* self, const SDL_Event* event)
@@ -60,7 +64,7 @@ void Active_setActiveData(Active* self, void* data)
 
 void Active_setDisactiveFunc(Active* self, void(*func)(void*))
 {
-	self->disactiveFunc = func;
+	self->disactiveCallback = func;
 }
 
 void Active_setDisactiveData(Active* self, void* data)
@@ -68,7 +72,7 @@ void Active_setDisactiveData(Active* self, void* data)
 	self->disactiveData = data;
 }
 
-void Active_isActive(Active* self)
+bool Active_isActive(Active* self)
 {
 	return self->isActive;
 }

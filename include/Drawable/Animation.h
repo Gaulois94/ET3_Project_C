@@ -4,11 +4,11 @@
 #include "SDL2/SDL.h"
 #include "Drawable/Sprite.h"
 
-typedef struct
+typedef struct Animation
 {
 	Sprite base;
 
-	void(*setSubNSpriteRect)(Animation*, uint32_t);
+	void(*setSubNSpriteRect)(struct Animation*, uint32_t);
 
 	uint32_t maxN;
 	uint32_t currentN;
@@ -19,6 +19,7 @@ typedef struct
 }Animation;
 
 void Animation_init(Animation* self, const SDL_Rect* destRect, const SDL_Texture* texture, uint32_t maxN, uint32_t currentN, uint32_t nbFrame);
+void Animation_draw(Drawable* self, SDL_Renderer* renderer);
 
 void Animation_setSubNSpriteRect(Animation* self, uint32_t n);
 void Animation_setInAnimation(Animation* self, bool inAnimation, bool reset);

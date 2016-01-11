@@ -1,15 +1,21 @@
 #ifndef  MAP_INC
 #define  MAP_INC
 
-#include "Tiles/Tile.h"
 #include "stdint.h"
 #include "stdlib.h"
 #include "stdio.h"
 #include "string.h"
 #include "expat.h"
-#include "globalVar"
+#include "globalVar.h"
 #include "ResourcesManager.h"
 #include "Tiles/Tile.h"
+#include "List.h"
+
+typedef enum
+{
+	GROUND,
+	COIN
+}EnumTile;
 
 typedef struct
 {
@@ -104,13 +110,15 @@ void endElement(void *map, const char* name);
 
 void getXYFromStr(const char* str, uint32_t* x, uint32_t* y);
 
+void Map_draw(Map* self, SDL_Renderer* renderer);
+
 void  Map_destroy(Map* map);
 
 File* File_create(const char* path);
 void  File_destroy(File* self);
 
 void  StaticFile_create(File* file);
-void  StaticFile_destroy(StaticTile* self);
+void  StaticFile_destroy(StaticFile* self);
 
 extern uint32_t XML_depth;
 

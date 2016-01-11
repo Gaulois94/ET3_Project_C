@@ -1,4 +1,4 @@
-#include "Animation.h"
+#include "Drawable/Animation.h"
 
 void Animation_init(Animation* self, const SDL_Rect* destRect, const SDL_Texture* texture, uint32_t maxN, uint32_t currentN, uint32_t nbFrame)
 {
@@ -6,16 +6,16 @@ void Animation_init(Animation* self, const SDL_Rect* destRect, const SDL_Texture
 	((Drawable*)self)->draw = &Animation_draw;
 
 	self->setSubNSpriteRect = NULL;
-	self->maxN = n;
+	self->maxN = maxN;
 	self->currentN = currentN;
 	self->nbFrame = nbFrame;
 	self->iFrame = 0;
 	self->inAnimation = true;
 }
 
-void Animation_draw(Drawable* self, SDL_Renderer* renderer)
+void Animation_draw(Drawable* drawable, SDL_Renderer* renderer)
 {
-	Animation* animation = (Animation*)self;
+	Animation* self = (Animation*)drawable;
 	if(animation->inAnimation)
 	{
 		if(self->iFrame == self->nbFrame)

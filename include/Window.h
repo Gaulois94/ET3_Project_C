@@ -17,14 +17,14 @@ typedef struct
 }Window;
 
 Window* Window_init(uint32_t width, uint32_t height, const char* title);
-void        Window_destroy(Window* window);
+void    Window_destroy(Window* window);
 
-bool Window_initSDL();
-bool Window_finishSDL();
-void Window_fpsManager(Window* window);
+bool    Window_initSDL();
+bool    Window_finishSDL();
+void    Window_fpsManager(Window* window);
 
-void Window_clear(Window* window);
-void Window_display(Window* window);
+void    Window_clear(Window* window);
+void    Window_display(Window* window);
 
 
 #endif

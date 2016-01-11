@@ -2,10 +2,11 @@
 #define  ENNEMY_INC
 
 #include "SDL2/SDL.h"
+#include "Drawable/Drawable.h"
 
 typedef struct
 {
-	Element base;
+	Drawable base;
 }Ennemy;
 
 #endif

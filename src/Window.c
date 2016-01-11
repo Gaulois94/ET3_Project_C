@@ -46,7 +46,7 @@ void Window_fpsManager(Window* window)
 	window->timer = SDL_GetTicks();
 }
 
-int Window_initSDL()
+bool Window_initSDL()
 {
 	if(SDL_Init(SDL_INIT_VIDEO) < 0)
 	{

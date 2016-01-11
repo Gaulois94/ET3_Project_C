@@ -5,7 +5,7 @@ typedef char bool;
 
 typedef struct ListElem
 {
-	ListElem* next;
+	struct ListElem* next;
 	void* data;
 }ListElem;
 

@@ -21,7 +21,7 @@ Text* Text_create(const SDL_Rect* destRect, SDL_Renderer* renderer, SDL_Color* c
 bool Text_init(Text* self, const SDL_Rect* destRect, SDL_Renderer* renderer, SDL_Color* color, TTF_Font* font, const char* text)
 {
 	Drawable_init((Drawable*)self, destRect);
-	self->destroy = &Text_destroy;
+	((Drawable*)self)->destroy = &Text_destroy;
 	self->color = color;
 	self->font  = font;
 
