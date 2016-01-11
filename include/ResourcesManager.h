@@ -1,7 +1,7 @@
 #ifndef  RESOURCES_INC
 #define  RESOURCES_INC
 
-typedef char bool;
+#include "typedefine.h"
 
 /* \struct ResourcesManager
  * \brief The structure handles datas such as TTF_Font, Texture*, etc. and maps them with key char* */
