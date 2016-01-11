@@ -18,6 +18,4 @@ void            Sprite_draw(Drawable* self, SDL_Renderer* renderer);
 const SDL_Rect* Sprite_getSubRect(Sprite* self);
 void            Sprite_setSubRect(Sprite* self, SDL_Rect* subRect);
 
-void            Sprite_destroy(Sprite* self);
-
 #endif
