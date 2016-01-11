@@ -3,6 +3,12 @@
 Text* Text_create(const SDL_Rect* destRect, SDL_Renderer* renderer, SDL_Color* color, TTF_Font*font, const char* text)
 {
 	Text* self = (Text*)malloc(sizeof(Text));
+	if(self == NULL)
+	{
+		perror("Error in malloc \n");
+		return NULL;
+	}
+
 	if(Text_init(self, destRect, renderer, color, font, text) == -1)
 	{
 		free(self);
@@ -15,6 +21,7 @@ Text* Text_create(const SDL_Rect* destRect, SDL_Renderer* renderer, SDL_Color* c
 bool Text_init(Text* self, const SDL_Rect* destRect, SDL_Renderer* renderer, SDL_Color* color, TTF_Font* font, const char* text)
 {
 	Drawable_init((Drawable*)self, destRect);
+	self->destroy = &Text_destroy;
 	self->color = color;
 	self->font  = font;
 
@@ -61,5 +68,5 @@ void Text_destroy(Text* text)
 		free(text->text);
 	if(text->texture)
 		free(text->texture);
-	free(text);
+	Drawable_destroy((Drawable*)text);
 }
