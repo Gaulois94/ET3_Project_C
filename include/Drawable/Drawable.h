@@ -2,13 +2,17 @@
 #define  DRAWABLE_INC
 
 #include "SDL2/SDL.h"
+#include "Widgets/Active.h"
+#include "typedefine.h"
 
 /* \struct Drawable
  * \brief Drawing things on the screen. Don't use this structure directly : use another which inherit from it.*/
 typedef struct Drawable
 {
+	Active base;
 	SDL_Rect rect; /*!< Destination rect.*/
 	void(*draw)(struct Drawable*, SDL_Renderer*); /* !<Function which point to the correct draw function (use for inheritance) */
+	void(*destroy)(struct Drawable*);
 }Drawable;
 
 void Drawable_init(Drawable* self, const SDL_Rect* destRect);
@@ -19,5 +23,7 @@ void Drawable_setPosition(Drawable* self, int32_t x, int32_t y);
 
 void copyRect(SDL_Rect* dest, const SDL_Rect* src);
 const SDL_Rect* evaluateRect(const SDL_Rect* rect);
+
+void Drawable_destroy(Drawable* self);
 
 #endif
