@@ -7,8 +7,7 @@
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
-
-typedef char bool;
+#include "typedefine.h"
 
 typedef struct
 {
