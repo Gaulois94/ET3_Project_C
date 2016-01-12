@@ -21,6 +21,7 @@ Window* Window_init(uint32_t width, uint32_t height, const char* title)
 
 	window->timer = 0;
 	window->cameraX = window->cameraY = 0;
+	window->framerate = FPS;
 
 	return window;
 }
@@ -52,6 +53,7 @@ void Window_fpsManager(Window* window)
 
 	//Then Delay
 	SDL_Delay(fmax(0, (float)(1.0/FPS) * 1000 - (SDL_GetTicks() - window->timer)));
+	window->framerate = 1/((SDL_GetTicks() - window->timer));
 	window->timer = SDL_GetTicks();
 }
 

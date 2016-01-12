@@ -17,6 +17,7 @@ typedef struct
 	uint64_t timer;
 	int32_t cameraX;
 	int32_t cameraY;
+	int64_t framerate;
 }Window;
 
 Window*      Window_init(uint32_t width, uint32_t height, const char* title);
