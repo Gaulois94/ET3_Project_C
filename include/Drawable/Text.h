@@ -15,11 +15,13 @@ typedef struct Text
 	SDL_Texture* texture;
 	SDL_Color*   color;
 	TTF_Font*    font;
+	bool autoSize;
 	char*  text;
 }Text;
 
 Text* Text_create(const SDL_Rect* destRect, Window* window, SDL_Color* color, TTF_Font*font, const char* text);
 bool  Text_init(Text* self, const SDL_Rect* destRect, Window* window, SDL_Color* color, TTF_Font* font, const char* text);
+bool  Text_autoSize(bool autoSize, bool reset);
 void  Text_draw(Drawable* self, Window* window);
 bool  Text_setText(Text* self, Window* window, const char* text);
 void  Text_destroy(Drawable* self);

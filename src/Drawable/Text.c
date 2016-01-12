@@ -24,6 +24,7 @@ bool Text_init(Text* self, const SDL_Rect* destRect, Window* window, SDL_Color* 
 	((Drawable*)self)->destroy = &Text_destroy;
 	self->color = color;
 	self->font  = font;
+	self->autoSize = true;
 
 	self->base.draw = &Text_draw;	
 	char* t     = (char*)malloc(sizeof(char)*(1+strlen(text)));
@@ -40,6 +41,17 @@ void Text_draw(Drawable* self, Window* window)
 	SDL_RenderCopy(window->renderer, text->texture, NULL, &rect);
 }
 
+void Text_setAutoSize(Text* self, bool autoSize, bool reset)
+{
+	self->autoSize = autoSize;
+	if(reset && self->texture)
+	{
+		int32_t w, h;
+		SDL_QueryTexture(self->texture, NULL, NULL, &w, &h)
+		Drawable_setSize((Drawable*)self, w, h);
+	}
+}
+
 bool Text_setText(Text* self, Window* window, const char* text)
 {
 	SDL_Surface *textSurface;
@@ -53,9 +65,12 @@ bool Text_setText(Text* self, Window* window, const char* text)
 		free(self->texture);
 
 	self->texture = SDL_CreateTextureFromSurface(window->renderer, textSurface);
-	uint32_t w, h;
-	SDL_QueryTexture(self->texture, NULL, NULL, &w, &h);
-	Drawable_setSize((Drawable*)self, w, h);
+	if(self->autoSize)
+	{
+		uint32_t w, h;
+		SDL_QueryTexture(self->texture, NULL, NULL, &w, &h);
+		Drawable_setSize((Drawable*)self, w, h);
+	}
 	free(textSurface);
 	return 0;
 }
