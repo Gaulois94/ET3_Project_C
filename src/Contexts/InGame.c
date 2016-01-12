@@ -16,6 +16,15 @@ void InGame_init(InGame* self)
 	self->map        = NULL;
 	self->ennemies   = NULL;
 	self->nbEnnemies = 0;
+	SDL_Rect scoreRect;
+	scoreRect.x = 10;
+	scoreRect.y = 20;
+	self->score       = Text_create(scoreRect, globalVar_window, SDL_Color_WHITE, globalVar_fonts->get(globalVar_fonts, "dejavu"), "00000000");
+	self->score->setStatic((Drawable*)(self->score), true);
+	
+	self->timeLabel       = Text_create(scoreRect, globalVar_window, SDL_Color_WHITE, globalVar_fonts->get(globalVar_fonts, "dejavu"), "000");
+	const SDL_Rect* timeLabelRect = Drawable_getRect((Drawable*)(self->timeLabel));
+	self->timeLabel->setPosition((Drawable*)(self->timeLabel), SCREEN_WIDTH - 10 - timeLabelRect->w, SCREEN_HEIGHT - 20 - timeLabelRect->h);
 
 	self->player     = Player_create();
 
@@ -32,6 +41,8 @@ EnumContext InGame_run(Context* context)
 	InGame_updateEnnemies(self);
 	InGame_updatePlayer(self);
 
+	InGame_updateTime(self);
+
 	//Then we display them
 	Map_draw(self->map, globalVar_window);
 	uint32_t i;
@@ -40,6 +51,13 @@ EnumContext InGame_run(Context* context)
 
 	self->player->draw(self->player, globalVar_window->window);
 	*/
+	void InGame_drawUI(self);
+}
+
+void InGame_drawUI(InGame* self)
+{
+	self->timeLabel->draw((Drawable*)(self->timeLabel), globalVar_window);
+	self->score->draw((Drawable*)(self->score), globalVar_window);
 }
 
 void InGame_updateEnnemies(InGame* self)
@@ -59,6 +77,12 @@ void InGame_loadMap(InGame* self, const char* path)
 
 	self->map = NULL;
 	self->map = Map_create(path);
+	if(self->map == NULL)
+	{
+		perror("Error while loading the map %s \n", path);
+		return;
+	}
+	self->initTime = self->currentTime = SDL_GetTicks();
 }
 
 void InGame_destroy(InGame* self)
