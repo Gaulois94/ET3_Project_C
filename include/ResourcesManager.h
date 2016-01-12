@@ -14,8 +14,8 @@ typedef struct
 
 ResourcesManager* ResourcesManager_init();
 void*             ResourcesManager_getData(ResourcesManager* resources, const char* key);
-const char*       ResourcesManager_getKey(ResourcesManager* resources, const void* data);
-uint32_t          ResourcesManager_getLen(ResourcesManager* resources);
+const char*       ResourcesManager_getKey(const ResourcesManager* resources, const void* data);
+uint32_t          ResourcesManager_getLen(const ResourcesManager* resources);
 void              ResourcesManager_addData(ResourcesManager* resources, const char* key, void* data);
 bool              ResourcesManager_deleteData(ResourcesManager* resources, const char* key);
 void              ResourcesManager_destroy(ResourcesManager* resources);

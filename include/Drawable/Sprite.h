@@ -6,16 +6,16 @@
 typedef struct Sprite
 {
 	Drawable base;
-	const SDL_Texture* texture;
+	SDL_Texture* texture;
 	SDL_Rect subRect;
 }Sprite;
 
-Sprite*         Sprite_create(const SDL_Rect* destRect, const SDL_Texture* texture, const SDL_Rect* subRect);
-void            Sprite_init(Sprite* self, const SDL_Rect* destRect, const SDL_Texture* texture, const SDL_Rect* subRect);
+Sprite*         Sprite_create(const SDL_Rect* destRect, SDL_Texture* texture, const SDL_Rect* subRect);
+void            Sprite_init(Sprite* self, const SDL_Rect* destRect, SDL_Texture* texture, const SDL_Rect* subRect);
 
-void            Sprite_draw(Drawable* self, SDL_Renderer* renderer);
+void            Sprite_draw(Drawable* self, Window* window);
 
-const SDL_Rect* Sprite_getSubRect(Sprite* self);
+const SDL_Rect* Sprite_getSubRect(const Sprite* self);
 void            Sprite_setSubRect(Sprite* self, SDL_Rect* subRect);
 
 #endif

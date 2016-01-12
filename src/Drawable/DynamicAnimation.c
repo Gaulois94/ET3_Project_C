@@ -1,6 +1,6 @@
 #include "Drawable/DynamicAnimation.h"
 
-DynamicAnimation* DynamicAnimation_create(const SDL_Rect* dest, const SDL_Texture* texture, const SDL_Rect* rectAnimation, uint32_t maxN, uint32_t currentN, uint32_t nbFrame)
+DynamicAnimation* DynamicAnimation_create(const SDL_Rect* dest, SDL_Texture* texture, const SDL_Rect* rectAnimation, uint32_t maxN, uint32_t currentN, uint32_t nbFrame)
 {
 	DynamicAnimation* self = (DynamicAnimation*)malloc(sizeof(DynamicAnimation));
 	if(self == NULL)
@@ -13,7 +13,7 @@ DynamicAnimation* DynamicAnimation_create(const SDL_Rect* dest, const SDL_Textur
 	return self;
 }
 
-void DynamicAnimation_init(DynamicAnimation* self, const SDL_Rect* dest, const SDL_Texture* texture, const SDL_Rect* rectAnimation, uint32_t maxN, uint32_t currentN, uint32_t nbFrame)
+void DynamicAnimation_init(DynamicAnimation* self, const SDL_Rect* dest, SDL_Texture* texture, const SDL_Rect* rectAnimation, uint32_t maxN, uint32_t currentN, uint32_t nbFrame)
 {
 	Animation_init((Animation*)self, dest, texture, maxN, currentN, nbFrame);
 	self->rect = (SDL_Rect*)malloc(maxN * sizeof(SDL_Rect));

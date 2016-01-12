@@ -33,12 +33,12 @@ EnumContext InGame_run(Context* context)
 	InGame_updatePlayer(self);
 
 	//Then we display them
-	Map_draw(self->map, globalVar_window->renderer);
+	Map_draw(self->map, globalVar_window);
 	uint32_t i;
 /* 	for(i=0; i < self->nbEnnemies; i++)
-		self->ennemies[i]->draw(self->ennemies[i], globalVar_window->renderer);
+		self->ennemies[i]->draw(self->ennemies[i], globalVar_window->window);
 
-	self->player->draw(self->player, globalVar_window->renderer);
+	self->player->draw(self->player, globalVar_window->window);
 	*/
 }
 

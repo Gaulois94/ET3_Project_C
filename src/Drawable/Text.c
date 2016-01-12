@@ -1,6 +1,6 @@
 #include "Drawable/Text.h"
 
-Text* Text_create(const SDL_Rect* destRect, SDL_Renderer* renderer, SDL_Color* color, TTF_Font*font, const char* text)
+Text* Text_create(const SDL_Rect* destRect, Window* window, SDL_Color* color, TTF_Font*font, const char* text)
 {
 	Text* self = (Text*)malloc(sizeof(Text));
 	if(self == NULL)
@@ -9,7 +9,7 @@ Text* Text_create(const SDL_Rect* destRect, SDL_Renderer* renderer, SDL_Color* c
 		return NULL;
 	}
 
-	if(Text_init(self, destRect, renderer, color, font, text) == -1)
+	if(Text_init(self, destRect, window, color, font, text) == -1)
 	{
 		free(self);
 		return NULL;
@@ -18,7 +18,7 @@ Text* Text_create(const SDL_Rect* destRect, SDL_Renderer* renderer, SDL_Color* c
 	return self;
 }
 
-bool Text_init(Text* self, const SDL_Rect* destRect, SDL_Renderer* renderer, SDL_Color* color, TTF_Font* font, const char* text)
+bool Text_init(Text* self, const SDL_Rect* destRect, Window* window, SDL_Color* color, TTF_Font* font, const char* text)
 {
 	Drawable_init((Drawable*)self, destRect);
 	((Drawable*)self)->destroy = &Text_destroy;
@@ -30,16 +30,17 @@ bool Text_init(Text* self, const SDL_Rect* destRect, SDL_Renderer* renderer, SDL
 	strcpy(t, text);
 	self->text  = t;
 
-	return Text_setText(self, renderer, text);
+	return Text_setText(self, window, text);
 }
 
-void Text_draw(Drawable* self, SDL_Renderer* renderer)
+void Text_draw(Drawable* self, Window* window)
 {
 	Text* text = (Text*)self;
-	SDL_RenderCopy(renderer, text->texture, NULL, Drawable_getRect((Drawable*)text));
+	SDL_Rect rect = Drawable_getRectOnScreen((Drawable*)text, window);
+	SDL_RenderCopy(window->renderer, text->texture, NULL, &rect);
 }
 
-bool Text_setText(Text* self, SDL_Renderer* renderer, const char* text)
+bool Text_setText(Text* self, Window* window, const char* text)
 {
 	SDL_Surface *textSurface;
 	if(!(textSurface = TTF_RenderText_Solid(self->font, text, *(self->color))))
@@ -51,7 +52,7 @@ bool Text_setText(Text* self, SDL_Renderer* renderer, const char* text)
 	if(self->texture != NULL)
 		free(self->texture);
 
-	self->texture = SDL_CreateTextureFromSurface(renderer, textSurface);
+	self->texture = SDL_CreateTextureFromSurface(window->renderer, textSurface);
 	uint32_t w, h;
 	SDL_QueryTexture(self->texture, NULL, NULL, &w, &h);
 	Drawable_setSize((Drawable*)self, w, h);

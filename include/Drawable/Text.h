@@ -18,10 +18,10 @@ typedef struct Text
 	char*  text;
 }Text;
 
-Text* Text_create(const SDL_Rect* destRect, SDL_Renderer* renderer, SDL_Color* color, TTF_Font*font, const char* text);
-bool  Text_init(Text* self, const SDL_Rect* destRect, SDL_Renderer* renderer, SDL_Color* color, TTF_Font* font, const char* text);
-void  Text_draw(Drawable* self, SDL_Renderer* renderer);
-bool  Text_setText(Text* self, SDL_Renderer* renderer, const char* text);
+Text* Text_create(const SDL_Rect* destRect, Window* window, SDL_Color* color, TTF_Font*font, const char* text);
+bool  Text_init(Text* self, const SDL_Rect* destRect, Window* window, SDL_Color* color, TTF_Font* font, const char* text);
+void  Text_draw(Drawable* self, Window* window);
+bool  Text_setText(Text* self, Window* window, const char* text);
 void  Text_destroy(Drawable* self);
 
 #endif

@@ -112,7 +112,7 @@ void endElement(void *map, const char* name);
 
 void getXYFromStr(const char* str, uint32_t* x, uint32_t* y);
 
-void Map_draw(Map* self, SDL_Renderer* renderer);
+void Map_draw(Map* self, Window* window);
 
 void  Map_destroy(Map* map);
 

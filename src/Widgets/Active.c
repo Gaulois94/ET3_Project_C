@@ -72,7 +72,7 @@ void Active_setDisactiveData(Active* self, void* data)
 	self->disactiveData = data;
 }
 
-bool Active_isActive(Active* self)
+bool Active_isActive(const Active* self)
 {
 	return self->isActive;
 }

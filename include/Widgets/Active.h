@@ -29,6 +29,6 @@ void Active_setActiveFunc(Active* self, void(*callback)(void*));
 void Active_setDisactiveFunc(Active* self, void(*callback)(void*));
 void Active_setActiveData(Active* self, void* data);
 void Active_setDisactiveData(Active* self, void* data);
-bool Active_isActive(Active* self);
+bool Active_isActive(const Active* self);
 
 #endif
