@@ -34,6 +34,7 @@ Map* Map_create(const char* path)
 		perror("Error in parsing the XML code");
 
 	XML_ParserFree(parser);
+
 	return map;
 }
 
