@@ -11,15 +11,16 @@ Window* Window_init(uint32_t width, uint32_t height, const char* title)
 		return NULL;
 	}
 	window->renderer = SDL_CreateRenderer(window->window, 0, SDL_RENDERER_TARGETTEXTURE);
-	if(window->renderer == NULL)
+	if(window->window == NULL)
 	{
-		printf("Couldn't create the window renderer. SDL_ERROR :  %s\n", SDL_GetError());
+		printf("Couldn't create the window window. SDL_ERROR :  %s\n", SDL_GetError());
 		free(window->window);
 		free(window);
 		return NULL;
 	}
 
 	window->timer = 0;
+	window->cameraX = window->cameraY = 0;
 
 	return window;
 }
@@ -33,6 +34,14 @@ void Window_display(Window* window)
 {
 	SDL_RenderPresent(window->renderer);
 	Window_fpsManager(window);
+}
+
+SDL_Point Window_convertToScreenCoord(const Window* window, const SDL_Point* point)
+{
+	SDL_Point p = *point;
+	p.x -= window->cameraX;
+	p.y -= window->cameraY;
+	return p;
 }
 
 void Window_fpsManager(Window* window)
