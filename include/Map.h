@@ -10,6 +10,7 @@
 #include "ResourcesManager.h"
 #include "Tiles/Tile.h"
 #include "List.h"
+#include "SDL2/SDL_image.h"
 
 typedef enum
 {
@@ -21,6 +22,7 @@ typedef struct
 {
 	Tile*** tiles; //2D array which place tiles on the map
 	EnumTile** tileTypes; //2D array which tell the type per tiles
+	XML_Parser parser;
 
 	uint32_t nbCaseX;
 	uint32_t nbCaseY;

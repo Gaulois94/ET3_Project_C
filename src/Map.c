@@ -12,7 +12,7 @@ Map* Map_create(const char* path)
 	//Init the parser
 	XML_Parser parser = XML_ParserCreate(NULL);
 	XML_SetUserData(parser, (void*)map);
-	XML_SetElementHandler(parser, startElement, end_element);
+	XML_SetElementHandler(parser, &startElement, &endElement);
 
 	map->parser = parser;
 
@@ -61,7 +61,7 @@ void startElementFiles(void *data, const char* name, const char** attrs)
 		if(!strcmp(name, "Static"))
 		{
 			StaticFile* sf = (StaticFile*)malloc(sizeof(StaticFile));
-			List_add(map->staticFiles, sf);
+			List_addData(map->staticFiles, sf);
             
 			for(i=0; attrs[i]; i+=2)
 			{
@@ -88,16 +88,16 @@ void startElementFiles(void *data, const char* name, const char** attrs)
 		if(file==NULL)
 		{
 			perror("Exit because can't load a file");
-			exit();
+			//exit();
 		}
-		List_add(map->files, file);
+		List_addData(map->files, file);
 	}
 
 	else if(XML_depth == 2)
 	{
 		if(List_getLen(map->files) == List_getLen(map->staticFiles)) //Because we load static files before dynamic files, if the len is equal, then the last file was static
 		{
-			StaticFile* sf = (StaticFile*) List_getData(List_getLen(map->staticFiles));
+			StaticFile* sf = (StaticFile*) List_getData(map->staticFiles, List_getLen(map->staticFiles));
 			for(i=0; attrs[i]; i+=2)
 			{
 				if(!strcmp(attrs[i], "type") && !strcmp(attrs[i+1], "someType"))
@@ -133,7 +133,7 @@ void endElement(void *data, const char* name)
 {
 	XML_depth--;
 	if(XML_depth == 1)
-		XML_SetElementHandler(((Map*)data)->parser, startElement, end_element);
+		XML_SetElementHandler(((Map*)data)->parser, startElement, endElement);
 }
 
 void getXYFromStr(const char* str, uint32_t* x, uint32_t* y)
@@ -153,16 +153,17 @@ void Map_destroy(Map* map)
 	uint32_t i;
 	for(i=0; i < List_getLen(map->files); i++)
 		File_destroy((File*)List_getData(map->files, i));
-	List_destroy(map->files);
-	List_destroy(map->staticFiles);
-	List_destroy(map->dynamicFiles);
+	List_destroy(map->files, false);
+	List_destroy(map->staticFiles, false);
+	List_destroy(map->dynamicFiles, false);
 }
 
 File* File_create(const char* path)
 {
+	File* file = (File*)malloc(sizeof(File));
 	SDL_Surface* image;
 	SDL_Texture* texture=NULL;
-	if(!(image = IMG_Load(attrs[i+1])))
+	if(!(image = IMG_Load(path)))
 	{
 		SDL_Texture* texture = SDL_CreateTextureFromSurface(globalVar_window->renderer, image);
 		file->texture = texture;

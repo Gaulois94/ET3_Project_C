@@ -59,8 +59,9 @@ bool Text_setText(Text* self, SDL_Renderer* renderer, const char* text)
 	return 0;
 }
 
-void Text_destroy(Text* text)
+void Text_destroy(Drawable* self)
 {
+	Text* text = (Text*)self;
 	if(text == NULL)
 		return;
 

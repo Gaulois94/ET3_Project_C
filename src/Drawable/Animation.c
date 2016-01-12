@@ -16,19 +16,19 @@ void Animation_init(Animation* self, const SDL_Rect* destRect, const SDL_Texture
 void Animation_draw(Drawable* drawable, SDL_Renderer* renderer)
 {
 	Animation* self = (Animation*)drawable;
-	if(animation->inAnimation)
+	if(self->inAnimation)
 	{
 		if(self->iFrame == self->nbFrame)
 		{
 			self->iFrame = 0;
 			self->currentN = (self->currentN+1) % self->maxN;
-			Animation_setSubNSpriteRect(animation, n);
+			Animation_setSubNSpriteRect(self, self->currentN);
 		}
 		else
 			self->iFrame++;
 	}
 
-	Sprite_draw(self, renderer);
+	Sprite_draw((Sprite*)self, renderer);
 }
 
 void Animation_setSubNSpriteRect(Animation* self, uint32_t n)
