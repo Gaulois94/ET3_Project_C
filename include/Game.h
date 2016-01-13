@@ -5,10 +5,13 @@
 #include "Contexts/Context.h"
 #include "globalVar.h"
 #include "SDL2/SDL.h"
+#include "Player.h"
+#include "Contexts/InGame.h"
 
 typedef struct
 {
 	Context* currentContext;
+	InGame* inGameContext;
 	SDL_Event event;
 	bool quit;
 }Game;

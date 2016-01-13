@@ -31,5 +31,5 @@ void Sprite_setSubRect(Sprite* self, SDL_Rect* subRect)
 {
 	copyRect(&(self->subRect), subRect);
 	if(self->autoSize)
-		Drawable_setRect((Drawable*)self, subRect);
+		Drawable_setSize((Drawable*)self, subRect->w, subRect->h);
 }

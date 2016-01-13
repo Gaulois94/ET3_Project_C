@@ -25,11 +25,10 @@ bool Text_init(Text* self, const SDL_Rect* destRect, Window* window, SDL_Color* 
 	self->color = color;
 	self->font  = font;
 	self->autoSize = true;
+	self->texture = NULL;
 
 	self->base.draw = &Text_draw;	
-	char* t     = (char*)malloc(sizeof(char)*(1+strlen(text)));
-	strcpy(t, text);
-	self->text  = t;
+	self->text  = NULL;
 
 	return Text_setText(self, window, text);
 }
@@ -55,35 +54,45 @@ void Text_setAutoSize(Text* self, bool autoSize, bool reset)
 bool Text_setText(Text* self, Window* window, const char* text)
 {
 	SDL_Surface *textSurface;
-	if(!(textSurface = TTF_RenderText_Solid(self->font, text, *(self->color))))
+
+	if(self->text != NULL)
+		free(self->text);
+	char* t     = (char*)malloc(sizeof(char)*(1+strlen(text)));
+	strcpy(t, text);
+	self->text  = t;
+
+	if((textSurface = TTF_RenderText_Solid(self->font, t, *(self->color))) == NULL)
 	{
 		printf("Couldn't create the text %s.\n", text);
 		return -1;
 	}
 
 	if(self->texture != NULL)
-		free(self->texture);
+		SDL_DestroyTexture(self->texture);
 
 	self->texture = SDL_CreateTextureFromSurface(window->renderer, textSurface);
+	if(self->texture == NULL)
+	{
+		printf("Couldn't create the text %s.\n", text);
+		return -1;
+	}
+
 	if(self->autoSize)
 	{
 		uint32_t w, h;
 		SDL_QueryTexture(self->texture, NULL, NULL, &w, &h);
 		Drawable_setSize((Drawable*)self, w, h);
 	}
-	free(textSurface);
+	SDL_FreeSurface(textSurface);
 	return 0;
 }
 
 void Text_destroy(Drawable* self)
 {
 	Text* text = (Text*)self;
-	if(text == NULL)
-		return;
-
 	if(text->text)
 		free(text->text);
 	if(text->texture)
-		free(text->texture);
+		SDL_DestroyTexture(text->texture);
 	Drawable_destroy((Drawable*)text);
 }

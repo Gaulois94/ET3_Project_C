@@ -24,7 +24,7 @@ void Player_init(Player* self, int32_t x, int32_t y)
 	self->playerImage = File_create("Resources/player.png");
 	if(self->playerImage == NULL)
 	{
-		perror("Couldn't load the player image file. abort");
+		perror("Couldn't load the player image file. abort \n");
 		return;
 	}
 
@@ -32,7 +32,7 @@ void Player_init(Player* self, int32_t x, int32_t y)
 	for(i=0; i < self->animLength; i++)
 	{
 		self->staticAnimation = (StaticAnimation**)malloc(sizeof(StaticAnimation*)*self->animLength);
-		self->staticAnimation[0] = StaticAnimation_create(NULL, self->playerImage->texture, 0, i*32, 0, 0, 29, 32, 3, 3, 0, 8);
+		self->staticAnimation[0] = StaticAnimation_create(NULL, self->playerImage->texture, 0, i*32, 2, 0, 29, 32, 3, 3, 0, 8);
 	}
 
 	self->idAnimation = 0;
@@ -40,6 +40,7 @@ void Player_init(Player* self, int32_t x, int32_t y)
 	Player_setPosition((Drawable*)self, x, y);
 
 	Drawable* selfDrawable = (Drawable*)self;
+	selfDrawable->draw        = &Player_draw;
 	selfDrawable->setPosition = &Player_setPosition;
 	selfDrawable->setSize     = &Player_setSize;
 	selfDrawable->setStatic   = &Player_setStatic;
@@ -118,5 +119,5 @@ void Player_destroy(Drawable* drawable)
 			((Drawable*)(self->staticAnimation[i]))->destroy((Drawable*)(self->staticAnimation[i]));
 	File_destroy(self->playerImage);
 	free(self->staticAnimation);
-	free(self);
+	Drawable_destroy(drawable);
 }

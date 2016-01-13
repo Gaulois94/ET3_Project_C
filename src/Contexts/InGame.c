@@ -6,8 +6,10 @@ InGame* InGame_create()
 	if(self == NULL)
 	{
 		perror("Error in malloc");
+		free(self);
 		return NULL;
 	}
+	InGame_init(self);
 	return self;
 }
 
@@ -26,7 +28,13 @@ void InGame_init(InGame* self)
 	const SDL_Rect* timeLabelRect = Drawable_getRect((Drawable*)(self->timeLabel));
 	((Drawable*)(self->timeLabel))->setPosition((Drawable*)(self->timeLabel), SCREEN_WIDTH - 10 - timeLabelRect->w, SCREEN_HEIGHT - 20 - timeLabelRect->h);
 
-	self->player     = Player_create(0, 0);
+	self->player     = Player_create(500, 400);
+	if(self->player == NULL)
+	{
+		perror("Error while loading the player \n");
+		return;
+	}
+	self->initTime = 0;
 
 	((Context*)self)->run = &InGame_run;
 }
@@ -34,23 +42,23 @@ void InGame_init(InGame* self)
 EnumContext InGame_run(Context* context)
 {
 	InGame* self = (InGame*)context;
-	if(self->map == NULL || globalVar_window)
-		return 0;
+//	if(self->map == NULL || globalVar_window)
+//		return 0;
 
 	//We first update our datas
-	InGame_updateEnnemies(self);
-	InGame_updatePlayer(self);
+//	InGame_updateEnnemies(self);
+//	InGame_updatePlayer(self);
 
 	InGame_updateTime(self);
 
 	//Then we display them
-	Map_draw(self->map, globalVar_window);
-	uint32_t i;
-/* 	for(i=0; i < self->nbEnnemies; i++)
+//	Map_draw(self->map, globalVar_window);
+/* 	uint32_t i;
+ 	for(i=0; i < self->nbEnnemies; i++)
 		self->ennemies[i]->draw(self->ennemies[i], globalVar_window->window);
-
-	self->player->draw(self->player, globalVar_window->window);
-	*/
+*/
+	Player_draw((Drawable*)(self->player), globalVar_window);
+	
 	InGame_drawUI(self);
 }
 
@@ -85,9 +93,13 @@ void InGame_loadMap(InGame* self, const char* path)
 	self->initTime = self->currentTime = SDL_GetTicks();
 }
 
-void InGame_updateTime(InGame* game)
+void InGame_updateTime(InGame* self)
 {
-
+	self->currentTime = SDL_GetTicks();
+	char t[4];
+	int32_t value = 400-(self->currentTime - self->initTime)/1000;
+	sprintf(t, "%3d", (value > 0) ? value : 0);
+	Text_setText(self->timeLabel, globalVar_window, t);
 }
 
 void InGame_destroy(InGame* self)
@@ -95,8 +107,13 @@ void InGame_destroy(InGame* self)
 	uint32_t i;
 //	for(i=0; i < self->nbEnnemies; i++)
 //		Ennemy_destroy(self->ennemies[i]);
-	if(self->map)
+	if(self->map != NULL)
 		Map_destroy(self->map);
-	if(self->player)
-		Player_destroy(self->player);
+	if(self->player != NULL)
+		Player_destroy((Drawable*)(self->player));
+	if(self->score != NULL)
+		Text_destroy((Drawable*)(self->score));
+	if(self->timeLabel != NULL)
+		Text_destroy((Drawable*)(self->timeLabel));
+	free(self);
 }

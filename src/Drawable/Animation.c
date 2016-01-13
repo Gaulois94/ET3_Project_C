@@ -22,7 +22,7 @@ void Animation_draw(Drawable* drawable, Window* window)
 		{
 			self->iFrame = 0;
 			self->currentN = (self->currentN+1) % self->maxN;
-			Animation_setSubNSpriteRect(self, self->currentN);
+			self->setSubNSpriteRect(self, self->currentN);
 		}
 		else
 			self->iFrame++;

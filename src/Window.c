@@ -11,7 +11,7 @@ Window* Window_init(uint32_t width, uint32_t height, const char* title)
 		return NULL;
 	}
 	window->renderer = SDL_CreateRenderer(window->window, 0, SDL_RENDERER_TARGETTEXTURE);
-	if(window->window == NULL)
+	if(window->renderer == NULL)
 	{
 		printf("Couldn't create the window window. SDL_ERROR :  %s\n", SDL_GetError());
 		free(window->window);

@@ -16,6 +16,13 @@ void globalVar_destroy()
 {
 	if(globalVar_window)
 		Window_destroy(globalVar_window);
+
 	if(globalVar_fonts)
+	{
+		int32_t i;
+		int32_t len = ResourcesManager_getLen(globalVar_fonts);
+		for(i=len-1; i >= 0; i--)
+			TTF_CloseFont((TTF_Font*)(ResourcesManager_getDataByID(globalVar_fonts, i)));
 		ResourcesManager_destroy(globalVar_fonts);
+	}
 }
