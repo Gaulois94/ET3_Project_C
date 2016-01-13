@@ -8,6 +8,7 @@ typedef struct Sprite
 	Drawable base;
 	SDL_Texture* texture;
 	SDL_Rect subRect;
+	bool autoSize;
 }Sprite;
 
 Sprite*         Sprite_create(const SDL_Rect* destRect, SDL_Texture* texture, const SDL_Rect* subRect);
