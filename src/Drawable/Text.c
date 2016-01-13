@@ -46,8 +46,8 @@ void Text_setAutoSize(Text* self, bool autoSize, bool reset)
 	self->autoSize = autoSize;
 	if(reset && self->texture)
 	{
-		int32_t w, h;
-		SDL_QueryTexture(self->texture, NULL, NULL, &w, &h)
+		uint32_t w, h;
+		SDL_QueryTexture(self->texture, NULL, NULL, &w, &h);
 		Drawable_setSize((Drawable*)self, w, h);
 	}
 }

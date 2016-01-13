@@ -9,7 +9,8 @@ ResourcesManager* ResourcesManager_create()
 		return NULL;
 	}
 	self->len = 0;
-	self->keys = self->data = NULL;
+	self->keys = NULL;
+   	self->data = NULL;
 	return self;
 }
 
@@ -27,12 +28,12 @@ void* ResourcesManager_getDataByID(ResourcesManager* self, uint32_t id)
 	return (id >= self->len) ? NULL : self->data[id];
 }
 
-void* ResourcesManager_getKeyByID(ResourcesManager* self, uint32_t id)
+const char* ResourcesManager_getKeyByID(const ResourcesManager* self, uint32_t id)
 {
 	return (id >= self->len) ? NULL : self->keys[id];
 }
 
-const char* ResourcesManager_getKey(ResourcesManager* self, void* data)
+const char* ResourcesManager_getKey(const ResourcesManager* self, const void* data)
 {
 	uint32_t i;
 	for(i=0; i < self->len; i++)
@@ -41,7 +42,7 @@ const char* ResourcesManager_getKey(ResourcesManager* self, void* data)
 	return NULL;
 }
 
-uint32_t ResourcesManager_getLen(ResourcesManager* self)
+uint32_t ResourcesManager_getLen(const ResourcesManager* self)
 {
 	return self->len;
 }
@@ -57,7 +58,7 @@ bool ResourcesManager_addData(ResourcesManager* self, const char* key, void* dat
 
 	self->len++;
 	self->keys = (const char**)realloc(self->keys, self->len * sizeof(char*));
-	self->data = (const char**)realloc(self->data, self->len * sizeof(char*));
+	self->data = (void**)realloc(self->data, self->len * sizeof(void*));
 
 	self->keys[self->len-1] = key;
 	self->data[self->len-1] = data;
@@ -66,6 +67,7 @@ bool ResourcesManager_addData(ResourcesManager* self, const char* key, void* dat
 
 void* ResourcesManager_removeData(ResourcesManager* self, const char* key)
 {
+	uint32_t i;
 	void* data = NULL;
 	for(i=0; i < self->len; i++)
 		if(!strcmp(self->keys[i], key))

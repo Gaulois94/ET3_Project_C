@@ -63,7 +63,7 @@ uint32_t List_getLen(const List* self)
 	return self->len;
 }
 
-void* List_getData(const List* self, uint32_t id)
+void* List_getData(List* self, uint32_t id)
 {
 	if(id >= self->len)
 		return NULL;

@@ -2,6 +2,9 @@
 #define  RESOURCES_INC
 
 #include "typedefine.h"
+#include "stdlib.h"
+#include "stdio.h"
+#include "string.h"
 
 /* \struct ResourcesManager
  * \brief The structure handles datas such as TTF_Font, Texture*, etc. and maps them with key char* */
@@ -37,13 +40,13 @@ uint32_t          ResourcesManager_getLen(const ResourcesManager* resources);
  * \param resources the ResourcesManager
  * \param i the ID
  * \return the data*/
-void*             ResourcesManager_getDataByID(ResourcesManager, uint32_t i);
+void*             ResourcesManager_getDataByID(ResourcesManager* resources, uint32_t i);
 
 /** \brief get the key by its ID
  * \param resources the ResourcesManager
  * \param i the ID
  * \return the key*/
-char*             ResourcesManager_getKeyByID(ResourcesManager, uint32_t i);
+const char*             ResourcesManager_getKeyByID(const ResourcesManager* resources, uint32_t i);
 
 /** \brief add a data to the ResourcesManager
  * \param resources the ResourcesManager

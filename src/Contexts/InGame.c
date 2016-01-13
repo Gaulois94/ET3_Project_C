@@ -19,12 +19,12 @@ void InGame_init(InGame* self)
 	SDL_Rect scoreRect;
 	scoreRect.x = 10;
 	scoreRect.y = 20;
-	self->score       = Text_create(scoreRect, globalVar_window, SDL_Color_WHITE, globalVar_fonts->get(globalVar_fonts, "dejavu"), "00000000");
-	self->score->setStatic((Drawable*)(self->score), true);
+	self->score       = Text_create(&scoreRect, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "00000000");
+	((Drawable*)(self->score))->setStatic((Drawable*)(self->score), true);
 	
-	self->timeLabel       = Text_create(scoreRect, globalVar_window, SDL_Color_WHITE, globalVar_fonts->get(globalVar_fonts, "dejavu"), "000");
+	self->timeLabel       = Text_create(&scoreRect, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "000");
 	const SDL_Rect* timeLabelRect = Drawable_getRect((Drawable*)(self->timeLabel));
-	self->timeLabel->setPosition((Drawable*)(self->timeLabel), SCREEN_WIDTH - 10 - timeLabelRect->w, SCREEN_HEIGHT - 20 - timeLabelRect->h);
+	((Drawable*)(self->timeLabel))->setPosition((Drawable*)(self->timeLabel), SCREEN_WIDTH - 10 - timeLabelRect->w, SCREEN_HEIGHT - 20 - timeLabelRect->h);
 
 	self->player     = Player_create();
 
@@ -56,8 +56,8 @@ EnumContext InGame_run(Context* context)
 
 void InGame_drawUI(InGame* self)
 {
-	self->timeLabel->draw((Drawable*)(self->timeLabel), globalVar_window);
-	self->score->draw((Drawable*)(self->score), globalVar_window);
+	((Drawable*)(self->timeLabel))->draw((Drawable*)(self->timeLabel), globalVar_window);
+	((Drawable*)(self->score))->draw((Drawable*)(self->score), globalVar_window);
 }
 
 void InGame_updateEnnemies(InGame* self)
@@ -79,7 +79,7 @@ void InGame_loadMap(InGame* self, const char* path)
 	self->map = Map_create(path);
 	if(self->map == NULL)
 	{
-		perror("Error while loading the map %s \n", path);
+		perror("Error while loading the map \n");
 		return;
 	}
 	self->initTime = self->currentTime = SDL_GetTicks();

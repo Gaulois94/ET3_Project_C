@@ -154,9 +154,9 @@ void Map_destroy(Map* map)
 	uint32_t i;
 	for(i=0; i < List_getLen(map->files); i++)
 		File_destroy((File*)List_getData(map->files, i));
-	List_destroy(map->files, false);
-	List_destroy(map->staticFiles, false);
-	List_destroy(map->dynamicFiles, false);
+	List_destroy(map->files);
+	List_destroy(map->staticFiles);
+	List_destroy(map->dynamicFiles);
 }
 
 File* File_create(const char* path)

@@ -1,6 +1,10 @@
 #ifndef  LIST_INC
 #define  LIST_INC
 
+#include "typedefine.h"
+#include "stdlib.h"
+#include "stdio.h"
+
 typedef char bool;
 
 typedef struct ListElem
@@ -18,7 +22,7 @@ typedef struct
 List*    List_createList();
 void     List_addData(List* self, void* data);
 uint32_t List_getLen(const List* self);
-void     List_getData(List* self, uint32_t id);
+void*    List_getData(List* self, uint32_t id);
 void     List_removeData(List* self, void* data);
 void*    List_removeDataByID(List* self, uint32_t i);
 void     List_clear(List* self);

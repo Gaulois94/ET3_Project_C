@@ -5,6 +5,9 @@
 #include "Ennemy.h"
 #include "Player.h"
 #include "Map.h"
+#include "Drawable/Text.h"
+#include "stdio.h"
+#include "stdlib.h"
 
 typedef struct
 {
