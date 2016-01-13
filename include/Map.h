@@ -10,6 +10,7 @@
 #include "ResourcesManager.h"
 #include "Tiles/Tile.h"
 #include "List.h"
+#include "File.h"
 #include "SDL2/SDL_image.h"
 
 typedef enum
@@ -39,11 +40,6 @@ typedef struct
 {
 	Tile(*createStaticTile)(const SDL_Rect*, const SDL_Rect*);
 }StaticTileDatas;
-
-typedef struct
-{
-	SDL_Texture* texture;
-}File;
 
 typedef struct
 {
@@ -115,9 +111,6 @@ void getXYFromStr(const char* str, uint32_t* x, uint32_t* y);
 void Map_draw(Map* self, Window* window);
 
 void  Map_destroy(Map* map);
-
-File* File_create(const char* path);
-void  File_destroy(File* self);
 
 void  StaticFile_create(File* file);
 void  StaticFile_destroy(StaticFile* self);
