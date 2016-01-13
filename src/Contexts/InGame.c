@@ -26,7 +26,7 @@ void InGame_init(InGame* self)
 	const SDL_Rect* timeLabelRect = Drawable_getRect((Drawable*)(self->timeLabel));
 	((Drawable*)(self->timeLabel))->setPosition((Drawable*)(self->timeLabel), SCREEN_WIDTH - 10 - timeLabelRect->w, SCREEN_HEIGHT - 20 - timeLabelRect->h);
 
-	self->player     = Player_create();
+	self->player     = Player_create(0, 0);
 
 	((Context*)self)->run = &InGame_run;
 }
@@ -51,7 +51,7 @@ EnumContext InGame_run(Context* context)
 
 	self->player->draw(self->player, globalVar_window->window);
 	*/
-	void InGame_drawUI(self);
+	InGame_drawUI(self);
 }
 
 void InGame_drawUI(InGame* self)
@@ -83,6 +83,11 @@ void InGame_loadMap(InGame* self, const char* path)
 		return;
 	}
 	self->initTime = self->currentTime = SDL_GetTicks();
+}
+
+void InGame_updateTime(InGame* game)
+{
+
 }
 
 void InGame_destroy(InGame* self)

@@ -74,7 +74,13 @@ bool Window_initSDL()
 }
 void Window_destroy(Window* window)
 {
-	free(window->renderer);
-	free(window->window);
+	SDL_DestroyRenderer(window->renderer);
+	SDL_DestroyWindow(window->window);
 	free(window);
+}
+
+void Window_finishSDL()
+{
+	TTF_Quit();
+	SDL_Quit();
 }

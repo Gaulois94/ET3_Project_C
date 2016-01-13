@@ -9,7 +9,8 @@
 typedef struct
 {
 	Context* currentContext;
-	SDL_Event* event;
+	SDL_Event event;
+	bool quit;
 }Game;
 
 Game* Game_create();

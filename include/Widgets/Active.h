@@ -20,7 +20,7 @@ typedef struct Active
 }Active;
 
 void Active_init(Active* self);
-bool Active_update(Active* self, const SDL_Event* event);
+bool Active_updateEvents(Active* self, const SDL_Event* event);
 void Active_activeIt(Active* self);
 void Active_disactiveIt(Active* self);
 bool Active_howActive(Active* self, const SDL_Event* event);

@@ -17,8 +17,10 @@ typedef struct
 	Orientation orientation;
 }Player;
 
-Player* Player_create();
-void    Player_init(Player* player);
+Player* Player_create(int32_t x, int32_t y);
+void    Player_init(Player* player, int32_t x, int32_t y);
+bool    Player_howActive(Active* active, SDL_Event* e);
+void    Player_activeIt(Active* active);
 void    Player_destroy(Player* player);
 
 #endif

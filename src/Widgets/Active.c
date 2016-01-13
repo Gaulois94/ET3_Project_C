@@ -9,7 +9,7 @@ void Active_init(Active* self)
 	self->howDisactive = &Active_howDisactive;
 }
 
-bool Active_update(Active* self, const SDL_Event* event)
+bool Active_updateEvents(Active* self, const SDL_Event* event)
 {
 	bool active = self->isActive;
 	if(active)

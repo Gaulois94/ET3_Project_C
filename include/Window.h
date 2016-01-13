@@ -24,7 +24,7 @@ Window*      Window_init(uint32_t width, uint32_t height, const char* title);
 void         Window_destroy(Window* window);
 
 bool         Window_initSDL();
-bool         Window_finishSDL();
+void         Window_finishSDL();
 void         Window_fpsManager(Window* window);
 
 SDL_Point    Window_convertToScreenCoord(const Window* window, const SDL_Point* point);

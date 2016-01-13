@@ -38,6 +38,11 @@ Map* Map_create(const char* path)
 	return map;
 }
 
+void Map_draw(Map* map, Window* window)
+{
+
+}
+
 void startElement(void *data, const char* name, const char** attrs)
 {
 	//Set the start_function while parsing the file
