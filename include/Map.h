@@ -9,6 +9,7 @@
 #include "globalVar.h"
 #include "ResourcesManager.h"
 #include "Tiles/Tile.h"
+#include "Trace.h"
 #include "List.h"
 #include "File.h"
 #include "SDL2/SDL_image.h"
@@ -21,8 +22,6 @@ typedef enum
 
 typedef struct
 {
-	Tile*** tiles; //2D array which place tiles on the map
-	EnumTile** tileTypes; //2D array which tell the type per tiles
 	XML_Parser parser;
 
 	uint32_t nbCaseX;
@@ -38,11 +37,6 @@ typedef struct
 
 typedef struct
 {
-	Tile(*createStaticTile)(const SDL_Rect*, const SDL_Rect*);
-}StaticTileDatas;
-
-typedef struct
-{
 	File* file;
 
 	List* tileDatas;
@@ -52,13 +46,6 @@ typedef struct
 	uint32_t tileSizeY;
 }StaticFile;
 
-typedef struct
-{
-	File* file;
-
-	List* tileRects;
-	Tile(*createDynamicTile)(const SDL_Rect*, const List*, int, int);
-}DynamicEntity;
 
 /* The xml format file are like this :
  * <map>
