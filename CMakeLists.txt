@@ -37,6 +37,6 @@ target_link_libraries(
 	${sdl_name}
 	${sdl_image_name}
 	${sdl_ttf_name}
-	${expat_lib_dir}
+	${expat_name}
 	m
 )	
