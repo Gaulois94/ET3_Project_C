@@ -8,8 +8,8 @@ typedef struct Ground
 	Tile base;
 }Ground;
 
-Ground* Ground_create(const SDL_Rect* destRect);
-void    Ground_init(Ground* self, const SDL_Rect* destRect);
-uint32_t Ground_updateCollision(Ground* self);
+Tile* Ground_create();
+void    Ground_init(Ground* self);
+uint32_t Ground_updateCollision(Tile* self);
 
 #endif

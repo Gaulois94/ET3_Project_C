@@ -23,8 +23,8 @@ void Object_init(Object* self, uint32_t nbCasesX, uint32_t nbCasesY, uint32_t si
 	Drawable_init(drawable, &rect);
 	self->sizeX = sizeX;
 	self->sizeY = sizeY;
-	self->nbCaseX = nbCasesX;
-	self->nbCaseY = nbCasesY;
+	self->nbCasesX = nbCasesX;
+	self->nbCasesY = nbCasesY;
 	self->tiles = (Tile***)malloc(nbCasesX * sizeof(Tile**));
 	uint32_t i=0;
 	for(i=0; i < nbCasesX; i++)
@@ -39,6 +39,16 @@ void Object_init(Object* self, uint32_t nbCasesX, uint32_t nbCasesY, uint32_t si
 	drawable->setPosition(drawable, posX, posY);
 }
 
+void Object_setStatic(Drawable* self, bool isStatic)
+{
+
+}
+
+void Object_draw(Drawable* self, Window* window)
+{
+
+}
+
 void Object_addTile(Object* self, uint32_t x, uint32_t y, Tile* tile)
 {
 	if(x >= self->nbCasesX && y >= self->nbCasesY)
@@ -50,7 +60,7 @@ void Object_setPosition(Drawable* drawable, int32_t x, int32_t y)
 {
 	Object* self = (Object*)drawable;
 	uint32_t i, j;
-	const SDL_Rect* rect = drawable->getRect(drawable);
+	const SDL_Rect* rect = Drawable_getRect(drawable);
 	float factorX = rect->w / (float)(self->nbCasesX * self->sizeX);
 	float factorY = rect->h / (float)(self->nbCasesY * self->sizeY);
 	for(i=0; i < self->nbCasesX; i++)
@@ -72,10 +82,11 @@ void Object_setSize(Drawable* drawable, uint32_t width, uint32_t height)
 {
 	Object* self = (Object*)drawable;
 	Drawable_setSize(drawable, width, height);
-	self->setPosition(width, height);
+	drawable->setPosition(drawable, width, height);
 
 	float factorX = width / (float)(self->nbCasesX * self->sizeX);
 	float factorY = height / (float)(self->nbCasesY * self->sizeY);
+	uint32_t i, j;
 	for(i=0; i < self->nbCasesX; i++)
 	{
 		for(j=0; j < self->nbCasesY; j++)
@@ -87,4 +98,9 @@ void Object_setSize(Drawable* drawable, uint32_t width, uint32_t height)
 			}
 		}
 	}
+}
+
+void Object_destroy(Drawable* drawable)
+{
+
 }

@@ -17,7 +17,7 @@ typedef struct
 	uint32_t len;
 }List;
 
-List*    List_createList();
+List*    List_create();
 void     List_addData(List* self, void* data);
 uint32_t List_getLen(const List* self);
 void*    List_getData(List* self, uint32_t id);

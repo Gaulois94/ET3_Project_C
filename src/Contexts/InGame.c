@@ -47,6 +47,8 @@ void InGame_init(InGame* self)
 EnumContext InGame_run(Context* context)
 {
 	InGame* self = (InGame*)context;
+	if(self->map == NULL)
+		InGame_loadMap(self, "Resources/Tile.xml");
 //	if(self->map == NULL || globalVar_window)
 //		return 0;
 

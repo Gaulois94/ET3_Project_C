@@ -8,6 +8,12 @@
 #define CHECKPOINT 0x08
 #define FINISH     0x10
 
+typedef enum
+{
+	GROUND,
+	COIN
+}EnumTile;
+
 typedef struct Tile
 {
 	Drawable  base;

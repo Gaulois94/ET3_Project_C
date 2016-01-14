@@ -1,6 +1,6 @@
 #include "List.h"
 
-List* List_createList()
+List* List_create()
 {
 	List* list = (List*)malloc(sizeof(List));
 	if(list == NULL)
@@ -26,6 +26,7 @@ void List_addData(List* self, void* data)
 		ListElem* queue = List_getElem(self, self->len-1);
 		queue->next = elem;
 	}
+	self->len++;
 }
 
 ListElem* List_getElem(List* self, uint32_t id)
@@ -42,7 +43,7 @@ ListElem* List_getElem(List* self, uint32_t id)
 
 void List_clear(List* self)
 {
-	ListElem* elem;
+	ListElem* elem =self->head;
 	uint32_t i;
 	for(i=0; i < self->len; i++)
 	{

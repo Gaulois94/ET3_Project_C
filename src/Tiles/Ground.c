@@ -1,6 +1,6 @@
 #include "Tiles/Ground.h"
 
-Ground* Ground_create(const SDL_Rect* destRect)
+Tile* Ground_create()
 {
 	Ground* self = (Ground*)malloc(sizeof(Ground));
 	if(self == NULL)
@@ -8,16 +8,17 @@ Ground* Ground_create(const SDL_Rect* destRect)
 		perror("Error in malloc \n");
 		return NULL;
 	}
-	Ground_init(self, destRect);
+	Ground_init(self);
+	return (Tile*)self;
 }
 
-void Ground_init(Ground* self, const SDL_Rect* destRect)
+void Ground_init(Ground* self)
 {
-	Tile_init((Tile*)self, destRect);
+	Tile_init((Tile*)self, NULL);
 	((Tile*)(self))->updateCollision = &Ground_updateCollision;
 }
 
-uint32_t Ground_updateCollision(Ground* self)
+uint32_t Ground_updateCollision(Tile* self)
 {
 	return 0x00;
 }

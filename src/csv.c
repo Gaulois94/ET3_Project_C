@@ -16,9 +16,9 @@ bool CSVParser_parse(CSVParser* self, const char* string)
 	int8_t signe=1;
 	int32_t exposant=1;
 	int8_t numberSize=-1;
-
 	uint32_t stringIndice;
-	for(stringIndice=0; string[stringIndice] != ',' && string[stringIndice] != ';' && string[stringIndice] != '\0' && string[stringIndice] != '\n'; i++)
+
+	for(stringIndice=0; string[stringIndice] != ',' && string[stringIndice] != ';' && string[stringIndice] != '\0' && string[stringIndice] != '\n'; stringIndice++)
 	{
 		if(string[stringIndice] == '-' && value == 0)
 			signe *= -1;
@@ -28,7 +28,7 @@ bool CSVParser_parse(CSVParser* self, const char* string)
 
 		else if(string[stringIndice] - '0' >= 0 && string[stringIndice] - '0' <= 9)
 		{
-			value += exposant * string[stringIndice] - '0';
+			value += exposant * (string[stringIndice] - '0');
 			exposant *= 10;
 			numberSize++;
 		}
@@ -47,13 +47,12 @@ bool CSVParser_parse(CSVParser* self, const char* string)
 	}
 	
 	int32_t stringValue=0;
-	int32_t stringExposant = 1;
 	int32_t i;
-	for(i=0; i < numberSize; i++)
+	for(i=0; i <= numberSize; i++)
 	{
-		exposant /= 10;
-		stringValue = stringExposant * (value / exposant);
-		stringExposant *= 10;
+		stringValue *=10;
+		stringValue += value % 10;
+		value /=10;
 	}
 
 	stringValue *= signe;
@@ -76,6 +75,6 @@ int32_t    CSVParser_getLen(CSVParser* self)
 void       CSVParser_destroy(CSVParser* self)
 {
 	if(self->values)
-		free(self->values;
+		free(self->values);
 	free(self);	
 }

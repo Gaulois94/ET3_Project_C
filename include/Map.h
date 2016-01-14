@@ -9,16 +9,23 @@
 #include "globalVar.h"
 #include "ResourcesManager.h"
 #include "Tiles/Tile.h"
+#include "Tiles/Ground.h"
 #include "Trace.h"
+#include "csv.h"
 #include "List.h"
 #include "File.h"
 #include "SDL2/SDL_image.h"
 
-typedef enum
+typedef struct
 {
-	GROUND,
-	COIN
-}EnumTile;
+	File* file;
+
+	List* tileDatas;
+	uint32_t spacingX;
+	uint32_t spacingY;
+	uint32_t tileSizeX;
+	uint32_t tileSizeY;
+}StaticFile;
 
 typedef struct
 {
@@ -32,19 +39,9 @@ typedef struct
 
 	List* files;
 	List* staticFiles;
+	List* staticTraces;
 	List* dynamicFiles;
 }Map;
-
-typedef struct
-{
-	File* file;
-
-	List* tileDatas;
-	uint32_t spacingX;
-	uint32_t spacingY;
-	uint32_t tileSizeX;
-	uint32_t tileSizeY;
-}StaticFile;
 
 
 /* The xml format file are like this :
@@ -99,9 +96,9 @@ void Map_draw(Map* self, Window* window);
 
 void  Map_destroy(Map* map);
 
-void  StaticFile_create(File* file);
+StaticFile*  StaticFile_create(File* file, uint32_t tileSizeX, uint32_t tileSizeY, uint32_t spacingX, uint32_t spacingY);
 void  StaticFile_destroy(StaticFile* self);
 
-extern uint32_t XML_depth;
+extern int32_t XML_depth;
 
 #endif
