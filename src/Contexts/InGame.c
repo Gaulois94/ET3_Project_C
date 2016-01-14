@@ -25,6 +25,8 @@ void InGame_init(InGame* self)
 	((Drawable*)(self->score))->setStatic((Drawable*)(self->score), true);
 	
 	self->timeLabel       = Text_create(&scoreRect, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "000");
+	((Drawable*)(self->timeLabel))->setStatic((Drawable*)(self->timeLabel), true);
+
 	const SDL_Rect* timeLabelRect = Drawable_getRect((Drawable*)(self->timeLabel));
 	((Drawable*)(self->timeLabel))->setPosition((Drawable*)(self->timeLabel), SCREEN_WIDTH - 10 - timeLabelRect->w, SCREEN_HEIGHT - 20 - timeLabelRect->h);
 
@@ -35,8 +37,11 @@ void InGame_init(InGame* self)
 		return;
 	}
 	self->initTime = 0;
+	const SDL_Rect* playerRect = Drawable_getRect((Drawable*)self->player);
+	Window_setCameraCoords(globalVar_window, -SCREEN_WIDTH/2+playerRect->x+playerRect->w/2, -SCREEN_HEIGHT/2+playerRect->y+playerRect->h/2);
 
 	((Context*)self)->run = &InGame_run;
+	((Context*)self)->updateEvent = &InGame_updateEvent;
 }
 
 EnumContext InGame_run(Context* context)
@@ -57,9 +62,18 @@ EnumContext InGame_run(Context* context)
  	for(i=0; i < self->nbEnnemies; i++)
 		self->ennemies[i]->draw(self->ennemies[i], globalVar_window->window);
 */
+	((Active*)(self->player))->update((Active*)(self->player), globalVar_window);
 	Player_draw((Drawable*)(self->player), globalVar_window);
 	
 	InGame_drawUI(self);
+}
+
+void InGame_updateEvent(Context* context, SDL_Event* event)
+{
+	InGame* self = (InGame*)context;
+	Active* player = (Active*)self->player;
+	if(Active_updateEvents(player, event))
+		return;
 }
 
 void InGame_drawUI(InGame* self)

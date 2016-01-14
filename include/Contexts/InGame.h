@@ -33,6 +33,7 @@ void        InGame_drawUI(InGame* self);
 void        InGame_updateEnnemies(InGame* self);
 void        InGame_updatePlayer(InGame* self);
 void        InGame_updateTime(InGame* self);
+void        InGame_updateEvent(Context* context, SDL_Event* event);
 void        InGame_loadMap(InGame* self, const char* path);
 void        InGame_destroy(InGame* self);
 

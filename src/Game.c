@@ -33,6 +33,8 @@ void Game_run(Game* game)
 				game->quit = true;
 				break;
 			}
+
+			game->currentContext->updateEvent(game->currentContext, &(game->event));
 		}
 		if(!game->quit)
 		{

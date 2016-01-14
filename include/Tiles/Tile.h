@@ -10,16 +10,21 @@
 
 typedef struct Tile
 {
+	Drawable  base;
 	Drawable* drawable;
 
 	uint32_t(*updateCollision)(struct Tile*);
 
-	uint8_t solid;
-	uint8_t doDamages;
+	bool solid;
+	bool doDamages;
 }Tile;
 
 void  Tile_init(Tile* self, const SDL_Rect* destRect);
-void  Tile_draw(Tile* self);
+void  Tile_setPosition(Drawable* self, int32_t x, int32_t y);
+void  Tile_setSize(Drawable* self, uint32_t width, uint32_t height);
+void  Tile_setStatic(Drawable* self, bool isStatic);
+void  Tile_draw(Drawable* self, Window* window);
+void  Tile_destroy(Drawable* self);
 uint32_t Tile_updateCollision(Tile* self);
 
 #endif

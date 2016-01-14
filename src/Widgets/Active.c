@@ -2,35 +2,56 @@
 
 void Active_init(Active* self)
 {
+	printf("init active \n");
 	self->activeData = self->disactiveData = NULL;
 	self->activeCallback = self->disactiveCallback = NULL;
 
 	self->howActive = &Active_howActive;
 	self->howDisactive = &Active_howDisactive;
+	self->activeIt = &Active_activeIt;
+	self->disactiveIt = &Active_disactiveIt;
+	self->permanentActivated = false;
+	self->isActive = false;
+	self->update = &Active_update;
+
+	self->autoDisactive = false;
+}
+
+void Active_update(Active* self, Window* window)
+{
+	return;
 }
 
 bool Active_updateEvents(Active* self, const SDL_Event* event)
 {
 	bool active = self->isActive;
-	if(active)
+	if(self->isActive)
+	{
 		if(!self->permanentActivated && self->howDisactive(self, event))
-			self->disactiveIt(self);
+			self->disactiveIt(self, event);
+	}
 
 	else
+	{
 		if(self->permanentActivated && (!self->isActive) || self->howActive(self, event))
-			self->activeIt(self);
+			self->activeIt(self, event);
+	}
 
-	return active != self->isActive;
+	bool returnValue = (active != self->isActive);
+	if(self->autoDisactive)
+		self->isActive = false;
+
+	return returnValue;
 }
 
-void Active_activeIt(Active* self)
+void Active_activeIt(Active* self, const SDL_Event* e)
 {
 	self->isActive = true;
 	if(self->activeCallback)
 		self->activeCallback(self->activeData);
 }
 
-void Active_disactiveIt(Active* self)
+void Active_disactiveIt(Active* self, const SDL_Event* e)
 {
 	self->isActive = false;
 	if(self->disactiveCallback)

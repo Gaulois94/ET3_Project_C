@@ -7,8 +7,10 @@
 
 #define PLAYER_SPEED_X 800
 #define PLAYER_SPEED_Y 100
+#define ANIME_SIZE_X 32
+#define ANIME_SIZE_Y 32
 
-typedef enum{RIGHT, LEFT, TOP, BOTTOM} Orientation;
+typedef enum{BOTTOM, RIGHT, TOP, LEFT} Orientation;
 
 typedef struct
 {
@@ -18,13 +20,15 @@ typedef struct
 	uint8_t    animLength;
 	uint8_t    idAnimation;
 	uint8_t    lifes;
+	bool stillDown;
 	Orientation orientation;
 }Player;
 
+void    Player_update(Active* active, Window* window);
 Player* Player_create(int32_t x, int32_t y);
 void    Player_init(Player* player, int32_t x, int32_t y);
-bool    Player_howActive(Active* active, SDL_Event* e);
-void    Player_activeIt(Active* active);
+bool    Player_howActive(Active* active, const SDL_Event* e);
+void    Player_activeIt(Active* active, const SDL_Event* e);
 void    Player_draw(Drawable* drawable, Window* window);
 void    Player_setPosition(Drawable* drawable, int32_t x, int32_t y);
 void    Player_setStatic(Drawable* drawable, bool isStatic);

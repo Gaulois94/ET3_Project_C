@@ -3,6 +3,7 @@
 
 #include "SDL2/SDL.h"
 #include "typedefine.h"
+#include "Window.h"
 
 typedef struct Active
 {
@@ -13,16 +14,19 @@ typedef struct Active
 
 	bool(*howActive)(struct Active*, const SDL_Event*);
 	bool(*howDisactive)(struct Active*, const SDL_Event*);
-	void(*activeIt)(struct Active*);
-	void(*disactiveIt)(struct Active*);
+	void(*activeIt)(struct Active*, const SDL_Event*);
+	void(*disactiveIt)(struct Active*, const SDL_Event*);
+	void(*update)(struct Active*, Window*);
 	bool isActive;
+	bool autoDisactive;
 	bool permanentActivated;
 }Active;
 
 void Active_init(Active* self);
+void Active_update(Active* self, Window* window);
 bool Active_updateEvents(Active* self, const SDL_Event* event);
-void Active_activeIt(Active* self);
-void Active_disactiveIt(Active* self);
+void Active_activeIt(Active* self, const SDL_Event* event);
+void Active_disactiveIt(Active* self, const SDL_Event* event);
 bool Active_howActive(Active* self, const SDL_Event* event);
 bool Active_howDisactive(Active* self, const SDL_Event* event);
 void Active_setActiveFunc(Active* self, void(*callback)(void*));

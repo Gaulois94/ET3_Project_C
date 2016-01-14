@@ -5,8 +5,6 @@
 #include "stdlib.h"
 #include "stdio.h"
 
-typedef char bool;
-
 typedef struct ListElem
 {
 	struct ListElem* next;
