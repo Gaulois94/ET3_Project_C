@@ -18,7 +18,7 @@ void Animation_draw(Drawable* drawable, Window* window)
 	Animation* self = (Animation*)drawable;
 	if(self->inAnimation)
 	{
-		if(self->iFrame == self->nbFrame)
+		if(self->iFrame >= self->nbFrame)
 		{
 			self->iFrame = 0;
 			self->currentN = (self->currentN+1) % self->maxN;
@@ -38,7 +38,10 @@ void Animation_setSubNSpriteRect(Animation* self, uint32_t n)
 void Animation_setInAnimation(Animation* self, bool inAnimation, bool reset)
 {
 	if(reset)
+	{
 		self->iFrame = 0;
+		self->setSubNSpriteRect(self, 0);
+	}
 	self->inAnimation = inAnimation;
 }
 

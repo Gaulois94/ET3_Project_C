@@ -39,6 +39,5 @@ void StaticAnimation_setSubNSpriteRect(Animation* self, uint32_t n)
     rect.w = anim->width;
     rect.h = anim->height;
 
-
     Sprite_setSubRect((Sprite*)self, &rect);
 }

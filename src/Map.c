@@ -106,9 +106,9 @@ void startElementFiles(void *data, const char* name, const char** attrs)
 			StaticFile* sf = (StaticFile*) List_getData(map->staticFiles, List_getLen(map->staticFiles));
 			for(i=0; attrs[i]; i+=2)
 			{
-				if(!strcmp(attrs[i], "type") && !strcmp(attrs[i+1], "someType"))
+				if(!strcmp(attrs[i], "type") && !strcmp(attrs[i+1], "ground"))
 				{
-					
+										
 				}
 			}
 		}

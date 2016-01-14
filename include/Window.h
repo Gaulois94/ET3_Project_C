@@ -29,8 +29,10 @@ void         Window_fpsManager(Window* window);
 
 SDL_Point    Window_convertToScreenCoord(const Window* window, const SDL_Point* point);
 
+void         Window_moveCamera(Window* window, uint32_t x, uint32_t y);
+void         Window_setCameraCoords(Window* window, uint32_t x, uint32_t y);
+
 void         Window_clear(Window* window);
 void         Window_display(Window* window);
-
 
 #endif

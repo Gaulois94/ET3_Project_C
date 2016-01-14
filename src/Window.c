@@ -72,6 +72,19 @@ bool Window_initSDL()
 
 	return 1;
 }
+
+
+void Window_moveCamera(Window* window, uint32_t x, uint32_t y)
+{
+	Window_setCameraCoords(window, window->cameraX+x, window->cameraY+y);
+}
+
+void Window_setCameraCoords(Window* window, uint32_t x, uint32_t y)
+{	
+	window->cameraX = x;
+	window->cameraY = y;	
+}
+
 void Window_destroy(Window* window)
 {
 	SDL_DestroyRenderer(window->renderer);
