@@ -167,6 +167,47 @@ void startElementFiles(void *data, const char* name, const char** attrs)
 
 void startElementObjects(void *data, const char* name, const char** attrs)
 {
+	if(XML_depth == 2 && !strcmp(name, "Objects"))
+	{
+		uint32_t i;
+		ObjectDatas* objDatas = ObjectDatas_create();
+		for(i=0; attrs[i]; i+=2)
+		{
+			if(!strcmp(attrs[i], "numberCases"))
+				getXYFromStr(attrs[i+1], &(objDatas->nbCasesX), &(objDatas->nbCasesY));
+			else if(!strcmp(attrs[i], "tileSize"))
+				getXYFromStr(attrs[i+1], &(objDatas->tileSizeX), &(objDatas->tileSizeY));
+			else if(!strcmp(attrs[i], "name"))
+			{
+				if(!strcmp(attrs[i+1], "finish"))
+					objDatas->createObject = &Finish_create();
+			}
+		}
+	}
+
+	else if(XML_depth == 3)
+	{
+		char* tileID, fileID;
+		for(i=0; attrs[i]; i+=2)
+		{
+			if(!strcmp(attrs[i], "fileID"))
+			{
+				tileID = (char*)malloc(sizeof(char)*(1+strlen(attrs[i+1])));
+				strcpy(tileID, attrs[i+1]);
+			}
+
+			else if(!strcmp(attrs[i], "tileID"))
+			{
+				fileID = (char*)malloc(sizeof(char)*(1+strlen(attrs[i+1])=);
+				strcpy(fileID, attrs[i+1]);
+			}
+		}
+
+		ObjectDatas* objDatas = (ObjectDatas*)List_getDatas(self->objects, List_getLen(self->objects)-1);
+		List_addData(objDatas->CSVTileID, tileID);
+		List_addData(objDatas->CSVFileID, fileID);
+	}
+
 	XML_depth++;
 }
 
@@ -198,6 +239,7 @@ void startElementTraces(void *data, const char* name, const char** attrs)
 		{
 			CSVParser* tileCSVID = CSVParser_create();
 			CSVParser* fileCSVID = CSVParser_create();
+			CSVParser* objectCSVID = CSVParser_create();
 
 			uint32_t i;
 			for(i=0; attrs[i]; i+=2)
@@ -207,6 +249,8 @@ void startElementTraces(void *data, const char* name, const char** attrs)
 
 				else if(!strcmp(attrs[i], "tileID"))
 					CSVParser_parse(tileCSVID, attrs[i+1]);
+				else if(!strcmp(attrs[i], "objectID"))
+					CSVParser_parse(objectCSVID, attrs[i+1]);
 			}
 
 			const int32_t* tileID = CSVParser_getValues(tileCSVID);
@@ -224,10 +268,26 @@ void startElementTraces(void *data, const char* name, const char** attrs)
 							StaticTrace_addTile(st, tile, XML_NthColumn, i);
 					}
 				}
+
+				//Object start to count from 1.
+				else if(objectID[i] > 0)
+				{
+					ObjectDatas* objDatas   = (ObjectDatas*)List_getData(self->objects, objectID[i]-1);
+					uint32_t j;
+					for(j=0; j < List_getLen(objDatas->CSVTileID); j++)
+					{
+						CSVParser* objectTileID = CSVParser_create();
+						CSVParser* objectFileID = CSVParser_create();
+						objectTileID->parse((char*)List_getData(objDatas->CSVTileID, j));
+						CSVParser_destroy(objectTileID);
+						CSVParser_destroy(objectFileID);
+					}
+				}
 			}
 
 			CSVParser_destroy(tileCSVID);
 			CSVParser_destroy(fileCSVID);
+			CSVParser_destroy(objectCSVID);
 			XML_NthColumn++;
 		}
 	}

@@ -59,7 +59,12 @@ void StaticTrace_addTile(StaticTrace* self, Tile* tile, uint32_t x, uint32_t y)
 
 void StaticTrace_addObject(StaticTrace* self, Object* object, uint32_t x, uint32_t y)
 {
-
+	if(x < self->nbCasesX && y < self->nbCasesY && object)
+	{
+		self->objects[x][y] = object;
+		Drawable* objectDrawable = (Drawable*)object;
+		objectDrawable->setPosition(objectDrawable, self->padX + x*self->sizeX, self->padY + y*self->sizeY);
+	}
 }
 
 void StaticTrace_destroy(StaticTrace* self, bool deleteTiles)
@@ -72,12 +77,17 @@ void StaticTrace_destroy(StaticTrace* self, bool deleteTiles)
 			for(j=0; j < self->nbCasesY; j++)
 			{
 				Drawable* tile = (Drawable*)(self->tiles[i][j]);
+				Drawable* object = (Drawable*)(self->objects[i][j]);
 				if(tile != NULL)
 					tile->destroy(tile);
+				if(object != NULL)
+					object->destroy(object);
 			}
 		}
 		free(self->tiles[i]);
+		free(self->objects[i]);
 	}
 	free(self->tiles);
+	free(self->objects);
 	free(self);
 }

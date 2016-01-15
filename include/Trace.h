@@ -3,6 +3,7 @@
 
 #include "Tiles/Tile.h"
 #include "List.h"
+#include "Datas.h"
 #include "File.h"
 
 typedef struct
@@ -22,20 +23,6 @@ typedef struct
 	Tile** tiles;
 }DynamicTrace;
 
-typedef struct
-{
-	Tile*(*createStaticTile)(SDL_Texture*, const SDL_Rect*);
-	char* type;
-}StaticTileDatas;
-
-typedef struct
-{
-	File* file;
-
-	List* tileRects;
-	Tile(*createDynamicTile)(const SDL_Rect*, const List*, int, int);
-}DynamicEntity;
-
 DynamicTrace* DynamicTrace_create();
 void DynamicTrace_addTile(DynamicTrace* self, Tile* tile);
 void DynamicTrace_draw(DynamicTrace* self, Window* window);
@@ -44,6 +31,7 @@ void DynamicTrace_destroy(DynamicTrace* self, bool deleteTiles);
 StaticTrace* StaticTrace_create(uint32_t sizeX, uint32_t sizeY, uint32_t nbCasesX, uint32_t nbCasesY,
 								  uint32_t padX, uint32_t padY);
 void StaticTrace_addTile(StaticTrace* self, Tile* tile, uint32_t x, uint32_t y);
+void StaticTrace_addObject(StaticTrace* self, Object* object, uint32_t x, uint32_t y);
 void StaticTrace_draw(StaticTrace* self, Window* window);
 void StaticTrace_destroy(StaticTrace* self, bool deleteTiles);
 

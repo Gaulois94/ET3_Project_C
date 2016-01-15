@@ -11,11 +11,13 @@
 #include "Tiles/Tile.h"
 #include "Tiles/Ground.h"
 #include "Tiles/Coin.h"
+#include "Objects.h"
 #include "Trace.h"
 #include "csv.h"
 #include "List.h"
 #include "File.h"
 #include "SDL2/SDL_image.h"
+#include "Datas.h"
 
 typedef struct
 {
@@ -42,8 +44,8 @@ typedef struct
 	List* staticFiles;
 	List* staticTraces;
 	List* dynamicFiles;
+	List* objects;
 }Map;
-
 
 /* The xml format file are like this :
  * <map>
@@ -60,13 +62,13 @@ typedef struct
  *	 </Dynamic>
  *	</Files>
  *
- *  <Objects name="name" numberCases = "axb" tileSize="axb">
+ *  <Objects name="name" numberCases = "axb" tileSize="axb" type="type">
  *   <ObjectsColumn fileID="fileID" tileID="tileID"/>
  *  </Objects>
  *
  *  <Traces>
  *   <StaticTrace name="name" shift="axb" size="axb">
- *    <Column fileID="fileID" tileID="tileID"/>
+ *    <Column fileID="fileID" tileID="tileID" objectID="objectID"/>
  *   </StaticTraces>
  *   <DynamicTrace name="name">
  *    <DynamicTile animName="name" animeTime="time" fileID="fileID" origin="axb" position="axb" tileID="tileID"/>
