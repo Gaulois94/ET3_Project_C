@@ -2,6 +2,7 @@
 #define  TILE_INC
 
 #include "Drawable/Drawable.h"
+#include "Drawable/Sprite.h"
 #define SCORE      0x01
 #define DAMAGE     0x02
 #define SOLID      0x04
@@ -17,7 +18,7 @@ typedef enum
 typedef struct Tile
 {
 	Drawable  base;
-	Drawable* drawable;
+	Sprite* sprite;
 
 	uint32_t(*updateCollision)(struct Tile*);
 
@@ -25,7 +26,7 @@ typedef struct Tile
 	bool doDamages;
 }Tile;
 
-void  Tile_init(Tile* self, const SDL_Rect* destRect);
+void  Tile_init(Tile* self, SDL_Texture* texture, const SDL_Rect* subRect);
 void  Tile_setPosition(Drawable* self, int32_t x, int32_t y);
 void  Tile_setSize(Drawable* self, uint32_t width, uint32_t height);
 void  Tile_setStatic(Drawable* self, bool isStatic);

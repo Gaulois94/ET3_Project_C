@@ -14,13 +14,53 @@ StaticTrace* StaticTrace_create(uint32_t sizeX, uint32_t sizeY, uint32_t nbCases
 	self->nbCasesY = nbCasesY;
 
 	self->tiles = (Tile***)malloc(nbCasesX * sizeof(Tile**));
-	uint32_t i=0;
+	uint32_t i,j;
 	for(i=0; i < nbCasesX; i++)
+	{
 		self->tiles[i] = (Tile**)malloc(nbCasesY * sizeof(Tile*));
+		for(j=0; j < nbCasesY; j++)
+			self->tiles[i][j] = NULL;
+	}
+
+	self->objects = (Object***)malloc(nbCasesX * sizeof(Object**));
+	uint32_t i,j;
+	for(i=0; i < nbCasesX; i++)
+	{
+		self->objects[i] = (Object**)malloc(nbCasesY * sizeof(Object*));
+		for(j=0; j < nbCasesY; j++)
+			self->objects[i][j] = NULL;
+	}
 
 	return self;
 }
 
+void StaticTrace_draw(StaticTrace* self, Window* window)
+{
+	uint32_t i, j;
+	for(i=0; i < self->nbCasesX; i++)
+	{
+		for(j=0; j < self->nbCasesY; j++)
+		{
+			if(self->tiles[i][j])
+				((Drawable*)self->tiles[i][j])->draw((Drawable*)self->tiles[i][j], window);
+		}
+	}
+}
+
+void StaticTrace_addTile(StaticTrace* self, Tile* tile, uint32_t x, uint32_t y)
+{
+	if(x < self->nbCasesX && y < self->nbCasesY && tile)
+	{
+		self->tiles[x][y] = tile;
+		Drawable* tileDrawable = (Drawable*)tile;
+		tileDrawable->setPosition(tileDrawable, self->padX + x*self->sizeX, self->padY + y*self->sizeY);
+	}
+}
+
+void StaticTrace_addObject(StaticTrace* self, Object* object, uint32_t x, uint32_t y)
+{
+
+}
 
 void StaticTrace_destroy(StaticTrace* self, bool deleteTiles)
 {
@@ -32,7 +72,8 @@ void StaticTrace_destroy(StaticTrace* self, bool deleteTiles)
 			for(j=0; j < self->nbCasesY; j++)
 			{
 				Drawable* tile = (Drawable*)(self->tiles[i][j]);
-				tile->destroy(tile);
+				if(tile != NULL)
+					tile->destroy(tile);
 			}
 		}
 		free(self->tiles[i]);

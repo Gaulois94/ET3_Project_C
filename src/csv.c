@@ -64,7 +64,7 @@ bool CSVParser_parse(CSVParser* self, const char* string)
 	return CSVParser_parse(self, &(string[stringIndice+1]));
 }
 
-const int32_t*   CSVParser_getValue(CSVParser* self)
+const int32_t*   CSVParser_getValues(CSVParser* self)
 {
 	return self->values;
 }

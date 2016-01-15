@@ -18,6 +18,11 @@ File* File_create(const char* path)
 	return NULL;
 }
 
+SDL_Texture* File_getTexture(File* self)
+{
+	return self->texture;
+}
+
 void File_destroy(File* self)
 {
 	SDL_DestroyTexture(self->texture);

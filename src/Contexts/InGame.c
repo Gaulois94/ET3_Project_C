@@ -30,15 +30,15 @@ void InGame_init(InGame* self)
 	const SDL_Rect* timeLabelRect = Drawable_getRect((Drawable*)(self->timeLabel));
 	((Drawable*)(self->timeLabel))->setPosition((Drawable*)(self->timeLabel), SCREEN_WIDTH - 10 - timeLabelRect->w, SCREEN_HEIGHT - 20 - timeLabelRect->h);
 
-	self->player     = Player_create(500, 400);
+	self->player     = Player_create(0, 224);
 	if(self->player == NULL)
 	{
 		perror("Error while loading the player \n");
 		return;
 	}
 	self->initTime = 0;
-	const SDL_Rect* playerRect = Drawable_getRect((Drawable*)self->player);
-	Window_setCameraCoords(globalVar_window, -SCREEN_WIDTH/2+playerRect->x+playerRect->w/2, -SCREEN_HEIGHT/2+playerRect->y+playerRect->h/2);
+//	const SDL_Rect* playerRect = Drawable_getRect((Drawable*)self->player);
+//	Window_setCameraCoords(globalVar_window, -SCREEN_WIDTH/2+playerRect->x+playerRect->w/2, -SCREEN_HEIGHT/2+playerRect->y+playerRect->h/2);
 
 	((Context*)self)->run = &InGame_run;
 	((Context*)self)->updateEvent = &InGame_updateEvent;
@@ -49,8 +49,8 @@ EnumContext InGame_run(Context* context)
 	InGame* self = (InGame*)context;
 	if(self->map == NULL)
 		InGame_loadMap(self, "Resources/Tile.xml");
-//	if(self->map == NULL || globalVar_window)
-//		return 0;
+	if(self->map == NULL || globalVar_window == NULL)
+		return;
 
 	//We first update our datas
 //	InGame_updateEnnemies(self);
@@ -59,7 +59,7 @@ EnumContext InGame_run(Context* context)
 	InGame_updateTime(self);
 
 	//Then we display them
-//	Map_draw(self->map, globalVar_window);
+	Map_draw(self->map, globalVar_window);
 /* 	uint32_t i;
  	for(i=0; i < self->nbEnnemies; i++)
 		self->ennemies[i]->draw(self->ennemies[i], globalVar_window->window);

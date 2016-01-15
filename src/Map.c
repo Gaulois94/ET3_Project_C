@@ -1,6 +1,7 @@
 #include "Map.h"
 
-int32_t XML_depth = 0;
+uint32_t XML_depth = 0;
+uint32_t XML_NthColumn = 0;
 
 Map* Map_create(const char* path)
 {
@@ -39,9 +40,14 @@ Map* Map_create(const char* path)
 	return map;
 }
 
-void Map_draw(Map* map, Window* window)
+void Map_draw(Map* self, Window* window)
 {
-
+	uint32_t i;
+	for(i=0; i < List_getLen(self->staticTraces); i++)
+	{
+		StaticTrace* st = (StaticTrace*)List_getData(self->staticTraces, i);
+		StaticTrace_draw(st, window);
+	}
 }
 
 void startElement(void *data, const char* name, const char** attrs)
@@ -128,16 +134,23 @@ void startElementFiles(void *data, const char* name, const char** attrs)
 			StaticFile* sf = (StaticFile*)List_getData(map->staticFiles, List_getLen(map->staticFiles)-1);
 			for(i=0; attrs[i]; i+=2)
 			{
-				if(!strcmp(attrs[i], "type") && !strcmp(attrs[i+1], "ground"))
+				if(!strcmp(attrs[i], "type"))
 				{
-					printf("create ground\n");
-					StaticTileDatas* std = (StaticTileDatas*)malloc(sizeof(StaticTileDatas));
-					std->createStaticTile = &Ground_create;
-					List_addData(sf->tileDatas, (void*)std);
+					if(!strcmp(attrs[i+1], "ground"))
+					{
+						StaticTileDatas* std = (StaticTileDatas*)malloc(sizeof(StaticTileDatas));
+						std->createStaticTile = &Ground_create;
+						List_addData(sf->tileDatas, (void*)std);
+					}
+					else if(!strcmp(attrs[i+1], "coin"))
+					{
+						StaticTileDatas* std = (StaticTileDatas*)malloc(sizeof(StaticTileDatas));
+						std->createStaticTile = &Coin_create;
+						List_addData(sf->tileDatas, (void*)std);
+					}
+					else
+						List_addData(sf->tileDatas, NULL);
 				}
-
-				else
-					List_addData(sf->tileDatas, NULL);
 			}
 		}
 
@@ -175,6 +188,7 @@ void startElementTraces(void *data, const char* name, const char** attrs)
 			}
 			StaticTrace* st = StaticTrace_create(sizeX, sizeY, self->nbCaseX * ((sizeX-padX)/self->caseSizeX), self->nbCaseY * ((sizeY-padY) / self->caseSizeY), padX, padY);
 			List_addData(self->staticTraces, (void*)st);
+			XML_NthColumn=0;
 		}
 	}
 
@@ -182,27 +196,39 @@ void startElementTraces(void *data, const char* name, const char** attrs)
 	{
 		if(!strcmp(name, "Column"))
 		{
-			CSVParser* tileID = CSVParser_create();
-			CSVParser* fileID = CSVParser_create();
+			CSVParser* tileCSVID = CSVParser_create();
+			CSVParser* fileCSVID = CSVParser_create();
 
 			uint32_t i;
 			for(i=0; attrs[i]; i+=2)
 			{
 				if(!strcmp(attrs[i], "fileID"))
-				{
-					printf("fileID %d \n", attrs[i+1]);
-					CSVParser_parse(fileID, attrs[i+1]);
-				}
+					CSVParser_parse(fileCSVID, attrs[i+1]);
 
 				else if(!strcmp(attrs[i], "tileID"))
+					CSVParser_parse(tileCSVID, attrs[i+1]);
+			}
+
+			const int32_t* tileID = CSVParser_getValues(tileCSVID);
+			const int32_t* fileID = CSVParser_getValues(fileCSVID);
+			for(i=0; i < CSVParser_getLen(tileCSVID); i++)
+			{
+				if(tileID[i] != -1 && fileID[i] != -1)
 				{
-					printf("tileID %d \n", attrs[i+1]);
-					CSVParser_parse(tileID, attrs[i+1]);
+					StaticFile* sf  = List_getData(self->staticFiles, fileID[i]);
+					Tile* tile      = StaticFile_createTile(sf, tileID[i]);
+					if(tile != NULL)
+					{
+						StaticTrace* st = (StaticTrace*)List_getData(self->staticTraces, List_getLen(self->staticTraces)-1);
+						if(st != NULL)
+							StaticTrace_addTile(st, tile, XML_NthColumn, i);
+					}
 				}
 			}
 
-			CSVParser_destroy(tileID);
-			CSVParser_destroy(fileID);
+			CSVParser_destroy(tileCSVID);
+			CSVParser_destroy(fileCSVID);
+			XML_NthColumn++;
 		}
 	}
 	XML_depth++;
@@ -260,6 +286,37 @@ StaticFile*  StaticFile_create(File* file, uint32_t tileSizeX, uint32_t tileSize
 	sf->file      = file;
 
 	return sf;
+}
+
+List* StaticFile_getTiles(StaticFile* self)
+{
+	return self->tileDatas;
+}
+
+Tile* StaticFile_createTile(StaticFile* self, int32_t tileID)
+{
+	StaticTileDatas* tile = (StaticTileDatas*)(List_getData(self->tileDatas, tileID));
+	if(tile == NULL)
+		return NULL;
+	SDL_Texture* texture = File_getTexture(self->file);
+	int32_t tWidth, tHeight;
+	SDL_QueryTexture(texture, NULL, NULL, &tWidth, &tHeight);
+
+	uint32_t numberTileX=0;
+	while(tWidth > 0)
+	{
+		tWidth -= self->tileSizeX;
+		if(numberTileX != 0)
+			tWidth -= self->spacingX;
+		numberTileX++;
+	}
+	
+	SDL_Rect subRect;
+	subRect.x = (tileID % numberTileX) * (self->tileSizeX + self->spacingX);
+	subRect.y = (tileID / numberTileX) * (self->tileSizeY + self->spacingY);
+	subRect.w = self->tileSizeX;
+	subRect.h = self->tileSizeY;
+	return tile->createStaticTile(texture, &subRect);
 }
 
 void  StaticFile_destroy(StaticFile* self)

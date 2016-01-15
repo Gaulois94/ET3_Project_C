@@ -10,6 +10,7 @@
 #include "ResourcesManager.h"
 #include "Tiles/Tile.h"
 #include "Tiles/Ground.h"
+#include "Tiles/Coin.h"
 #include "Trace.h"
 #include "csv.h"
 #include "List.h"
@@ -97,8 +98,11 @@ void Map_draw(Map* self, Window* window);
 void  Map_destroy(Map* map);
 
 StaticFile*  StaticFile_create(File* file, uint32_t tileSizeX, uint32_t tileSizeY, uint32_t spacingX, uint32_t spacingY);
+List* StaticFile_getTiles(StaticFile* self);
+Tile* StaticFile_createTile(StaticFile* self, int32_t tileID);
 void  StaticFile_destroy(StaticFile* self);
 
-extern int32_t XML_depth;
+extern uint32_t XML_depth;
+extern uint32_t XML_NthColumn;
 
 #endif

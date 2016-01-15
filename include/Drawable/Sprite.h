@@ -17,6 +17,6 @@ void            Sprite_init(Sprite* self, const SDL_Rect* destRect, SDL_Texture*
 void            Sprite_draw(Drawable* self, Window* window);
 
 const SDL_Rect* Sprite_getSubRect(const Sprite* self);
-void            Sprite_setSubRect(Sprite* self, SDL_Rect* subRect);
+void            Sprite_setSubRect(Sprite* self, const SDL_Rect* subRect);
 
 #endif

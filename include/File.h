@@ -11,6 +11,7 @@ typedef struct
 }File;
 
 File* File_create(const char* path);
+SDL_Texture* File_getTexture(File* self);
 void  File_destroy(File* self);
 
 #endif

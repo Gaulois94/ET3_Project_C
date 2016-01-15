@@ -8,6 +8,7 @@
 typedef struct
 {
 	Tile*** tiles; //2D array which place tiles on the map
+	Object*** objects; //2D array which place objects on the map
 	uint32_t nbCasesX;
 	uint32_t nbCasesY;
 	uint32_t sizeX;
@@ -23,7 +24,7 @@ typedef struct
 
 typedef struct
 {
-	Tile*(*createStaticTile)(void);
+	Tile*(*createStaticTile)(SDL_Texture*, const SDL_Rect*);
 	char* type;
 }StaticTileDatas;
 
