@@ -1,6 +1,6 @@
 #include "Widgets/CheckBox.h"
 
-CheckBox* CheckBox_create(void(*callback)(void*), void* data, const SDL_Rect* rect);
+CheckBox* CheckBox_create(void(*callback)(void*), void* data, const SDL_Rect* rect)
 {
 	CheckBox* checkbox = (CheckBox*)malloc(sizeof(CheckBox));
 	if(checkbox == NULL)
@@ -16,7 +16,7 @@ void CheckBox_init(CheckBox* self, void(*callback)(void*), void* data, const SDL
 {
 	Drawable_init((Drawable*)self, rect);
 	((Active*)self)->howActive = &CheckBox_howActive;
-	((Active*)self)->howDesactive = &CheckBox_howDesactive;
+	((Active*)self)->howDisactive = &CheckBox_howDisactive;
 }
 
 bool CheckBox_howActive(Active* self, const SDL_Event* event)
@@ -54,7 +54,7 @@ bool CheckBox_howDisactive(Active* self, const SDL_Event* event)
 void CheckBox_draw(Drawable* drawable, Window* window)
 {
 	CheckBox* self = (CheckBox*)drawable;
-	SDL_Rect rect = Drawable_getRectOnScreen(drawable, window)
+	SDL_Rect rect = Drawable_getRectOnScreen(drawable, window);
 	SDL_SetRenderDrawColor(window->renderer, 0xff, 0xff, 0xff, 0xff);
 	SDL_RenderFillRect(window->renderer, &rect);
 
@@ -65,7 +65,3 @@ void CheckBox_draw(Drawable* drawable, Window* window)
 		SDL_RenderDrawLine(window->renderer, rect.x, rect.y + rect.h, rect.x + rect.w, rect.y);
 	}
 }
-
-
-
-

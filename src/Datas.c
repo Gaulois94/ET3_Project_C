@@ -8,7 +8,8 @@ ObjectDatas* ObjectDatas_create()
 		perror("Error in malloc \n");
 		return NULL;
 	}
-	objDatas->List_create();
+	objDatas->CSVTileID = List_create();
+	objDatas->CSVFileID = List_create();
 	objDatas->createObject = NULL;
 	return objDatas;
 }

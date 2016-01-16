@@ -2,6 +2,9 @@
 #define  DATAS_INC
 
 #include "Tiles/Tile.h"
+#include "File.h"
+#include "List.h"
+#include "Objects/Object.h"
 
 typedef struct
 {
@@ -11,7 +14,7 @@ typedef struct
 
 typedef struct
 {
-	Object*(*createObject)(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
+	Object*(*createObject)(uint32_t, uint32_t, uint32_t, uint32_t);
 	List* CSVTileID;
 	List* CSVFileID;
 	uint32_t nbCasesX;

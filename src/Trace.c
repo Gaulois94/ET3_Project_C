@@ -14,21 +14,17 @@ StaticTrace* StaticTrace_create(uint32_t sizeX, uint32_t sizeY, uint32_t nbCases
 	self->nbCasesY = nbCasesY;
 
 	self->tiles = (Tile***)malloc(nbCasesX * sizeof(Tile**));
-	uint32_t i,j;
-	for(i=0; i < nbCasesX; i++)
-	{
-		self->tiles[i] = (Tile**)malloc(nbCasesY * sizeof(Tile*));
-		for(j=0; j < nbCasesY; j++)
-			self->tiles[i][j] = NULL;
-	}
-
 	self->objects = (Object***)malloc(nbCasesX * sizeof(Object**));
 	uint32_t i,j;
 	for(i=0; i < nbCasesX; i++)
 	{
+		self->tiles[i] = (Tile**)malloc(nbCasesY * sizeof(Tile*));
 		self->objects[i] = (Object**)malloc(nbCasesY * sizeof(Object*));
 		for(j=0; j < nbCasesY; j++)
+		{
+			self->tiles[i][j] = NULL;
 			self->objects[i][j] = NULL;
+		}
 	}
 
 	return self;
@@ -43,6 +39,8 @@ void StaticTrace_draw(StaticTrace* self, Window* window)
 		{
 			if(self->tiles[i][j])
 				((Drawable*)self->tiles[i][j])->draw((Drawable*)self->tiles[i][j], window);
+			else if(self->objects[i][j])
+				((Drawable*)self->objects[i][j])->draw((Drawable*)self->objects[i][j], window);
 		}
 	}
 }
