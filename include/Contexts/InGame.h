@@ -1,7 +1,7 @@
 #ifndef  INGAME_INC
 #define  INGAME_INC
 
-#define GRAVITY 0.1
+#define GRAVITY 0.3
 
 #include "Contexts/Context.h"
 #include "math.h"

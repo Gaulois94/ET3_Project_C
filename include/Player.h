@@ -7,7 +7,7 @@
 
 #define PLAYER_SPEED_X 800
 #define PLAYER_SPEED_Y 100
-#define JUMP_SPEED            -4
+#define JUMP_SPEED            -7
 #define MAX_SPEED_GRAVITY     5
 #define ANIME_SIZE_X 16
 #define ANIME_SIZE_Y 19
@@ -29,6 +29,8 @@ typedef struct
 }Player;
 
 void    Player_update(Active* active);
+void    Player_updateGravity(Player* self);
+void    Player_updateMovement(Player* self);
 void    Player_move(Player* player, int32_t x, int32_t y);
 Player* Player_create(int32_t x, int32_t y);
 void    Player_init(Player* player, int32_t x, int32_t y);

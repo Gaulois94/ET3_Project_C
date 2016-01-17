@@ -3,7 +3,7 @@
 void Tile_init(Tile* self, SDL_Texture* texture, const SDL_Rect* subRect)
 {
 	Drawable* drawable = (Drawable*)self;
-	Drawable_init(drawable, NULL);
+	Drawable_init(drawable, subRect);
 	drawable->draw = &Tile_draw;
 	drawable->setStatic = &Tile_setStatic;
 	drawable->destroy = &Tile_destroy;

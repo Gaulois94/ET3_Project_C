@@ -93,7 +93,6 @@ void InGame_updatePlayer(InGame* self)
 	if(!self->map)
 		return;
 
-	((Active*)(self->player))->update((Active*)(self->player));
 	const SDL_Rect* pRect = Drawable_getRect((Drawable*)self->player);
 
 	Tile* topLeftTile=NULL;
@@ -101,16 +100,116 @@ void InGame_updatePlayer(InGame* self)
 	Tile* bottomLeftTile=NULL;
 	Tile* bottomRightTile=NULL;
 
-	//Get the tile information
+	//Update the player gravity
+	Player_updateGravity(self->player);
+
+	//Then check collisions
+	pRect           = Drawable_getRect((Drawable*)self->player);
+	bottomLeftTile  = Map_getTileInfo(self->map, pRect->x, pRect->y + pRect->h + 1); //+1 are here to check if we will be on collision if we move the player by gravity of 1 pixel.
+	bottomRightTile = Map_getTileInfo(self->map, pRect->x + pRect->w, pRect->y + pRect->h + 1);
+	topLeftTile     = Map_getTileInfo(self->map, pRect->x, pRect->y);
+	topRightTile    = Map_getTileInfo(self->map, pRect->x + pRect->w, pRect->y);
+
+
+	if(bottomLeftTile && (Tile_getInfo(bottomLeftTile) & SOLID) ||
+	   bottomRightTile && (Tile_getInfo(bottomRightTile) & SOLID))
+    {
+		const SDL_Rect* tileRect;
+		if(bottomRightTile)
+		{
+			bottomRightTile->updateCollision(bottomRightTile);
+			tileRect = Drawable_getRect((Drawable*)bottomRightTile);
+		}
+		if(bottomLeftTile)
+		{
+			bottomLeftTile->updateCollision(bottomLeftTile);
+			tileRect = Drawable_getRect((Drawable*)bottomLeftTile);
+		}
+		int32_t y = tileRect->y - 1;
+		((Drawable*)self->player)->setPosition((Drawable*)self->player, pRect->x, y - pRect->h);
+		Player_setSpeedY(self->player, 0);
+    }
+
+	else if(topLeftTile && (Tile_getInfo(topLeftTile) & SOLID) ||
+	        topRightTile && (Tile_getInfo(topRightTile) & SOLID))
+    {
+		const SDL_Rect* tileRect;
+		if(topRightTile)
+		{
+			topRightTile->updateCollision(topRightTile);
+			tileRect = Drawable_getRect((Drawable*)topRightTile);
+		}
+		if(topLeftTile)
+		{
+			topLeftTile->updateCollision(topLeftTile);
+			tileRect = Drawable_getRect((Drawable*)topLeftTile);
+		}
+		int32_t y = tileRect->y + tileRect->h + 1;
+		((Drawable*)self->player)->setPosition((Drawable*)self->player, pRect->x, y);
+		Player_setSpeedY(self->player, 0);
+    }
+
+	else
+		Player_setSpeedY(self->player, Player_getSpeedY(self->player) + GRAVITY);
+
+	//Check if something solid is on our side
+	Player_updateMovement(self->player);
+	pRect           = Drawable_getRect((Drawable*)self->player);
+	bottomLeftTile  = Map_getTileInfo(self->map, pRect->x, pRect->y + pRect->h);
+	bottomRightTile = Map_getTileInfo(self->map, pRect->x + pRect->w, pRect->y + pRect->h);
+	topLeftTile     = Map_getTileInfo(self->map, pRect->x, pRect->y);
+	topRightTile    = Map_getTileInfo(self->map, pRect->x + pRect->w, pRect->y);
+	//on left
+	if(bottomLeftTile && (Tile_getInfo(bottomLeftTile) & SOLID) ||
+	   topLeftTile && (Tile_getInfo(topLeftTile) & SOLID))
+    {
+		const SDL_Rect* tileRect;
+		if(topLeftTile)
+		{
+			topLeftTile->updateCollision(topLeftTile);
+			tileRect = Drawable_getRect((Drawable*)topLeftTile);
+		}
+		if(bottomLeftTile)
+		{
+			bottomLeftTile->updateCollision(bottomLeftTile);
+			tileRect = Drawable_getRect((Drawable*)bottomLeftTile);
+		}
+
+		uint32_t x = tileRect->x + tileRect->w + 1;
+		((Drawable*)self->player)->setPosition((Drawable*)self->player, x, pRect->y);
+    }
+
+	//on right
+	else if(topRightTile && (Tile_getInfo(topRightTile) & SOLID) ||
+	        bottomRightTile && (Tile_getInfo(bottomRightTile) & SOLID))
+    {
+		const SDL_Rect* tileRect;
+		if(topRightTile)
+		{
+			topRightTile->updateCollision(topRightTile);
+			tileRect = Drawable_getRect((Drawable*)topRightTile);
+		}
+		if(bottomRightTile)
+		{
+			bottomRightTile->updateCollision(bottomRightTile);
+			tileRect = Drawable_getRect((Drawable*)bottomRightTile);
+		}
+
+		int32_t x = tileRect->x - 1;
+		((Drawable*)self->player)->setPosition((Drawable*)self->player, x - pRect->w, pRect->y);
+    }
+
+	//Reload tile information.
+	pRect           = Drawable_getRect((Drawable*)self->player);
 	bottomLeftTile  = Map_getTileInfo(self->map, pRect->x, pRect->y + pRect->h);
 	bottomRightTile = Map_getTileInfo(self->map, pRect->x + pRect->w, pRect->y + pRect->h);
 	topLeftTile     = Map_getTileInfo(self->map, pRect->x, pRect->y);
 	topRightTile    = Map_getTileInfo(self->map, pRect->x + pRect->w, pRect->y);
 
-	//Check if we are on a coin
+	//Then check if we are on a coin
 	if(bottomLeftTile && (Tile_getInfo(bottomLeftTile) & SCORE))
 	{
-		//The destroy it and add the score to the actual score.
+		//Destroy it and add the score to the actual score.
 		bottomLeftTile->updateCollision(bottomLeftTile);
 		InGame_addScore(self, 100);
 	}
@@ -123,7 +222,6 @@ void InGame_updatePlayer(InGame* self)
 
 	if(topLeftTile && (Tile_getInfo(topLeftTile) & SCORE))
 	{
-		//The destroy it and add the score to the actual score.
 		topLeftTile->updateCollision(topLeftTile);
 		InGame_addScore(self, 100);
 	}
@@ -133,29 +231,6 @@ void InGame_updatePlayer(InGame* self)
 		topRightTile->updateCollision(topRightTile);
 		InGame_addScore(self, 100);
 	}
-
-	//Then replace correctly the player
-	if(bottomLeftTile && (Tile_getInfo(bottomLeftTile) & SOLID) ||
-	   bottomRightTile && (Tile_getInfo(bottomRightTile) & SOLID))
-    {
-        uint32_t y = pRect->y + pRect->h;
-        if(bottomLeftTile)
-        {
-			bottomLeftTile->updateCollision(bottomLeftTile);
-            const SDL_Rect* tileRect = Drawable_getRect((Drawable*)bottomLeftTile);
-            y = tileRect->y + tileRect->h;
-        }
-        if(bottomRightTile)
-        {
-			bottomRightTile->updateCollision(bottomRightTile);
-            const SDL_Rect* tileRect = Drawable_getRect((Drawable*)bottomRightTile);
-            y = fmin(y, tileRect->y + tileRect->h);
-        }
-		((Drawable*)self->player)->setPosition((Drawable*)self->player, pRect->x, y - pRect->h);
-		Player_setSpeedY(self->player, 0);
-    }
-	else
-		Player_setSpeedY(self->player, Player_getSpeedY(self->player) + GRAVITY);
 }
 
 void InGame_updateCamera(InGame* self)

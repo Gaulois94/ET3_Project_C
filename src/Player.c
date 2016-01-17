@@ -70,24 +70,35 @@ void Player_draw(Drawable* drawable, Window* window)
 
 void Player_update(Active* active)
 {
-	Player* self = (Player*)active;
+	return;
+}
 
+void Player_updateGravity(Player* self)
+{
 	Player_move(self, 0, self->speedY);
 	if(self->jump && self->speedY != 0 && self->action == LEFT)
 		self->idAnimation = JUMPL;
-	else if(self->action == LEFT)
-		self->idAnimation = LEFT;
 	else if(self->jump && self->speedY != 0 && self->action == RIGHT)
 		self->idAnimation = JUMPR;
-	else if(self->action == RIGHT)
-		self->idAnimation = RIGHT;
+}
 
+void Player_updateMovement(Player* self)
+{
 	if(!self->stillDown)
 		return;
+
 	if(self->action == LEFT)
+	{
+		if(!self->jump)
+			self->idAnimation = LEFT;
 		Player_move(self, -2, 0);
+	}
 	else if(self->action == RIGHT)
+	{
+		if(!self->jump)
+			self->idAnimation = RIGHT;
 		Player_move(self, 2, 0);
+	}
 }
 
 void Player_move(Player* self, int32_t x, int32_t y)
