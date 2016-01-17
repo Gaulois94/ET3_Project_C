@@ -2,7 +2,6 @@
 
 void Active_init(Active* self)
 {
-	printf("init active \n");
 	self->activeData = self->disactiveData = NULL;
 	self->activeCallback = self->disactiveCallback = NULL;
 
@@ -17,7 +16,7 @@ void Active_init(Active* self)
 	self->autoDisactive = false;
 }
 
-void Active_update(Active* self, Window* window)
+void Active_update(Active* self)
 {
 	return;
 }

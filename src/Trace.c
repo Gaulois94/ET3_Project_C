@@ -38,7 +38,15 @@ void StaticTrace_draw(StaticTrace* self, Window* window)
 		for(j=0; j < self->nbCasesY; j++)
 		{
 			if(self->tiles[i][j])
-				((Drawable*)self->tiles[i][j])->draw((Drawable*)self->tiles[i][j], window);
+			{
+				if(self->tiles[i][j]->canDestroy)
+				{
+					((Drawable*)self->tiles[i][j])->destroy((Drawable*)(self->tiles[i][j]));
+					self->tiles[i][j] = NULL;
+				}
+				else
+					((Drawable*)self->tiles[i][j])->draw((Drawable*)self->tiles[i][j], window);
+			}
 			else if(self->objects[i][j])
 				((Drawable*)self->objects[i][j])->draw((Drawable*)self->objects[i][j], window);
 		}
@@ -63,6 +71,14 @@ void StaticTrace_addObject(StaticTrace* self, Object* object, uint32_t x, uint32
 		Drawable* objectDrawable = (Drawable*)object;
 		objectDrawable->setPosition(objectDrawable, self->padX + x*self->sizeX, self->padY + y*self->sizeY);
 	}
+}
+
+Tile* StaticTrace_getTile(StaticTrace* self, int32_t x, int32_t y)
+{
+	if(x < 0 || y < 0 ||
+	   x >= self->nbCasesX * self->sizeX + self->padX || y >= self->nbCasesY * self->sizeY + self->padY)
+		return NULL;
+	return self->tiles[(x - self->padX)/self->sizeX][(y - self->padY)/self->sizeY];
 }
 
 void StaticTrace_destroy(StaticTrace* self, bool deleteTiles)

@@ -21,26 +21,31 @@ void Player_init(Player* self, int32_t x, int32_t y)
 	rect.h = ANIME_SIZE_Y;
 	Drawable_init((Drawable*)self, &rect);
 
-	self->lifes = 3;
+	self->lifes      = 3;
 	self->animLength = 4;
+	self->speedY     = 0;
+	self->jump       = true;
 
-	self->playerImage = File_create("Resources/player.png");
+	self->playerImage = File_create("Resources/Mario.png");
 	if(self->playerImage == NULL)
 	{
 		perror("Couldn't load the player image file. abort \n");
 		return;
 	}
 
-	int32_t i;
+	//Load animation;
 	self->staticAnimation = (StaticAnimation**)malloc(sizeof(StaticAnimation*)*self->animLength);
+	self->staticAnimation[LEFT]  = StaticAnimation_create(NULL, self->playerImage->texture, 0, 0, 1, 1, ANIME_SIZE_X, ANIME_SIZE_Y, 2, 2, 0, 8);
+	self->staticAnimation[RIGHT] = StaticAnimation_create(NULL, self->playerImage->texture, 0, ANIME_SIZE_Y+1, 1, 1, ANIME_SIZE_X, ANIME_SIZE_Y, 2, 2, 0, 8);
+	self->staticAnimation[JUMPL] = StaticAnimation_create(NULL, self->playerImage->texture, 2*(ANIME_SIZE_X+2), 0, 1, 1, ANIME_SIZE_X, ANIME_SIZE_Y, 1, 1, 0, 8);
+	self->staticAnimation[JUMPR] = StaticAnimation_create(NULL, self->playerImage->texture, 2*(ANIME_SIZE_X+2), ANIME_SIZE_Y+1, 1, 1, ANIME_SIZE_X, ANIME_SIZE_Y, 1, 1, 0, 8);
+
+	uint32_t i;
 	for(i=0; i < self->animLength; i++)
-	{
-		self->staticAnimation[i] = StaticAnimation_create(NULL, self->playerImage->texture, 3*i*ANIME_SIZE_X, 0, 0, 0, ANIME_SIZE_X, ANIME_SIZE_Y, 3, 3, 0, 8);
 		Animation_setInAnimation((Animation*)(self->staticAnimation[i]), false, true);
-	}
 
 	self->idAnimation = 0;
-	self->orientation=RIGHT;
+	self->action=RIGHT;
 	Player_setPosition((Drawable*)self, x, y);
 
 	Drawable* selfDrawable = (Drawable*)self;
@@ -63,34 +68,32 @@ void Player_draw(Drawable* drawable, Window* window)
 	((Drawable*)(self->staticAnimation[self->idAnimation]))->draw((Drawable*)(self->staticAnimation[self->idAnimation]), window);
 }
 
-void Player_update(Active* active, Window* window)
+void Player_update(Active* active)
 {
 	Player* self = (Player*)active;
+
+	Player_move(self, 0, self->speedY);
+	if(self->jump && self->speedY != 0 && self->action == LEFT)
+		self->idAnimation = JUMPL;
+	else if(self->action == LEFT)
+		self->idAnimation = LEFT;
+	else if(self->jump && self->speedY != 0 && self->action == RIGHT)
+		self->idAnimation = JUMPR;
+	else if(self->action == RIGHT)
+		self->idAnimation = RIGHT;
+
 	if(!self->stillDown)
 		return;
+	if(self->action == LEFT)
+		Player_move(self, -2, 0);
+	else if(self->action == RIGHT)
+		Player_move(self, 2, 0);
+}
 
+void Player_move(Player* self, int32_t x, int32_t y)
+{
 	const SDL_Rect* rect = Drawable_getRect((Drawable*)(self));
-	int32_t xScroll=0, yScroll=0;
-	switch(self->orientation)
-	{
-		case TOP:
-			((Drawable*)(self))->setPosition((Drawable*)(self), rect->x, rect->y - 5);
-			yScroll = -5;
-			break;
-		case BOTTOM:
-			((Drawable*)(self))->setPosition((Drawable*)(self), rect->x, rect->y + 5);
-			yScroll = 5;
-			break;
-		case LEFT:
-			((Drawable*)(self))->setPosition((Drawable*)(self), rect->x - 5, rect->y);
-			xScroll = -5;
-			break;
-		case RIGHT:
-			((Drawable*)(self))->setPosition((Drawable*)(self), rect->x + 5, rect->y);
-			xScroll = 5;
-			break;
-	}
-	Window_moveCamera(window, xScroll, yScroll);
+	((Drawable*)(self))->setPosition((Drawable*)(self), rect->x + x, rect->y + y);
 }
 
 bool Player_howActive(Active* active, const SDL_Event* e)
@@ -99,35 +102,20 @@ bool Player_howActive(Active* active, const SDL_Event* e)
 	if(e->type == SDL_KEYDOWN)
 	{
 		if(e->key.keysym.scancode == SDL_SCANCODE_LEFT)
-		{
-			self->orientation = LEFT;
-			self->idAnimation = LEFT;
-		}
+			self->action = LEFT;
 
 		else if(e->key.keysym.scancode == SDL_SCANCODE_RIGHT)
-		{
-			self->orientation = RIGHT;
-			self->idAnimation = RIGHT;
-		}
+			self->action = RIGHT;
 
 		else if(e->key.keysym.scancode == SDL_SCANCODE_UP)
-		{
-			self->orientation = TOP;
-			self->idAnimation = TOP;
-		}
-
-		else if(e->key.keysym.scancode == SDL_SCANCODE_DOWN)
-		{
-			self->orientation = BOTTOM;
-			self->idAnimation = BOTTOM;
-		}
+			self->jump = true;
 		else
 			return false;
 		return true;
 	}
 
 	if(e->type == SDL_KEYUP)
-		if(e->key.keysym.scancode == SDL_SCANCODE_LEFT && self->orientation == LEFT || e->key.keysym.scancode == SDL_SCANCODE_RIGHT && self->orientation == RIGHT || e->key.keysym.scancode == SDL_SCANCODE_DOWN && self->orientation == BOTTOM || e->key.keysym.scancode == SDL_SCANCODE_UP && self->orientation == TOP)
+		if(e->key.keysym.scancode == SDL_SCANCODE_LEFT && self->action == LEFT || e->key.keysym.scancode == SDL_SCANCODE_RIGHT && self->action == RIGHT)
 			return true;
 	return false;
 }
@@ -138,8 +126,21 @@ void Player_activeIt(Active* active, const SDL_Event* e)
 	uint32_t i;
 	if(e->type == SDL_KEYDOWN)
 	{
+		//If the key is jump
+		if(e->key.keysym.scancode == SDL_SCANCODE_UP)
+		{
+			//and that we are already jumping
+			if(self->speedY != 0)
+				return;
+			else
+				self->speedY = JUMP_SPEED;
+			return;
+		}
+
 		if(self->stillDown)
 			return;
+
+		uint32_t i;
 		for(i=0; i < self->animLength; i++)
 			Animation_setInAnimation((Animation*)(self->staticAnimation[i]), true, true);
 		self->stillDown = true;
@@ -147,8 +148,10 @@ void Player_activeIt(Active* active, const SDL_Event* e)
 
 	else if(e->type == SDL_KEYUP)
 	{
-		printf("up \n");
+		if(e->key.keysym.scancode == SDL_SCANCODE_UP)
+			return;
 		self->stillDown = false;
+		uint32_t i;
 		for(i=0; i < self->animLength; i++)
 			Animation_setInAnimation((Animation*)(self->staticAnimation[i]), false, true);
 	}
@@ -161,6 +164,20 @@ void Player_setPosition(Drawable* drawable, int32_t x, int32_t y)
 	for(i=0; i < self->animLength; i++)
 		((Drawable*)(self->staticAnimation[i]))->setPosition((Drawable*)(self->staticAnimation[i]), x, y);
 	Drawable_setPosition(drawable, x, y);
+}
+
+float Player_getSpeedY(const Player* player)
+{
+	return player->speedY;
+}
+
+void Player_setSpeedY(Player* self, float speed)
+{
+	if(speed > MAX_SPEED_GRAVITY)
+		speed = MAX_SPEED_GRAVITY;
+	self->speedY = speed;
+	if(speed == 0)
+		self->jump = false;
 }
 
 void Player_setSize(Drawable* drawable, uint32_t width, uint32_t height)

@@ -7,10 +7,12 @@
 
 #define PLAYER_SPEED_X 800
 #define PLAYER_SPEED_Y 100
-#define ANIME_SIZE_X 32
-#define ANIME_SIZE_Y 32
+#define JUMP_SPEED            -4
+#define MAX_SPEED_GRAVITY     5
+#define ANIME_SIZE_X 16
+#define ANIME_SIZE_Y 19
 
-typedef enum{BOTTOM, RIGHT, TOP, LEFT} Orientation;
+typedef enum{LEFT, JUMPL, RIGHT, JUMPR} Action;
 
 typedef struct
 {
@@ -21,10 +23,13 @@ typedef struct
 	uint8_t    idAnimation;
 	uint8_t    lifes;
 	bool stillDown;
-	Orientation orientation;
+	bool jump;
+	Action action;
+	float      speedY;
 }Player;
 
-void    Player_update(Active* active, Window* window);
+void    Player_update(Active* active);
+void    Player_move(Player* player, int32_t x, int32_t y);
 Player* Player_create(int32_t x, int32_t y);
 void    Player_init(Player* player, int32_t x, int32_t y);
 bool    Player_howActive(Active* active, const SDL_Event* e);
@@ -33,6 +38,9 @@ void    Player_draw(Drawable* drawable, Window* window);
 void    Player_setPosition(Drawable* drawable, int32_t x, int32_t y);
 void    Player_setStatic(Drawable* drawable, bool isStatic);
 void    Player_setSize(Drawable* drawable, uint32_t width, uint32_t height);
+
+void    Player_setSpeedY(Player* player, float speed);
+float   Player_getSpeedY(const Player* player);
 void    Player_destroy(Drawable* drawable);
 
 #endif

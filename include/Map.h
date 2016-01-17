@@ -36,8 +36,8 @@ typedef struct
 {
 	XML_Parser parser;
 
-	uint32_t nbCaseX;
-	uint32_t nbCaseY;
+	uint32_t nbCasesX;
+	uint32_t nbCasesY;
 
 	uint32_t caseSizeX;
 	uint32_t caseSizeY;
@@ -98,6 +98,9 @@ void endElement(void *map, const char* name);
 void getXYFromStr(const char* str, uint32_t* x, uint32_t* y);
 
 void Map_draw(Map* self, Window* window);
+SDL_Rect Map_getRect(Map* self);
+
+Tile* Map_getTileInfo(Map* self, int32_t x, int32_t y);
 
 void  Map_destroy(Map* map);
 

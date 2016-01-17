@@ -3,6 +3,7 @@
 
 #include "Drawable/Drawable.h"
 #include "Drawable/Sprite.h"
+
 #define SCORE      0x01
 #define DAMAGE     0x02
 #define SOLID      0x04
@@ -24,14 +25,17 @@ typedef struct Tile
 
 	bool solid;
 	bool doDamages;
+	bool canDestroy;
+	uint32_t info;
 }Tile;
 
-void  Tile_init(Tile* self, SDL_Texture* texture, const SDL_Rect* subRect);
-void  Tile_setPosition(Drawable* self, int32_t x, int32_t y);
-void  Tile_setSize(Drawable* self, uint32_t width, uint32_t height);
-void  Tile_setStatic(Drawable* self, bool isStatic);
-void  Tile_draw(Drawable* self, Window* window);
-void  Tile_destroy(Drawable* self);
+void     Tile_init(Tile* self, SDL_Texture* texture, const SDL_Rect* subRect);
+void     Tile_setPosition(Drawable* self, int32_t x, int32_t y);
+void     Tile_setSize(Drawable* self, uint32_t width, uint32_t height);
+void     Tile_setStatic(Drawable* self, bool isStatic);
+void     Tile_draw(Drawable* self, Window* window);
+void     Tile_destroy(Drawable* self);
+uint32_t Tile_getInfo(Tile* tile);
 uint32_t Tile_updateCollision(Tile* self);
 
 #endif

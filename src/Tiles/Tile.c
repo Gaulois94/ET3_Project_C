@@ -10,9 +10,11 @@ void Tile_init(Tile* self, SDL_Texture* texture, const SDL_Rect* subRect)
 	drawable->setPosition = &Tile_setPosition;
 	drawable->setSize = &Tile_setSize;
 
-	self->solid = true;
-	self->doDamages = false;
-	self->sprite = NULL;
+	self->solid      = true;
+	self->doDamages  = false;
+	self->sprite     = NULL;
+	self->info       = 0x00;
+	self->canDestroy = false;
 }
 
 void Tile_setPosition(Drawable* drawable, int32_t x, int32_t y)
@@ -57,4 +59,9 @@ void Tile_destroy(Drawable* drawable)
 	if(self->sprite != NULL)
 		((Drawable*)self->sprite)->destroy(((Drawable*)self->sprite));
 	Drawable_destroy(drawable);
+}
+
+uint32_t  Tile_getInfo(Tile* tile)
+{
+	return tile->info;
 }

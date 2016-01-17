@@ -46,6 +46,15 @@ Map* Map_create(const char* path)
 	return map;
 }
 
+SDL_Rect Map_getRect(Map* self)
+{
+	SDL_Rect r;
+	r.x = r.y = 0;
+	r.w = self->nbCasesX * self->caseSizeX;
+	r.h = self->nbCasesY * self->caseSizeY;
+	return r;
+}
+
 void Map_draw(Map* self, Window* window)
 {
 	uint32_t i;
@@ -54,6 +63,20 @@ void Map_draw(Map* self, Window* window)
 		StaticTrace* st = (StaticTrace*)List_getData(self->staticTraces, i);
 		StaticTrace_draw(st, window);
 	}
+}
+
+Tile* Map_getTileInfo(Map* self, int32_t x, int32_t y)
+{
+	uint32_t i;
+	Tile* tile;
+	for(i=0; i < List_getLen(self->staticTraces); i++)
+	{
+		StaticTrace* st = (StaticTrace*)List_getData(self->staticTraces, i);
+		tile = StaticTrace_getTile(st, x, y);
+		if(tile != NULL)
+			return tile;
+	}
+	return NULL;
 }
 
 void startElement(void *data, const char* name, const char** attrs)
@@ -65,7 +88,7 @@ void startElement(void *data, const char* name, const char** attrs)
 		for(i=0; attrs[i]; i+=2)
 		{
 			if(!strcmp(attrs[i], "numberCases"))
-				getXYFromStr(attrs[i+1], &self->nbCaseX, &self->nbCaseY);
+				getXYFromStr(attrs[i+1], &self->nbCasesX, &self->nbCasesY);
 			else if(!strcmp(attrs[i], "tileSize"))
 				getXYFromStr(attrs[i+1], &self->caseSizeX, &self->caseSizeY);
 		}
@@ -237,7 +260,7 @@ void startElementTraces(void *data, const char* name, const char** attrs)
 				else if(!strcmp(attrs[i], "shift"))
 					getXYFromStr(attrs[i+1], &padX, &padY);
 			}
-			StaticTrace* st = StaticTrace_create(sizeX, sizeY, self->nbCaseX * ((sizeX-padX)/self->caseSizeX), self->nbCaseY * ((sizeY-padY) / self->caseSizeY), padX, padY);
+			StaticTrace* st = StaticTrace_create(sizeX, sizeY, self->nbCasesX * ((sizeX-padX)/self->caseSizeX), self->nbCasesY * ((sizeY-padY) / self->caseSizeY), padX, padY);
 			List_addData(self->staticTraces, (void*)st);
 			XML_NthColumn=0;
 		}

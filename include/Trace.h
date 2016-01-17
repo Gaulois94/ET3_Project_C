@@ -30,9 +30,10 @@ void DynamicTrace_destroy(DynamicTrace* self, bool deleteTiles);
 
 StaticTrace* StaticTrace_create(uint32_t sizeX, uint32_t sizeY, uint32_t nbCasesX, uint32_t nbCasesY,
 								  uint32_t padX, uint32_t padY);
-void StaticTrace_addTile(StaticTrace* self, Tile* tile, uint32_t x, uint32_t y);
-void StaticTrace_addObject(StaticTrace* self, Object* object, uint32_t x, uint32_t y);
-void StaticTrace_draw(StaticTrace* self, Window* window);
-void StaticTrace_destroy(StaticTrace* self, bool deleteTiles);
+void  StaticTrace_addTile(StaticTrace* self, Tile* tile, uint32_t x, uint32_t y);
+void  StaticTrace_addObject(StaticTrace* self, Object* object, uint32_t x, uint32_t y);
+Tile* StaticTrace_getTile(StaticTrace* self, int32_t x, int32_t y);
+void  StaticTrace_draw(StaticTrace* self, Window* window);
+void  StaticTrace_destroy(StaticTrace* self, bool deleteTiles);
 
 #endif

@@ -17,9 +17,11 @@ void Coin_init(Coin* self, SDL_Texture* texture, const SDL_Rect* subRect)
 	Tile_init((Tile*)self, texture, subRect);
 	((Tile*)self)->sprite          = Sprite_create(NULL, texture, subRect);
 	((Tile*)self)->updateCollision = &Coin_updateCollision;
+	((Tile*)self)->info            = SCORE;
+	printf("coin init \n");
 }
 
 uint32_t Coin_updateCollision(Tile* self)
 {
-	return 0x00;
+	self->canDestroy = true;
 }

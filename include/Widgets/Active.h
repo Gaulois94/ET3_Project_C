@@ -16,14 +16,14 @@ typedef struct Active
 	bool(*howDisactive)(struct Active*, const SDL_Event*);
 	void(*activeIt)(struct Active*, const SDL_Event*);
 	void(*disactiveIt)(struct Active*, const SDL_Event*);
-	void(*update)(struct Active*, Window*);
+	void(*update)(struct Active*);
 	bool isActive;
 	bool autoDisactive;
 	bool permanentActivated;
 }Active;
 
 void Active_init(Active* self);
-void Active_update(Active* self, Window* window);
+void Active_update(Active* self);
 bool Active_updateEvents(Active* self, const SDL_Event* event);
 void Active_activeIt(Active* self, const SDL_Event* event);
 void Active_disactiveIt(Active* self, const SDL_Event* event);
