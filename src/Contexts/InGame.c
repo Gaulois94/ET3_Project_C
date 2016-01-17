@@ -283,6 +283,11 @@ void InGame_updateTime(InGame* self)
 	Text_setText(self->timeLabel, globalVar_window, t);
 }
 
+bool InGame_updateLoose(InGame* self)
+{
+	return false;
+}
+
 void InGame_destroy(InGame* self)
 {
 	uint32_t i;
