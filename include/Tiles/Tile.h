@@ -9,6 +9,7 @@
 #define SOLID      0x04
 #define CHECKPOINT 0x08
 #define FINISH     0x10
+#define BEGIN      0x20
 
 typedef enum
 {

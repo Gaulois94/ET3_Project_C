@@ -81,6 +81,28 @@ Tile* Map_getTileInfo(Map* self, int32_t x, int32_t y)
 	return NULL;
 }
 
+Object* Map_getObjectInfo(Map* self, int32_t x, int32_t y)
+{
+	uint32_t i;
+	Object* object;
+	for(i=0; i < List_getLen(self->staticTraces); i++)
+	{
+		StaticTrace* st = (StaticTrace*)List_getData(self->staticTraces, i);
+		object = StaticTrace_getObject(st, x, y);
+		if(object != NULL)
+			return object;
+	}
+	return NULL;
+}
+
+SDL_Point Map_getStartCoords(Map* self)
+{
+	SDL_Point p;
+	p.x = self->startX;
+	p.y = self->startY;
+	return p;
+}
+
 bool  Map_isOutside(Map* self, int32_t x, int32_t y)
 {
 	if(x < 0 || y < 0 || x / self->caseSizeX >= self->nbCasesX || y / self->caseSizeY >= self->nbCasesY)
@@ -319,6 +341,12 @@ void startElementTraces(void *data, const char* name, const char** attrs)
 					{
 						if(st != NULL)
 							StaticTrace_addTile(st, tile, XML_NthColumn, i);
+						if(Tile_getInfo(tile) & BEGIN)
+						{
+							const SDL_Rect* tileRect = Drawable_getRect((Drawable*)tile);
+							self->startX = tileRect->x;
+							self->startY = tileRect->y;
+						}
 					}
 				}
 

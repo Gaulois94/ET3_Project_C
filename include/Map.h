@@ -12,6 +12,7 @@
 #include "Tiles/Ground.h"
 #include "Tiles/Coin.h"
 #include "Tiles/DefaultTile.h"
+#include "Tiles/TileStart.h"
 #include "Objects/Object.h"
 #include "Objects/Finish.h"
 #include "Trace.h"
@@ -30,9 +31,6 @@ typedef struct
 	uint32_t spacingY;
 	uint32_t tileSizeX;
 	uint32_t tileSizeY;
-
-	int32_t startX;
-	int32_t startY;
 }StaticFile;
 
 typedef struct
@@ -44,6 +42,10 @@ typedef struct
 
 	uint32_t caseSizeX;
 	uint32_t caseSizeY;
+
+	//The point is on the top left of the tile
+	int32_t startX;
+	int32_t startY;
 
 	List* files;
 	List* staticFiles;
@@ -97,21 +99,21 @@ void startElementFiles(void *map, const char* name, const char** attrs);
 void startElementObjects(void *map, const char* name, const char** attrs);
 void startElementTraces(void *map, const char* name, const char** attrs);
 void endElement(void *map, const char* name);
-
 void getXYFromStr(const char* str, uint32_t* x, uint32_t* y);
-
 void Map_draw(Map* self, Window* window);
-SDL_Rect Map_getRect(Map* self);
 
-Tile* Map_getTileInfo(Map* self, int32_t x, int32_t y);
-bool  Map_isOutside(Map* self, int32_t x, int32_t y);
 
-void  Map_destroy(Map* map);
+SDL_Rect  Map_getRect(Map* self);
+Tile*     Map_getTileInfo(Map* self, int32_t x, int32_t y);
+Object*   Map_getObjectInfo(Map* self, int32_t x, int32_t y);
+SDL_Point Map_getStartCoords(Map* self);
+bool      Map_isOutside(Map* self, int32_t x, int32_t y);
+void      Map_destroy(Map* map);
 
 StaticFile*  StaticFile_create(File* file, uint32_t tileSizeX, uint32_t tileSizeY, uint32_t spacingX, uint32_t spacingY);
-List* StaticFile_getTiles(StaticFile* self);
-Tile* StaticFile_createTile(StaticFile* self, int32_t tileID, bool def);
-void  StaticFile_destroy(StaticFile* self);
+List*        StaticFile_getTiles(StaticFile* self);
+Tile*        StaticFile_createTile(StaticFile* self, int32_t tileID, bool def);
+void         StaticFile_destroy(StaticFile* self);
 
 extern uint32_t XML_depth;
 extern uint32_t XML_NthColumn;

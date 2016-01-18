@@ -81,6 +81,14 @@ Tile* StaticTrace_getTile(StaticTrace* self, int32_t x, int32_t y)
 	return self->tiles[(x - self->padX)/self->sizeX][(y - self->padY)/self->sizeY];
 }
 
+Object* StaticTrace_getObject(StaticTrace* self, int32_t x, int32_t y)
+{
+	if(x < 0 || y < 0 ||
+	   x >= self->nbCasesX * self->sizeX - self->padX || y >= self->nbCasesY * self->sizeY - self->padY)
+		return NULL;
+	return self->objects[(x - self->padX)/self->sizeX][(y - self->padY)/self->sizeY];
+}
+
 void StaticTrace_destroy(StaticTrace* self, bool deleteTiles)
 {
 	uint32_t i, j;

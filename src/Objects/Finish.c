@@ -6,5 +6,6 @@ Object* Finish_create(uint32_t nbCasesX, uint32_t nbCasesY, uint32_t tileSizeX, 
 	if(finish == NULL)
 		return NULL;
 	Object_init((Object*)finish, nbCasesX, nbCasesY, tileSizeX, tileSizeY);
+	((Object*)finish)->info = FINISH;
 	return (Object*)finish;
 }

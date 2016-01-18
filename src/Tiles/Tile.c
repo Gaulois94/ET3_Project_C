@@ -20,18 +20,16 @@ void Tile_init(Tile* self, SDL_Texture* texture, const SDL_Rect* subRect)
 void Tile_setPosition(Drawable* drawable, int32_t x, int32_t y)
 {
 	Tile* self = (Tile*)drawable;
-	if(self->sprite == NULL)
-		return;
-	((Drawable*)self->sprite)->setPosition(((Drawable*)self->sprite), x, y);
+	if(self->sprite != NULL)
+		((Drawable*)self->sprite)->setPosition(((Drawable*)self->sprite), x, y);
 	Drawable_setPosition(drawable, x, y);
 }
 
 void Tile_setSize(Drawable* drawable, uint32_t width, uint32_t height)
 {
 	Tile* self = (Tile*)drawable;
-	if(self->sprite == NULL)
-		return;
-	((Drawable*)self->sprite)->setSize(((Drawable*)self->sprite), width, height);
+	if(self->sprite != NULL)
+		((Drawable*)self->sprite)->setSize(((Drawable*)self->sprite), width, height);
 	Drawable_setSize(drawable, width, height);
 }
 

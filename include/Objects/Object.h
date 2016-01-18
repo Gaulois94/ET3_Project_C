@@ -8,6 +8,7 @@
 typedef struct
 {
 	Drawable base;
+	uint32_t info;
 	Tile*** tiles;
 	uint32_t nbCasesX;
 	uint32_t nbCasesY;
@@ -22,6 +23,7 @@ void    Object_setPosition(Drawable* drawable, int32_t x, int32_t y);
 void    Object_setSize(Drawable* drawable, uint32_t width, uint32_t height);
 void    Object_setStatic(Drawable* drawable, bool isStatic);
 void    Object_draw(Drawable* drawable, Window* window);
+int32_t Object_getInfo(Object* object);
 void    Object_destroy(Drawable* drawable);
 
 #endif

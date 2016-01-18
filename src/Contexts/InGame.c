@@ -71,9 +71,14 @@ EnumContext InGame_run(Context* context)
 	SDL_SetRenderDrawColor(globalVar_window->renderer, 0x93, 0xbb, 0xec, 0xff);
 	InGame* self = (InGame*)context;
 	if(self->map == NULL)
+	{
 		InGame_loadMap(self, "Resources/Tile.xml");
-	if(self->map == NULL || globalVar_window == NULL)
-		return NOTHING;
+		if(self->map == NULL || globalVar_window == NULL)
+			return NOTHING;
+		SDL_Point start = Map_getStartCoords(self->map);
+		const SDL_Rect* playerRect = Drawable_getRect((Drawable*)self->player);
+		((Drawable*)self->player)->setPosition((Drawable*)self->player, start.x, start.y + self->map->caseSizeX - playerRect->h-1);
+	}
 
 	//We first update our datas
 //	InGame_updateEnnemies(self);

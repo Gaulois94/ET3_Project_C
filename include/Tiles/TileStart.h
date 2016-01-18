@@ -5,9 +5,10 @@
 
 typedef struct
 {
-
+	Tile base;
 }TileStart;
 
 Tile* TileStart_create(SDL_Texture* texture, const SDL_Rect* subRect);
+void  TileStart_init(TileStart* self, SDL_Texture* texture, const SDL_Rect* subRect);
 
 #endif
