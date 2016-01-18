@@ -34,6 +34,7 @@ void    Player_updateMovement(Player* self);
 void    Player_move(Player* player, int32_t x, int32_t y);
 Player* Player_create(int32_t x, int32_t y);
 void    Player_init(Player* player, int32_t x, int32_t y);
+void    Player_stop(Player* self);
 bool    Player_howActive(Active* active, const SDL_Event* e);
 void    Player_activeIt(Active* active, const SDL_Event* e);
 void    Player_draw(Drawable* drawable, Window* window);

@@ -29,23 +29,46 @@ void InGame_init(InGame* self)
 	self->timeLabel       = Text_create(&scoreRect, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "000");
 	((Drawable*)(self->timeLabel))->setStatic((Drawable*)(self->timeLabel), true);
 
+	self->gameOver        = Text_create(&scoreRect, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "Game Over");
+	((Drawable*)(self->gameOver))->setStatic((Drawable*)(self->gameOver), true);
+
 	const SDL_Rect* timeLabelRect = Drawable_getRect((Drawable*)(self->timeLabel));
 	((Drawable*)(self->timeLabel))->setPosition((Drawable*)(self->timeLabel), SCREEN_WIDTH - 10 - timeLabelRect->w, SCREEN_HEIGHT - 20 - timeLabelRect->h);
+	((Drawable*)(self->gameOver))->setPosition((Drawable*)(self->gameOver), 360, 290);
 
 	self->player     = Player_create(0, 0);
+	self->hasDied    = false;
+	self->hasActivedGameOver = false;
 	if(self->player == NULL)
 	{
 		perror("Error while loading the player \n");
 		return;
 	}
-	self->initTime = 0;
+	self->initTime = self->currentTime = SDL_GetTicks();
 
-	((Context*)self)->run = &InGame_run;
+	((Context*)self)->run         = &InGame_run;
 	((Context*)self)->updateEvent = &InGame_updateEvent;
+	((Context*)self)->reinit      = &InGame_reinit;
+}
+
+void InGame_reinit(Context* context)
+{
+    InGame* self = (InGame*)context;
+    ((Drawable*)self->player)->setPosition((Drawable*)self->player, 0, 0);
+    Player_setSpeedY(self->player, 0);
+	self->initTime = self->currentTime = SDL_GetTicks();
+    if(self->map)
+    {
+        Map_destroy(self->map);
+        self->map = NULL;
+    }
+	self->hasDied    = false;
+	self->hasActivedGameOver = false;
 }
 
 EnumContext InGame_run(Context* context)
 {
+	SDL_SetRenderDrawColor(globalVar_window->renderer, 0x93, 0xbb, 0xec, 0xff);
 	InGame* self = (InGame*)context;
 	if(self->map == NULL)
 		InGame_loadMap(self, "Resources/Tile.xml");
@@ -54,9 +77,20 @@ EnumContext InGame_run(Context* context)
 
 	//We first update our datas
 //	InGame_updateEnnemies(self);
-	InGame_updatePlayer(self);
-	InGame_updateTime(self);
-	InGame_updateCamera(self);
+	
+	if(!self->hasDied)
+	{
+		InGame_updatePlayer(self);
+		InGame_updateTime(self);
+		InGame_updateCamera(self);
+	}
+
+	const SDL_Rect* rect = Drawable_getRect((Drawable*)self->player);
+	if(Map_isOutside(self->map, rect->x, rect->y + rect->h) && Map_isOutside(self->map, rect->x + rect->w, rect->y + rect->h) || TIMEOUT-(self->currentTime - self->initTime)/1000 == 0)
+    {
+		self->hasDied = true;
+		Player_stop(self->player);
+    }
 
 	//Then we display them
 	Map_draw(self->map, globalVar_window);
@@ -65,22 +99,38 @@ EnumContext InGame_run(Context* context)
 		self->ennemies[i]->draw(self->ennemies[i], globalVar_window->window);
 */
 	Player_draw((Drawable*)(self->player), globalVar_window);
-	
 	InGame_drawUI(self);
+
+	return (self->hasActivedGameOver) ? START : NOTHING;
 }
 
 void InGame_updateEvent(Context* context, SDL_Event* event)
 {
 	InGame* self = (InGame*)context;
-	Active* player = (Active*)self->player;
-	if(Active_updateEvents(player, event))
-		return;
+
+	if(self->hasDied)
+	{
+		if(event->type == SDL_KEYDOWN)
+		{
+			self->hasActivedGameOver = true;
+			return;
+		}
+	}
+
+	else
+	{
+		Active* player = (Active*)self->player;
+		if(Active_updateEvents(player, event))
+			return;
+	}
 }
 
 void InGame_drawUI(InGame* self)
 {
 	((Drawable*)(self->timeLabel))->draw((Drawable*)(self->timeLabel), globalVar_window);
 	((Drawable*)(self->scoreLabel))->draw((Drawable*)(self->scoreLabel), globalVar_window);
+	if(self->hasDied)
+		((Drawable*)(self->gameOver))->draw((Drawable*)(self->gameOver), globalVar_window);
 }
 
 void InGame_updateEnnemies(InGame* self)
@@ -278,7 +328,7 @@ void InGame_updateTime(InGame* self)
 {
 	self->currentTime = SDL_GetTicks();
 	char t[4];
-	int32_t value = 400-(self->currentTime - self->initTime)/1000;
+	int32_t value = TIMEOUT-(self->currentTime - self->initTime)/1000;
 	sprintf(t, "%03d", (value > 0) ? value : 0);
 	Text_setText(self->timeLabel, globalVar_window, t);
 }
@@ -301,5 +351,7 @@ void InGame_destroy(InGame* self)
 		Text_destroy((Drawable*)(self->scoreLabel));
 	if(self->timeLabel != NULL)
 		Text_destroy((Drawable*)(self->timeLabel));
+	if(self->gameOver != NULL)
+		Text_destroy((Drawable*)(self->gameOver));
 	free(self);
 }

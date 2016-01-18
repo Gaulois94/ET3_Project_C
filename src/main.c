@@ -9,11 +9,8 @@ int main()
 	Game_run(game);
 
 	Game_destroy(game);
-	printf("Game destroyed \n");
 	globalVar_destroy();
-	printf("globalVar_destroy \n");
 	Window_finishSDL();
-	printf("finish SDL");
 
 	return 0;
 }

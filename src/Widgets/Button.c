@@ -17,9 +17,25 @@ void Button_init(Button* self, void(*callback)(void*), void* data, const SDL_Rec
 	Drawable_init((Drawable*)self, rect);
 	((Drawable*)self)->setPosition = &Button_setPosition;
 	((Drawable*)self)->setSize = &Button_setSize;
+	((Drawable*)self)->draw = &Button_draw;
 	((Active*)self)->howActive = &Button_howActive;
+	((Active*)self)->autoDisactive = true;
 	self->sprite = image;
 	self->text = text;
+
+	if(rect->w == 0 && rect->h == 0)
+	{
+		if(self->sprite)
+		{
+			const SDL_Rect* rs = Drawable_getRect((Drawable*)self->sprite);
+			((Drawable*)self)->setSize((Drawable*)self, rs->w, rs->h);
+		}
+		else if(self->text)
+		{
+			const SDL_Rect* rt = Drawable_getRect((Drawable*)self->text);
+			((Drawable*)self)->setSize((Drawable*)self, rt->w, rt->h);
+		}
+	}
 
 	Button_updateDrawableRect(self);
 }
@@ -42,18 +58,18 @@ void Button_updateDrawableRect(Button* self)
 	const SDL_Rect* rect = Drawable_getRect((Drawable*)self);
 	if(self->sprite)
 		Drawable_setRect(((Drawable*)self->sprite), rect);
+
 	if(self->text)
 	{
 		const SDL_Rect* textRect = Drawable_getRect((Drawable*)self->text);
-		float scale = 0.9 * fmin(rect->x / (float)textRect->x, rect->y / (float)textRect->y);
-		Drawable_setSize(((Drawable*)self->text), textRect->x * scale, textRect->y * scale);
+		float scale = fmin(rect->w / (float)textRect->w, rect->h / (float)textRect->h);
+		Drawable_setSize(((Drawable*)self->text), textRect->w * scale, textRect->h * scale);
 
 		int32_t buttonCenterX = rect->x + rect->w / 2;
 		int32_t buttonCenterY = rect->y + rect->h / 2;
+
 		textRect = Drawable_getRect((Drawable*)self->text);
-		int32_t textCenterX = textRect->x + textRect->w / 2;
-		int32_t textCenterY = textRect->y + textRect->h / 2;
-		Drawable_setPosition((Drawable*)self->text, buttonCenterX-textCenterX, buttonCenterY-textCenterY);
+		Drawable_setPosition((Drawable*)self->text, buttonCenterX-textRect->w/2, buttonCenterY-textRect->h/2);
 	}
 }
 

@@ -16,8 +16,11 @@ Game* Game_create()
 	}
 	ResourcesManager_addData(globalVar_fonts, "dejavu", font);
 
-	game->inGameContext = InGame_create();
-	game->currentContext = (Context*)(game->inGameContext);
+	game->inGameContext  = InGame_create();
+	game->optionContext  = Option_create();
+	game->startContext   = Start_create();
+	game->currentContext = (Context*)(game->startContext);
+
 
 	return game;
 }
@@ -34,13 +37,34 @@ void Game_run(Game* game)
 				break;
 			}
 
-			game->currentContext->updateEvent(game->currentContext, &(game->event));
+			if(game->currentContext)
+				game->currentContext->updateEvent(game->currentContext, &(game->event));
 		}
+
+
+
 		if(!game->quit)
 		{
 			Window_clear(globalVar_window);
 			if(game->currentContext)
-				game->currentContext->run(game->currentContext);
+			{
+				switch(game->currentContext->run(game->currentContext))
+				{
+					case INGAME:
+						game->currentContext = (Context*)(game->inGameContext);
+						game->currentContext->reinit(game->currentContext);
+						break;
+					case START:
+						game->currentContext = (Context*)(game->startContext);
+						game->currentContext->reinit(game->currentContext);
+						break;
+					case OPTION:
+						break;
+					case QUIT:
+						game->quit = true;
+						break;
+				}
+			}
 			Window_display(globalVar_window);
 		}
 	}

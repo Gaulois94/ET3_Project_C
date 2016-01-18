@@ -76,7 +76,7 @@ void StaticTrace_addObject(StaticTrace* self, Object* object, uint32_t x, uint32
 Tile* StaticTrace_getTile(StaticTrace* self, int32_t x, int32_t y)
 {
 	if(x < 0 || y < 0 ||
-	   x >= self->nbCasesX * self->sizeX + self->padX || y >= self->nbCasesY * self->sizeY + self->padY)
+	   x >= self->nbCasesX * self->sizeX - self->padX || y >= self->nbCasesY * self->sizeY - self->padY)
 		return NULL;
 	return self->tiles[(x - self->padX)/self->sizeX][(y - self->padY)/self->sizeY];
 }

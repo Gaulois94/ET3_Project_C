@@ -30,6 +30,9 @@ typedef struct
 	uint32_t spacingY;
 	uint32_t tileSizeX;
 	uint32_t tileSizeY;
+
+	int32_t startX;
+	int32_t startY;
 }StaticFile;
 
 typedef struct
@@ -101,6 +104,7 @@ void Map_draw(Map* self, Window* window);
 SDL_Rect Map_getRect(Map* self);
 
 Tile* Map_getTileInfo(Map* self, int32_t x, int32_t y);
+bool  Map_isOutside(Map* self, int32_t x, int32_t y);
 
 void  Map_destroy(Map* map);
 

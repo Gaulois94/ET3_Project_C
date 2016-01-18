@@ -7,6 +7,7 @@
 typedef enum
 {
 	NOTHING,
+	START,
 	INGAME,
 	OPTION,
 	QUIT

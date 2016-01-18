@@ -11,6 +11,8 @@ Map* Map_create(const char* path)
 	map->staticTraces = List_create();
 	map->dynamicFiles = List_create();
 	map->objects      = List_create();
+	map->startX       = 0;
+	map->startY       = 0;
 
 	//Init the parser
 	XML_Parser parser = XML_ParserCreate(NULL);
@@ -77,6 +79,13 @@ Tile* Map_getTileInfo(Map* self, int32_t x, int32_t y)
 			return tile;
 	}
 	return NULL;
+}
+
+bool  Map_isOutside(Map* self, int32_t x, int32_t y)
+{
+	if(x < 0 || y < 0 || x / self->caseSizeX >= self->nbCasesX || y / self->caseSizeY >= self->nbCasesY)
+		return true;
+	return false;
 }
 
 void startElement(void *data, const char* name, const char** attrs)
@@ -177,6 +186,14 @@ void startElementFiles(void *data, const char* name, const char** attrs)
 						std->createStaticTile = &Coin_create;
 						List_addData(sf->tileDatas, (void*)std);
 					}
+
+					else if(!strcmp(attrs[i+1], "start"))
+					{
+						StaticTileDatas* std = (StaticTileDatas*)malloc(sizeof(StaticTileDatas));
+						std->createStaticTile = &TileStart_create;
+						List_addData(sf->tileDatas, (void*)std);
+					}
+
 					else
 						List_addData(sf->tileDatas, NULL);
 				}

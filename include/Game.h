@@ -4,6 +4,7 @@
 #include "stdlib.h"
 #include "Contexts/Context.h"
 #include "Contexts/Option.h"
+#include "Contexts/Start.h"
 #include "globalVar.h"
 #include "SDL2/SDL.h"
 #include "Player.h"
@@ -14,6 +15,7 @@ typedef struct
 	Context* currentContext;
 	InGame* inGameContext;
 	Option* optionContext;
+	Start*  startContext;
 	SDL_Event event;
 	bool quit;
 }Game;
