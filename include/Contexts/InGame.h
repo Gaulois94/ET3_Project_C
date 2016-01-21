@@ -24,9 +24,13 @@ typedef struct
 	Text*    scoreLabel;
 	Text*    timeLabel;
 	Text*    gameOver;
+	Text*    winLabel;
 
 	bool hasDied;
 	bool hasActivedGameOver;
+
+	bool hasWon;
+	bool hasActivedWin;
 
 	int64_t  currentTime;
 	int64_t  initTime;

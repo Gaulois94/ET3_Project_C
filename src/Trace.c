@@ -86,7 +86,23 @@ Object* StaticTrace_getObject(StaticTrace* self, int32_t x, int32_t y)
 	if(x < 0 || y < 0 ||
 	   x >= self->nbCasesX * self->sizeX - self->padX || y >= self->nbCasesY * self->sizeY - self->padY)
 		return NULL;
-	return self->objects[(x - self->padX)/self->sizeX][(y - self->padY)/self->sizeY];
+
+	uint32_t indiceX = (x - self->padX)/self->sizeX;
+	uint32_t indiceY = (y - self->padY)/self->sizeY;
+	uint32_t i, j;
+	for(i=0; i <= indiceX; i++)
+	{
+		for(j=0; j <= indiceY; j++)
+		{
+			if(self->objects[i][j])
+			{
+				if(self->objects[i][j]->nbCasesX + i > indiceX && 
+						self->objects[i][j]->nbCasesY + j > indiceY)
+					return self->objects[i][j];
+			}
+		}
+	}
+	return NULL;
 }
 
 void StaticTrace_destroy(StaticTrace* self, bool deleteTiles)

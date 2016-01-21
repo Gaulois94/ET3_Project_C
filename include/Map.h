@@ -54,7 +54,7 @@ typedef struct
 	List* objects;
 }Map;
 
-/* The xml format file are like this :
+/* The xml format file is like this :
  * <map>
  *	<Window numberCase="axb" tileSize="axb" title="title"/>
  *

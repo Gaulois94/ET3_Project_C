@@ -23,28 +23,36 @@ void InGame_init(InGame* self)
 	scoreRect.y = 20;
 
 	self->scoreLabel       = Text_create(&scoreRect, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "00000000");
-	self->score = 0;
 	((Drawable*)(self->scoreLabel))->setStatic((Drawable*)(self->scoreLabel), true);
 	
 	self->timeLabel       = Text_create(&scoreRect, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "000");
 	((Drawable*)(self->timeLabel))->setStatic((Drawable*)(self->timeLabel), true);
 
 	self->gameOver        = Text_create(&scoreRect, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "Game Over");
+	self->winLabel        = Text_create(&scoreRect, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "Win");
 	((Drawable*)(self->gameOver))->setStatic((Drawable*)(self->gameOver), true);
+	((Drawable*)(self->winLabel))->setStatic((Drawable*)(self->winLabel), true);
 
 	const SDL_Rect* timeLabelRect = Drawable_getRect((Drawable*)(self->timeLabel));
 	((Drawable*)(self->timeLabel))->setPosition((Drawable*)(self->timeLabel), SCREEN_WIDTH - 10 - timeLabelRect->w, SCREEN_HEIGHT - 20 - timeLabelRect->h);
 	((Drawable*)(self->gameOver))->setPosition((Drawable*)(self->gameOver), 360, 290);
+	((Drawable*)(self->winLabel))->setPosition((Drawable*)(self->winLabel), 360, 290);
 
-	self->player     = Player_create(0, 0);
-	self->hasDied    = false;
+	self->player             = Player_create(0, 0);
+/*  self->hasDied            = false;
+	self->hasWon             = false;
 	self->hasActivedGameOver = false;
+	self->hasActivedWin      = false;
+	self->score              = 0;
+	self->initTime = self->currentTime = SDL_GetTicks();
+*/
+
+	InGame_reinit((Context*)self);
 	if(self->player == NULL)
 	{
 		perror("Error while loading the player \n");
 		return;
 	}
-	self->initTime = self->currentTime = SDL_GetTicks();
 
 	((Context*)self)->run         = &InGame_run;
 	((Context*)self)->updateEvent = &InGame_updateEvent;
@@ -54,7 +62,6 @@ void InGame_init(InGame* self)
 void InGame_reinit(Context* context)
 {
     InGame* self = (InGame*)context;
-    ((Drawable*)self->player)->setPosition((Drawable*)self->player, 0, 0);
     Player_setSpeedY(self->player, 0);
 	self->initTime = self->currentTime = SDL_GetTicks();
     if(self->map)
@@ -62,8 +69,12 @@ void InGame_reinit(Context* context)
         Map_destroy(self->map);
         self->map = NULL;
     }
-	self->hasDied    = false;
+	self->hasDied            = false;
 	self->hasActivedGameOver = false;
+	self->hasWon             = false;
+	self->hasActivedWin      = false;
+	self->score              = 0;
+	InGame_addScore(self, 0);
 }
 
 EnumContext InGame_run(Context* context)
@@ -83,7 +94,7 @@ EnumContext InGame_run(Context* context)
 	//We first update our datas
 //	InGame_updateEnnemies(self);
 	
-	if(!self->hasDied)
+	if(!self->hasDied && !self->hasWon)
 	{
 		InGame_updatePlayer(self);
 		InGame_updateTime(self);
@@ -106,20 +117,25 @@ EnumContext InGame_run(Context* context)
 	Player_draw((Drawable*)(self->player), globalVar_window);
 	InGame_drawUI(self);
 
-	return (self->hasActivedGameOver) ? START : NOTHING;
+	if(self->hasActivedGameOver || self->hasActivedWin)
+		return START;
+	return NOTHING;
 }
 
 void InGame_updateEvent(Context* context, SDL_Event* event)
 {
 	InGame* self = (InGame*)context;
 
-	if(self->hasDied)
+	if(self->hasDied && event->type == SDL_KEYDOWN)
 	{
-		if(event->type == SDL_KEYDOWN)
-		{
-			self->hasActivedGameOver = true;
-			return;
-		}
+		self->hasActivedGameOver = true;
+		return;
+	}
+
+	else if(self->hasWon && event->type == SDL_KEYDOWN)
+	{
+		self->hasActivedWin = true;
+		return;
 	}
 
 	else
@@ -136,6 +152,8 @@ void InGame_drawUI(InGame* self)
 	((Drawable*)(self->scoreLabel))->draw((Drawable*)(self->scoreLabel), globalVar_window);
 	if(self->hasDied)
 		((Drawable*)(self->gameOver))->draw((Drawable*)(self->gameOver), globalVar_window);
+	if(self->hasWon)
+		((Drawable*)(self->winLabel))->draw((Drawable*)(self->winLabel), globalVar_window);
 }
 
 void InGame_updateEnnemies(InGame* self)
@@ -164,7 +182,6 @@ void InGame_updatePlayer(InGame* self)
 	bottomRightTile = Map_getTileInfo(self->map, pRect->x + pRect->w, pRect->y + pRect->h + 1);
 	topLeftTile     = Map_getTileInfo(self->map, pRect->x, pRect->y);
 	topRightTile    = Map_getTileInfo(self->map, pRect->x + pRect->w, pRect->y);
-
 
 	if(bottomLeftTile && (Tile_getInfo(bottomLeftTile) & SOLID) ||
 	   bottomRightTile && (Tile_getInfo(bottomRightTile) & SOLID))
@@ -261,6 +278,11 @@ void InGame_updatePlayer(InGame* self)
 	topLeftTile     = Map_getTileInfo(self->map, pRect->x, pRect->y);
 	topRightTile    = Map_getTileInfo(self->map, pRect->x + pRect->w, pRect->y);
 
+	Object* bottomLeftObject  = Map_getObjectInfo(self->map, pRect->x, pRect->y + pRect->h);
+	Object* bottomRightObject = Map_getObjectInfo(self->map, pRect->x + pRect->w, pRect->y + pRect->h);
+	Object* topLeftObject     = Map_getObjectInfo(self->map, pRect->x, pRect->y);
+	Object* topRightObject    = Map_getObjectInfo(self->map, pRect->x + pRect->w, pRect->y);
+
 	//Then check if we are on a coin
 	if(bottomLeftTile && (Tile_getInfo(bottomLeftTile) & SCORE))
 	{
@@ -269,22 +291,46 @@ void InGame_updatePlayer(InGame* self)
 		InGame_addScore(self, 100);
 	}
 	   
-	if(bottomRightTile && (Tile_getInfo(bottomRightTile) & SCORE))
+	if(bottomRightTile && (Tile_getInfo(bottomRightTile) & SCORE) && bottomRightTile != bottomLeftTile)
 	{
 		bottomRightTile->updateCollision(bottomRightTile);
 		InGame_addScore(self, 100);
 	}
 
-	if(topLeftTile && (Tile_getInfo(topLeftTile) & SCORE))
+	if(topLeftTile && (Tile_getInfo(topLeftTile) & SCORE) && topLeftTile != bottomLeftTile && topLeftTile != bottomRightTile)
 	{
 		topLeftTile->updateCollision(topLeftTile);
 		InGame_addScore(self, 100);
 	}
 	   
-	if(topRightTile && (Tile_getInfo(topRightTile) & SCORE))
+	if(topRightTile && (Tile_getInfo(topRightTile) & SCORE) && topRightTile != bottomLeftTile && topRightTile != bottomRightTile && topRightTile != topLeftTile)
 	{
 		topRightTile->updateCollision(topRightTile);
 		InGame_addScore(self, 100);
+	}
+
+	if(bottomLeftObject && (Object_getInfo(bottomLeftObject) & FINISH))
+	{
+		bottomLeftObject->updateCollision(bottomLeftObject);
+		self->hasWon = true;
+	}
+	   
+	if(bottomRightObject && (Object_getInfo(bottomRightObject) & FINISH) && bottomRightObject != bottomLeftObject)
+	{
+		bottomRightObject->updateCollision(bottomRightObject);
+		self->hasWon = true;
+	}
+
+	if(topLeftObject && (Object_getInfo(topLeftObject) & FINISH) && topLeftObject != bottomLeftObject && topLeftObject != bottomRightObject)
+	{
+		topLeftObject->updateCollision(topLeftObject);
+		self->hasWon = true;
+	}
+	   
+	if(topRightObject && (Object_getInfo(topRightObject) & FINISH) && topRightObject != bottomLeftObject && topRightObject != bottomRightObject && topRightObject != topLeftObject)
+	{
+		topRightObject->updateCollision(topRightObject);
+		self->hasWon = true;
 	}
 }
 

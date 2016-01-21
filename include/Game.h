@@ -18,6 +18,7 @@ typedef struct
 	Start*  startContext;
 	SDL_Event event;
 	bool quit;
+	bool finishLevel;
 }Game;
 
 Game* Game_create();

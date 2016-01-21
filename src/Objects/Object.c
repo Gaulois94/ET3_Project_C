@@ -37,6 +37,7 @@ void Object_init(Object* self, uint32_t nbCasesX, uint32_t nbCasesY, uint32_t si
 	drawable->destroy     = &Object_destroy;
 
 	drawable->setSize(drawable, nbCasesX*sizeX, nbCasesY*sizeY);
+	self->updateCollision = &Object_updateCollision;
 	self->info = 0x00;
 }
 
@@ -116,6 +117,11 @@ void Object_setSize(Drawable* drawable, uint32_t width, uint32_t height)
 int32_t Object_getInfo(Object* object)
 {
 	return object->info;
+}
+
+void Object_updateCollision(Object* self)
+{
+	return;
 }
 
 void Object_destroy(Drawable* drawable)

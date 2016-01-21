@@ -54,9 +54,14 @@ Option* Option_create()
 	return self;
 }
 
-EnumContext Option_run(Context* self)
+EnumContext Option_run(Context* context)
 {
 	
+}
+
+void Option_reinit(Context* context)
+{
+
 }
 
 void Option_updateEvent(Context* self, SDL_Event* event)

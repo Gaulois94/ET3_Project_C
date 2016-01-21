@@ -51,6 +51,7 @@ void Start_reinit(Context* context)
 
 EnumContext Start_run(Context* context)
 {
+	SDL_SetRenderDrawColor(globalVar_window->renderer, 0x00, 0x00, 0x00, 0xff);
     Start* self = (Start*)context;
 
     ((Drawable*)self->startButton)->draw((Drawable*)self->startButton, globalVar_window);
