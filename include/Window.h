@@ -7,6 +7,7 @@
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
+#include "SDL/SDL_mixer.h"
 #include "typedefine.h"
 
 typedef struct

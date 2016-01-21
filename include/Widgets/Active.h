@@ -7,8 +7,8 @@
 
 typedef struct Active
 {
-	void(*activeCallback)(void* data);
-	void(*disactiveCallback)(void* data);
+	void(*activeCallback)(void* data, struct Active*);
+	void(*disactiveCallback)(void* data, struct Active*);
 	void* activeData;
 	void* disactiveData;
 
@@ -29,8 +29,8 @@ void Active_activeIt(Active* self, const SDL_Event* event);
 void Active_disactiveIt(Active* self, const SDL_Event* event);
 bool Active_howActive(Active* self, const SDL_Event* event);
 bool Active_howDisactive(Active* self, const SDL_Event* event);
-void Active_setActiveFunc(Active* self, void(*callback)(void*));
-void Active_setDisactiveFunc(Active* self, void(*callback)(void*));
+void Active_setActiveFunc(Active* self, void(*callback)(void*, Active*));
+void Active_setDisactiveFunc(Active* self, void(*callback)(void*, Active*));
 void Active_setActiveData(Active* self, void* data);
 void Active_setDisactiveData(Active* self, void* data);
 bool Active_isActive(const Active* self);

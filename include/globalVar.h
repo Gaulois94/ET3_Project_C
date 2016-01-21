@@ -3,6 +3,7 @@
 
 #include "Window.h"
 #include "ResourcesManager.h"
+#include "MusicManager.h"
 
 typedef enum
 {
@@ -17,6 +18,7 @@ void globalVar_destroy();
 
 extern Window*           globalVar_window;
 extern ResourcesManager* globalVar_fonts;
+extern MusicManager*     globalVar_musics;
 
 extern SDL_Color RED;
 extern SDL_Color GREEN;
@@ -26,5 +28,9 @@ extern SDL_Color YELLOW;
 extern SDL_Color CYAN;
 extern SDL_Color BLACK;
 extern SDL_Color WHITE;
+
+extern uint32_t jumpScanCode;
+extern uint32_t leftScanCode;
+extern uint32_t rightScanCode;
 
 #endif

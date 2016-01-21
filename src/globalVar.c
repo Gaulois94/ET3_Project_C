@@ -1,7 +1,12 @@
 #include "globalVar.h"
 
-Window* globalVar_window = NULL;
-ResourcesManager* globalVar_fonts = NULL;
+Window*           globalVar_window = NULL;
+ResourcesManager* globalVar_fonts  = NULL;
+MusicManager*     globalVar_musics = NULL;
+
+uint32_t jumpScanCode  = SDL_SCANCODE_UP;
+uint32_t leftScanCode  = SDL_SCANCODE_LEFT;
+uint32_t rightScanCode = SDL_SCANCODE_RIGHT;
 
 SDL_Color RED = {.r=255, .g=0, .b=0};
 SDL_Color GREEN = {.r=0, .g=255, .b=0};

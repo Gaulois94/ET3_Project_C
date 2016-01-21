@@ -75,6 +75,7 @@ void InGame_reinit(Context* context)
 	self->hasActivedWin      = false;
 	self->score              = 0;
 	InGame_addScore(self, 0);
+	MusicManager_playBackground(globalVar_musics);
 }
 
 EnumContext InGame_run(Context* context)
@@ -108,7 +109,7 @@ EnumContext InGame_run(Context* context)
 		Player_stop(self->player);
     }
 
-	//Then we display them
+	//Then we display them;
 	Map_draw(self->map, globalVar_window);
 /* 	uint32_t i;
  	for(i=0; i < self->nbEnnemies; i++)
@@ -142,7 +143,11 @@ void InGame_updateEvent(Context* context, SDL_Event* event)
 	{
 		Active* player = (Active*)self->player;
 		if(Active_updateEvents(player, event))
+		{
+			if(event->type == SDL_KEYDOWN && event->key.keysym.scancode == SDL_SCANCODE_UP)
+				MusicManager_playSound(globalVar_musics, JUMP);
 			return;
+		}
 	}
 }
 
@@ -288,24 +293,28 @@ void InGame_updatePlayer(InGame* self)
 	{
 		//Destroy it and add the score to the actual score.
 		bottomLeftTile->updateCollision(bottomLeftTile);
+		MusicManager_playSound(globalVar_musics, COIN_SOUND);
 		InGame_addScore(self, 100);
 	}
 	   
 	if(bottomRightTile && (Tile_getInfo(bottomRightTile) & SCORE) && bottomRightTile != bottomLeftTile)
 	{
 		bottomRightTile->updateCollision(bottomRightTile);
+		MusicManager_playSound(globalVar_musics, COIN_SOUND);
 		InGame_addScore(self, 100);
 	}
 
 	if(topLeftTile && (Tile_getInfo(topLeftTile) & SCORE) && topLeftTile != bottomLeftTile && topLeftTile != bottomRightTile)
 	{
 		topLeftTile->updateCollision(topLeftTile);
+		MusicManager_playSound(globalVar_musics, COIN_SOUND);
 		InGame_addScore(self, 100);
 	}
 	   
 	if(topRightTile && (Tile_getInfo(topRightTile) & SCORE) && topRightTile != bottomLeftTile && topRightTile != bottomRightTile && topRightTile != topLeftTile)
 	{
 		topRightTile->updateCollision(topRightTile);
+		MusicManager_playSound(globalVar_musics, COIN_SOUND);
 		InGame_addScore(self, 100);
 	}
 

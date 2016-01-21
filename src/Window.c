@@ -70,6 +70,18 @@ bool Window_initSDL()
         return 0;    
     }
 
+	//Init the music
+	if(SDL_Init(SDL_INIT_AUDIO)==-1) 
+	{
+		printf("SDL_Init: %s\n", SDL_GetError());
+		return 0;
+	}
+
+    if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 4, 1024) == -1 )
+    {
+        return 0;    
+    }
+
 	return 1;
 }
 

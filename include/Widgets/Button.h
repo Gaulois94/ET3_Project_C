@@ -18,6 +18,8 @@ bool Button_howActive(Active* self, const SDL_Event* event);
 void Button_draw(Drawable* drawable, Window* window);
 void Button_setSize(Drawable* drawable, uint32_t width, uint32_t height);
 void Button_setPosition(Drawable* drawable, int32_t x, int32_t y);
+
+void Button_setText(Button* self, Text* text, bool resetRect);
 void Button_destroy(Button* self);
 
 #endif

@@ -9,6 +9,7 @@
 #include "SDL2/SDL.h"
 #include "Player.h"
 #include "Contexts/InGame.h"
+#include "MusicManager.h"
 
 typedef struct
 {

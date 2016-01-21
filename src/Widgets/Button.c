@@ -85,6 +85,25 @@ void Button_setSize(Drawable* drawable, uint32_t w, uint32_t h)
 	Button_updateDrawableRect((Button*)drawable);
 }
 
+void Button_setText(Button* self, Text* text, bool resetRect)
+{
+	self->text = text;
+	if(resetRect)
+	{
+		if(self->sprite)
+		{
+			const SDL_Rect* rs = Drawable_getRect((Drawable*)self->sprite);
+			((Drawable*)self)->setSize((Drawable*)self, rs->w, rs->h);
+		}
+		else if(self->text)
+		{
+			const SDL_Rect* rt = Drawable_getRect((Drawable*)self->text);
+			((Drawable*)self)->setSize((Drawable*)self, rt->w, rt->h);
+		}
+	}
+	Button_updateDrawableRect(self);
+}
+
 void Button_draw(Drawable* drawable, Window* window)
 {
 	Button* self = (Button*)drawable;

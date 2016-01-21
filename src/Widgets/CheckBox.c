@@ -17,11 +17,12 @@ void CheckBox_init(CheckBox* self, void(*callback)(void*), void* data, const SDL
 	Drawable_init((Drawable*)self, rect);
 	((Active*)self)->howActive = &CheckBox_howActive;
 	((Active*)self)->howDisactive = &CheckBox_howDisactive;
+	((Drawable*)self)->draw = &CheckBox_draw;
 }
 
 bool CheckBox_howActive(Active* self, const SDL_Event* event)
 {
-	if(self->isActive == false)
+	if(self->isActive == true)
 		return false;
 
 	if(event->type == SDL_MOUSEBUTTONDOWN)
@@ -37,7 +38,7 @@ bool CheckBox_howActive(Active* self, const SDL_Event* event)
 
 bool CheckBox_howDisactive(Active* self, const SDL_Event* event)
 {
-	if(self->isActive == true)
+	if(self->isActive == false)
 		return false;
 
 	if(event->type == SDL_MOUSEBUTTONDOWN)
@@ -60,7 +61,7 @@ void CheckBox_draw(Drawable* drawable, Window* window)
 
 	if(((Active*)self)->isActive)
 	{
-		SDL_SetRenderDrawColor(window->renderer, 0x00, 0x00, 0x00, 0xff);
+		SDL_SetRenderDrawColor(window->renderer, 0xff, 0x00, 0x00, 0xff);
 		SDL_RenderDrawLine(window->renderer, rect.x, rect.y, rect.x + rect.w, rect.y + rect.h);
 		SDL_RenderDrawLine(window->renderer, rect.x, rect.y + rect.h, rect.x + rect.w, rect.y);
 	}

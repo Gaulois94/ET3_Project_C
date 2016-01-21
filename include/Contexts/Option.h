@@ -18,16 +18,22 @@ typedef struct
 	Text* leftCommand;
 	Text* rightCommand;
 
+	Text* tapCommand;
+
 	Button* jumpButton;
 	Button* leftButton;
 	Button* rightButton;
+
+	Button* actived;
 
 	CheckBox* soundBox;
 }Option;
 
 Option* Option_create();
 EnumContext Option_run(Context* self);
+void Option_reinit(Context* self);
 void Option_updateEvent(Context* self, SDL_Event* event);
 void Option_destroy(Option* self);
+void Option_callback(void* option, Active* self);
 
 #endif

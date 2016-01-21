@@ -4,7 +4,8 @@ Game* Game_create()
 {
 	Game* game = (Game*)malloc(sizeof(Game));
 	globalVar_window = Window_init(SCREEN_WIDTH, SCREEN_HEIGHT, "Mario Like");
-	globalVar_fonts = ResourcesManager_create();
+	globalVar_fonts  = ResourcesManager_create();
+	globalVar_musics = MusicManager_create();
 	game->currentContext = NULL;
 	game->quit = false;
 	TTF_Font* font = TTF_OpenFont("Resources/DejaVuSansMono.ttf", 15);
@@ -20,7 +21,6 @@ Game* Game_create()
 	game->optionContext  = Option_create();
 	game->startContext   = Start_create();
 	game->currentContext = (Context*)(game->startContext);
-
 
 	return game;
 }
@@ -41,8 +41,6 @@ void Game_run(Game* game)
 				game->currentContext->updateEvent(game->currentContext, &(game->event));
 		}
 
-
-
 		if(!game->quit)
 		{
 			Window_clear(globalVar_window);
@@ -59,6 +57,8 @@ void Game_run(Game* game)
 						game->currentContext->reinit(game->currentContext);
 						break;
 					case OPTION:
+						game->currentContext = (Context*)(game->optionContext);
+						game->currentContext->reinit(game->currentContext);
 						break;
 					case QUIT:
 						game->quit = true;
