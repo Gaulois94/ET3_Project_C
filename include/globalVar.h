@@ -29,8 +29,8 @@ extern SDL_Color CYAN;
 extern SDL_Color BLACK;
 extern SDL_Color WHITE;
 
-extern uint32_t jumpScanCode;
-extern uint32_t leftScanCode;
-extern uint32_t rightScanCode;
+extern uint32_t globalVar_jumpscancode;
+extern uint32_t globalVar_leftscancode;
+extern uint32_t globalVar_rightscancode;
 
 #endif

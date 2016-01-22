@@ -63,6 +63,7 @@ void InGame_reinit(Context* context)
 {
     InGame* self = (InGame*)context;
     Player_setSpeedY(self->player, 0);
+	Player_setScancode(self->player, globalVar_jumpscancode, globalVar_leftscancode, globalVar_rightscancode);
 	self->initTime = self->currentTime = SDL_GetTicks();
     if(self->map)
     {

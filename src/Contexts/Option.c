@@ -10,24 +10,25 @@ Option* Option_create()
 	}
 
 	self->sound = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "SOUND");
-	self->jump = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "JUMP");
-	self->left = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "LEFT");
+	self->jump  = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "JUMP");
+	self->left  = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "LEFT");
 	self->right = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "RIGHT");
+	self->quit  = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "QUIT");
 
 	self->jumpCommand = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "UP");
 	self->leftCommand = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "LEFT");
 	self->rightCommand = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "RIGHT");
 
-	((Drawable*)self->sound)->setPosition((Drawable*)self->sound, 200, 200);
-	((Drawable*)self->jump)->setPosition((Drawable*)self->jump, 200, 300);
-	((Drawable*)self->left)->setPosition((Drawable*)self->left, 200, 400);
-	((Drawable*)self->right)->setPosition((Drawable*)self->right, 200, 500);
+	((Drawable*)self->sound)->setPosition((Drawable*)self->sound, 200, 100);
+	((Drawable*)self->jump)->setPosition((Drawable*)self->jump, 200, 200);
+	((Drawable*)self->left)->setPosition((Drawable*)self->left, 200, 300);
+	((Drawable*)self->right)->setPosition((Drawable*)self->right, 200, 400);
 
 	const SDL_Rect* commandRect = Drawable_getRect((Drawable*)self->jump);
 	commandRect = Drawable_getRect((Drawable*)self->jumpCommand);
 	SDL_Rect rect;
 	rect.x = 600;
-	rect.y = 300;
+	rect.y = 200;
 	rect.w = commandRect->w;
 	rect.h = commandRect->h;
 	self->jumpButton = Button_create(NULL, NULL, &rect, NULL, self->jumpCommand);
@@ -45,10 +46,17 @@ Option* Option_create()
 	self->rightButton = Button_create(NULL, NULL, &rect, NULL, self->rightCommand);
 
 	rect.x = 600;
-	rect.y = 200;
+	rect.y = 100;
 	rect.w = 50;
 	rect.h = 50;
 	self->soundBox = CheckBox_create(NULL, NULL, &rect);
+
+	commandRect = Drawable_getRect((Drawable*)self->rightCommand);
+	rect.x = 350;
+	rect.y = 500;
+	rect.w = commandRect->w;
+	rect.h = commandRect->h;
+	self->quitButton = Button_create(NULL, NULL, &rect, NULL, self->quit);
 
 	Active_setActiveFunc((Active*)self->leftButton, Option_callback);
 	Active_setActiveData((Active*)self->leftButton, (void*)self);
@@ -68,6 +76,8 @@ Option* Option_create()
 	((Context*)self)->updateEvent = &Option_updateEvent;
 	Option_reinit((Context*)self);
 
+	self->quitOption = false;
+
 	return self;
 }
 
@@ -83,13 +93,34 @@ EnumContext Option_run(Context* context)
 	((Drawable*)self->leftButton)->draw((Drawable*)self->leftButton, globalVar_window);
 	((Drawable*)self->rightButton)->draw((Drawable*)self->rightButton, globalVar_window);
 	((Drawable*)self->jumpButton)->draw((Drawable*)self->jumpButton, globalVar_window);
+	((Drawable*)self->quitButton)->draw((Drawable*)self->quitButton, globalVar_window);
 	((Drawable*)self->soundBox)->draw((Drawable*)self->soundBox, globalVar_window);
 	SDL_SetRenderDrawColor(globalVar_window->renderer, 0x00, 0x00, 0x00, 0xff);
+
+	if(self->quitOption)
+		return START;
+	return NOTHING;
 }
 
 void Option_reinit(Context* context)
 {
+	Option* self = (Option*)context;
+	self->quitOption = false;
 	MusicManager_stopBackground(globalVar_musics);
+	char text[20];
+
+	Option_scancodeToString(text, globalVar_jumpscancode);
+	Text_setText(self->jumpCommand, globalVar_window, text);
+
+	Option_scancodeToString(text, globalVar_leftscancode);
+	Text_setText(self->leftCommand, globalVar_window, text);
+
+	Option_scancodeToString(text, globalVar_rightscancode);
+	Text_setText(self->rightCommand, globalVar_window, text);
+
+	Button_setText(self->jumpButton, self->jumpCommand, true);
+	Button_setText(self->leftButton, self->leftCommand, true);
+	Button_setText(self->rightButton, self->rightCommand, true);
 }
 
 void Option_updateEvent(Context* context, SDL_Event* event)
@@ -104,85 +135,101 @@ void Option_updateEvent(Context* context, SDL_Event* event)
 		return;
 	else if(Active_updateEvents((Active*)self->soundBox, event))
 		return;
+	else if(Active_updateEvents((Active*)self->quitButton, event))
+	{
+		self->quitOption = true;
+		return;
+	}
 
 	if(self->actived != NULL && event->type == SDL_KEYDOWN)
 	{
 		char text[20];
 
-		switch(event->key.keysym.scancode)
-		{
-			case SDL_SCANCODE_LEFT:
-				strcpy(text, "LEFT");
-				break;
+		Option_scancodeToString(text, event->key.keysym.scancode);
 
-			case SDL_SCANCODE_RIGHT:
-				strcpy(text, "LEFT");
-				break;
-
-			case SDL_SCANCODE_UP:
-				strcpy(text, "UP");
-				break;
-
-			case SDL_SCANCODE_DOWN:
-				strcpy(text, "DOWN");
-				break;
-
-			case SDL_SCANCODE_KP_ENTER:
-				strcpy(text, "ENTER");
-				break;
-
-			case SDL_SCANCODE_SPACE:
-				strcpy(text, "SPACE");
-				break;
-
-			case SDL_SCANCODE_TAB:
-				strcpy(text, "TAB");
-				break;
-
-			case SDL_SCANCODE_LCTRL:
-			case SDL_SCANCODE_RCTRL:
-				strcpy(text, "CTRL");
-				break;
-
-			case SDL_SCANCODE_LALT:
-			case SDL_SCANCODE_RALT:
-				strcpy(text, "ALT");
-				break;
-
-			case SDL_SCANCODE_LSHIFT:
-			case SDL_SCANCODE_RSHIFT:
-				strcpy(text, "Shift");
-				break;
-
-			default:
-				if(event->key.keysym.scancode >= 4 && event->key.keysym.scancode <= 30)
-				{
-					text[0] = 'A' - 4 + event->key.keysym.scancode;
-					text[1] = '\0';
-				}
-				break;
-		}
-
-		if(self->actived == self->leftButton)
+		if(self->actived == self->leftButton && event->key.keysym.scancode != globalVar_rightscancode && event->key.keysym.scancode != globalVar_jumpscancode)
 		{
 			Text_setText(self->leftCommand, globalVar_window, text);
 			Button_setText(self->actived, self->leftCommand, true);
+			globalVar_leftscancode = event->key.keysym.scancode;
+			self->actived = NULL;
 		}
 
-		else if(self->actived == self->rightButton)
+		else if(self->actived == self->rightButton && event->key.keysym.scancode != globalVar_leftscancode && event->key.keysym.scancode != globalVar_jumpscancode)
 		{
 			Text_setText(self->rightCommand, globalVar_window, text);
 			Button_setText(self->actived, self->rightCommand, true);
+			globalVar_rightscancode = event->key.keysym.scancode;
+			self->actived = NULL;
 		}
 
-		else if(self->actived == self->jumpButton)
+		else if(self->actived == self->jumpButton && event->key.keysym.scancode != globalVar_rightscancode && event->key.keysym.scancode != globalVar_leftscancode)
 		{
 			Text_setText(self->jumpCommand, globalVar_window, text);
 			Button_setText(self->actived, self->jumpCommand, true);
+			globalVar_jumpscancode = event->key.keysym.scancode;
+			self->actived = NULL;
 		}
-		self->actived = NULL;
 	}
+}
 
+void Option_scancodeToString(char* text, uint32_t scancode)
+{
+	switch(scancode)
+	{
+		case SDL_SCANCODE_LEFT:
+			strcpy(text, "LEFT");
+			break;
+
+		case SDL_SCANCODE_RIGHT:
+			strcpy(text, "RIGHT");
+			break;
+
+		case SDL_SCANCODE_UP:
+			strcpy(text, "UP");
+			break;
+
+		case SDL_SCANCODE_DOWN:
+			strcpy(text, "DOWN");
+			break;
+
+		case SDL_SCANCODE_KP_ENTER:
+			strcpy(text, "ENTER");
+			break;
+
+		case SDL_SCANCODE_SPACE:
+			strcpy(text, "SPACE");
+			break;
+
+		case SDL_SCANCODE_TAB:
+			strcpy(text, "TAB");
+			break;
+
+		case SDL_SCANCODE_LCTRL:
+		case SDL_SCANCODE_RCTRL:
+			strcpy(text, "CTRL");
+			break;
+
+		case SDL_SCANCODE_LALT:
+		case SDL_SCANCODE_RALT:
+			strcpy(text, "ALT");
+			break;
+
+		case SDL_SCANCODE_LSHIFT:
+		case SDL_SCANCODE_RSHIFT:
+			strcpy(text, "Shift");
+			break;
+
+		default:
+			if(scancode >= 4 && scancode <= 30)
+			{
+				text[0] = 'A' - 4 + scancode;
+				text[1] = '\0';
+			}
+			else
+				text[0] = '\0';
+			break;
+	}
 }
 
 void Option_callback(void* option, Active* active)

@@ -60,6 +60,10 @@ void Player_init(Player* self, int32_t x, int32_t y)
 	selfActive->howActive = &Player_howActive;
 	selfActive->activeIt = &Player_activeIt;
 	selfActive->update   = &Player_update;
+
+	self->jumpScancode  = self->jumpScancode;
+	self->leftScancode  = self->rightScancode;
+	self->rightScancode = self->leftScancode;
 }
 
 void Player_stop(Player* self)
@@ -128,13 +132,13 @@ bool Player_howActive(Active* active, const SDL_Event* e)
 	Player* self = (Player*)active;
 	if(e->type == SDL_KEYDOWN)
 	{
-		if(e->key.keysym.scancode == SDL_SCANCODE_LEFT)
+		if(e->key.keysym.scancode == self->leftScancode)
 			self->action = LEFT;
 
-		else if(e->key.keysym.scancode == SDL_SCANCODE_RIGHT)
+		else if(e->key.keysym.scancode == self->rightScancode)
 			self->action = RIGHT;
 
-		else if(e->key.keysym.scancode == SDL_SCANCODE_UP)
+		else if(e->key.keysym.scancode == self->jumpScancode)
 			self->jump = true;
 		else
 			return false;
@@ -142,7 +146,7 @@ bool Player_howActive(Active* active, const SDL_Event* e)
 	}
 
 	if(e->type == SDL_KEYUP)
-		if(e->key.keysym.scancode == SDL_SCANCODE_LEFT && self->action == LEFT || e->key.keysym.scancode == SDL_SCANCODE_RIGHT && self->action == RIGHT)
+		if(e->key.keysym.scancode == self->leftScancode && self->action == LEFT || e->key.keysym.scancode == self->rightScancode && self->action == RIGHT)
 			return true;
 	return false;
 }
@@ -154,7 +158,7 @@ void Player_activeIt(Active* active, const SDL_Event* e)
 	if(e->type == SDL_KEYDOWN)
 	{
 		//If the key is jump
-		if(e->key.keysym.scancode == SDL_SCANCODE_UP)
+		if(e->key.keysym.scancode == self->jumpScancode)
 		{
 			//and that we are already jumping
 			if(self->speedY != 0)
@@ -175,7 +179,7 @@ void Player_activeIt(Active* active, const SDL_Event* e)
 
 	else if(e->type == SDL_KEYUP)
 	{
-		if(e->key.keysym.scancode == SDL_SCANCODE_UP)
+		if(e->key.keysym.scancode == self->jumpScancode)
 			return;
 		self->stillDown = false;
 		uint32_t i;
@@ -191,6 +195,13 @@ void Player_setPosition(Drawable* drawable, int32_t x, int32_t y)
 	for(i=0; i < self->animLength; i++)
 		((Drawable*)(self->staticAnimation[i]))->setPosition((Drawable*)(self->staticAnimation[i]), x, y);
 	Drawable_setPosition(drawable, x, y);
+}
+
+void Player_setScancode(Player* self, uint32_t jump, uint32_t left, uint32_t right)
+{
+	self->leftScancode  = left;
+	self->rightScancode = right;
+	self->jumpScancode  = jump;
 }
 
 float Player_getSpeedY(const Player* player)

@@ -26,6 +26,10 @@ typedef struct
 	bool jump;
 	Action action;
 	float      speedY;
+
+	uint32_t jumpScancode;
+	uint32_t leftScancode;
+	uint32_t rightScancode;
 }Player;
 
 void    Player_update(Active* active);
@@ -41,6 +45,8 @@ void    Player_draw(Drawable* drawable, Window* window);
 void    Player_setPosition(Drawable* drawable, int32_t x, int32_t y);
 void    Player_setStatic(Drawable* drawable, bool isStatic);
 void    Player_setSize(Drawable* drawable, uint32_t width, uint32_t height);
+
+void    Player_setScancode(Player* player, uint32_t jump, uint32_t left, uint32_t right);
 
 void    Player_setSpeedY(Player* player, float speed);
 float   Player_getSpeedY(const Player* player);
