@@ -22,6 +22,8 @@ void InGame_init(InGame* self)
 	scoreRect.x = 10;
 	scoreRect.y = 20;
 
+	uint32_t nbLifes = DEFAULT_LIFE;
+
 	self->scoreLabel       = Text_create(&scoreRect, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "00000000");
 	((Drawable*)(self->scoreLabel))->setStatic((Drawable*)(self->scoreLabel), true);
 	
@@ -33,19 +35,16 @@ void InGame_init(InGame* self)
 	((Drawable*)(self->gameOver))->setStatic((Drawable*)(self->gameOver), true);
 	((Drawable*)(self->winLabel))->setStatic((Drawable*)(self->winLabel), true);
 
+	self->lifeText        = Text_create(&scoreRect, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "Life x3");
+	((Drawable*)(self->lifeText))->setStatic((Drawable*)(self->lifeText), true);
+
 	const SDL_Rect* timeLabelRect = Drawable_getRect((Drawable*)(self->timeLabel));
 	((Drawable*)(self->timeLabel))->setPosition((Drawable*)(self->timeLabel), SCREEN_WIDTH - 10 - timeLabelRect->w, SCREEN_HEIGHT - 20 - timeLabelRect->h);
 	((Drawable*)(self->gameOver))->setPosition((Drawable*)(self->gameOver), 360, 290);
 	((Drawable*)(self->winLabel))->setPosition((Drawable*)(self->winLabel), 360, 290);
+	((Drawable*)(self->lifeText))->setPosition((Drawable*)(self->lifeText), 380, 20);
 
 	self->player             = Player_create(0, 0);
-/*  self->hasDied            = false;
-	self->hasWon             = false;
-	self->hasActivedGameOver = false;
-	self->hasActivedWin      = false;
-	self->score              = 0;
-	self->initTime = self->currentTime = SDL_GetTicks();
-*/
 
 	InGame_reinit((Context*)self);
 	if(self->player == NULL)
@@ -77,6 +76,16 @@ void InGame_reinit(Context* context)
 	self->score              = 0;
 	InGame_addScore(self, 0);
 	MusicManager_playBackground(globalVar_musics);
+
+	self->nbLifes = DEFAULT_LIFE;
+	InGame_setLifeLabel(self);
+}
+
+void InGame_setLifeLabel(InGame* self)
+{
+	char text[20];
+	sprintf(text, "Life%s x%d", (self->nbLifes > 1) ? "s" : "", self->nbLifes);
+	Text_setText(self->lifeText, globalVar_window, text);
 }
 
 EnumContext InGame_run(Context* context)
@@ -119,7 +128,20 @@ EnumContext InGame_run(Context* context)
 	Player_draw((Drawable*)(self->player), globalVar_window);
 	InGame_drawUI(self);
 
-	if(self->hasActivedGameOver || self->hasActivedWin)
+	if(self->hasActivedGameOver)
+	{
+		self->nbLifes--;
+		InGame_setLifeLabel(self);
+		if(self->nbLifes == 0)
+			return START;
+		else
+		{
+			self->hasActivedGameOver = false;
+			self->hasDied = false;
+		}
+	}
+
+	if(self->hasActivedWin)
 		return START;
 	return NOTHING;
 }
@@ -131,6 +153,14 @@ void InGame_updateEvent(Context* context, SDL_Event* event)
 	if(self->hasDied && event->type == SDL_KEYDOWN)
 	{
 		self->hasActivedGameOver = true;
+		if(self->nbLifes > 0)
+		{
+			if(self->map)
+			{
+				Map_destroy(self->map);
+				self->map = NULL;
+			}
+		}
 		return;
 	}
 
@@ -156,6 +186,7 @@ void InGame_drawUI(InGame* self)
 {
 	((Drawable*)(self->timeLabel))->draw((Drawable*)(self->timeLabel), globalVar_window);
 	((Drawable*)(self->scoreLabel))->draw((Drawable*)(self->scoreLabel), globalVar_window);
+	((Drawable*)(self->lifeText))->draw((Drawable*)(self->lifeText), globalVar_window);
 	if(self->hasDied)
 		((Drawable*)(self->gameOver))->draw((Drawable*)(self->gameOver), globalVar_window);
 	if(self->hasWon)

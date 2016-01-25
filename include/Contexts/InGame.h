@@ -3,10 +3,11 @@
 
 #define GRAVITY 0.3
 #define TIMEOUT 400
+#define DEFAULT_LIFE 3
 
 #include "Contexts/Context.h"
 #include "math.h"
-#include "Ennemy.h"
+#include "Ennemies/Ennemy.h"
 #include "Player.h"
 #include "Map.h"
 #include "Drawable/Text.h"
@@ -20,11 +21,14 @@ typedef struct
 	Ennemy** ennemies;
 	uint32_t nbEnnemies;
 
+	uint32_t nbLifes;
+
 	Player*  player;
 	Text*    scoreLabel;
 	Text*    timeLabel;
 	Text*    gameOver;
 	Text*    winLabel;
+	Text*    lifeText;
 
 	bool hasDied;
 	bool hasActivedGameOver;
@@ -45,6 +49,7 @@ void        InGame_init(InGame* self);
 EnumContext InGame_run(Context* self);
 void        InGame_drawUI(InGame* self);
 void        InGame_addScore(InGame* self, uint32_t score);
+void        InGame_setLifeLabel(InGame* self);
 void        InGame_updateEnnemies(InGame* self);
 void        InGame_updatePlayer(InGame* self);
 void        InGame_updateCamera(InGame* self);

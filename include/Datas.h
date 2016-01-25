@@ -5,11 +5,11 @@
 #include "File.h"
 #include "List.h"
 #include "Objects/Object.h"
+#include "stdint.h"
 
 typedef struct
 {
 	Tile*(*createStaticTile)(SDL_Texture*, const SDL_Rect*);
-//	char* type;
 }StaticTileDatas;
 
 typedef struct
@@ -25,10 +25,8 @@ typedef struct
 
 typedef struct
 {
-	File* file;
-
 	List* tileRects;
-	Tile(*createDynamicTile)(const SDL_Rect*, const List*, int, int);
+	Tile*(*createDynamicTile)(const SDL_Rect*, SDL_Texture*, SDL_Rect*, uint32_t, uint32_t, uint32_t);
 }DynamicEntity;
 
 ObjectDatas* ObjectDatas_create();

@@ -13,6 +13,7 @@ void Tile_init(Tile* self, SDL_Texture* texture, const SDL_Rect* subRect)
 	self->solid      = true;
 	self->doDamages  = false;
 	self->sprite     = NULL;
+	self->updateCollision = &Tile_updateCollision;
 	self->info       = 0x00;
 	self->canDestroy = false;
 }
@@ -59,7 +60,12 @@ void Tile_destroy(Drawable* drawable)
 	Drawable_destroy(drawable);
 }
 
-uint32_t  Tile_getInfo(Tile* tile)
+uint32_t  Tile_getInfo(Tile* self)
 {
-	return tile->info;
+	return self->info;
+}
+
+uint32_t Tile_updateCollision(Tile* self)
+{
+	return self->info;
 }

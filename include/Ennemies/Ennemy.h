@@ -2,11 +2,13 @@
 #define  ENNEMY_INC
 
 #include "SDL2/SDL.h"
-#include "Drawable/Drawable.h"
+#include "Tiles/Tile.h"
 
 typedef struct
 {
-	Drawable base;
+	Tile base;
 }Ennemy;
+
+void Ennemy_init(Ennemy* self);
 
 #endif

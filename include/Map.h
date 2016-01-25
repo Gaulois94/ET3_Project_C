@@ -13,6 +13,7 @@
 #include "Tiles/Coin.h"
 #include "Tiles/DefaultTile.h"
 #include "Tiles/TileStart.h"
+#include "Ennemies/Goomba.h"
 #include "Objects/Object.h"
 #include "Objects/Finish.h"
 #include "Trace.h"
@@ -32,6 +33,12 @@ typedef struct
 	uint32_t tileSizeX;
 	uint32_t tileSizeY;
 }StaticFile;
+
+typedef struct
+{
+	File* file;
+	List* dynamicEntities;
+}DynamicFile;
 
 typedef struct
 {
@@ -114,6 +121,8 @@ StaticFile*  StaticFile_create(File* file, uint32_t tileSizeX, uint32_t tileSize
 List*        StaticFile_getTiles(StaticFile* self);
 Tile*        StaticFile_createTile(StaticFile* self, int32_t tileID, bool def);
 void         StaticFile_destroy(StaticFile* self);
+
+DynamicFile* DynamicFile_create(File* file);
 
 extern uint32_t XML_depth;
 extern uint32_t XML_NthColumn;

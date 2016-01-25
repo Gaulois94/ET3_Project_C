@@ -5,6 +5,7 @@ uint32_t XML_NthColumn = 0;
 
 Map* Map_create(const char* path)
 {
+	//Init all map variables
 	Map* map          = (Map*)malloc(sizeof(Map));
 	map->files        = List_create();
 	map->staticFiles  = List_create();
@@ -18,7 +19,6 @@ Map* Map_create(const char* path)
 	XML_Parser parser = XML_ParserCreate(NULL);
 	XML_SetUserData(parser, (void*)map);
 	XML_SetElementHandler(parser, &startElement, &endElement);
-
 	map->parser = parser;
 
 	//Get the xml code
@@ -40,6 +40,7 @@ Map* Map_create(const char* path)
 	fclose(file);
 	file = NULL;
 
+	//Then finally launch the parse process
 	if(XML_Parse(parser, NULL, 0, 1) == 0)
 		perror("Error in parsing the XML code");
 
@@ -178,11 +179,15 @@ void startElementFiles(void *data, const char* name, const char** attrs)
 					file = File_create(p);
 				}
 			}
+
+			DynamicFile* df = DynamicFile_create(file);
+			List_addData(map->dynamicFiles, df);
         }
 
 		if(file==NULL)
 		{
-			perror("Exit because can't load a file");
+			perror("Exit because can't load a file \n");
+			return;
 		}
 		List_addData(map->files, file);
 	}
@@ -221,14 +226,40 @@ void startElementFiles(void *data, const char* name, const char** attrs)
 				}
 			}
 		}
-
-		else
-		{
-		}
 	}
 
 	else if(XML_depth == 4) //We know that we are handling DynamicTiles
 	{
+		DynamicFile* df = (DynamicFile*)List_getData(map->dynamicFiles, List_getLen(map->dynamicFiles)-1);
+		DynamicEntity* de = (DynamicEntity*)malloc(sizeof(DynamicEntity));
+		List_addData(df->dynamicEntities, (void*)de);
+
+		uint32_t i;
+		for(i=0; attrs[i]; i+=2)
+		{
+			if(!strcmp(attrs[i], "name"))
+			{
+				if(!strcmp(attrs[i+1], "goomba"))
+					de->createDynamicTile = &Goomba_create;
+			}
+		}
+	}
+
+	else if(XML_depth == 5)
+	{
+		DynamicFile* df = (DynamicFile*)List_getData(map->dynamicFiles, List_getLen(map->dynamicFiles)-1);
+		DynamicEntity* de = (DynamicEntity*)List_getData(df->dynamicEntities, List_getLen(df->dynamicEntities)-1);
+		SDL_Rect* rect = (SDL_Rect*)malloc(sizeof(SDL_Rect));
+		uint32_t i;
+		for(i=0; attrs[i]; i+=2)
+		{
+			if(!strcmp(attrs[i], "pos"))
+				getXYFromStr(attrs[i+1], &(rect->x), &(rect->y));
+
+			else if(!strcmp(attrs[i], "size"))
+				getXYFromStr(attrs[i+1], &(rect->w), &(rect->h));
+		}
+		List_addData(de->tileRects, (void*)rect);
 	}
 	XML_depth++;
 }
@@ -302,6 +333,13 @@ void startElementTraces(void *data, const char* name, const char** attrs)
 			StaticTrace* st = StaticTrace_create(sizeX, sizeY, self->nbCasesX * ((sizeX-padX)/self->caseSizeX), self->nbCasesY * ((sizeY-padY) / self->caseSizeY), padX, padY);
 			List_addData(self->staticTraces, (void*)st);
 			XML_NthColumn=0;
+		}
+		
+		else if(!strcmp(name, "DynamicTrace"))
+		{
+			DynamicTrace* dt = DynamicTrace_create();
+			//List_addData
+
 		}
 	}
 
@@ -498,6 +536,19 @@ Tile* StaticFile_createTile(StaticFile* self, int32_t tileID, bool def)
 	if(!def)
 		return tile->createStaticTile(texture, &subRect);
 	return DefaultTile_create(texture, &subRect);
+}
+
+DynamicFile* DynamicFile_create(File* file)
+{
+	DynamicFile* df = (DynamicFile*)malloc(sizeof(DynamicFile));
+	if(df==NULL)
+	{
+		perror("Error in malloc \n");
+		return NULL;
+	}
+	df->file = file;
+	df->dynamicEntities = List_create();
+	return df;
 }
 
 void  StaticFile_destroy(StaticFile* self)
