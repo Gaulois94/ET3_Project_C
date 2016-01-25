@@ -1,0 +1,30 @@
+\section{Difficultés / Solutions}
+
+\subsection{Difficultés}
+\paragraph{} La principale difficulté d'un jeu tel que Mario Bros est de le rendre suffisament modulable pour avoir des perspectives d'améliorations facilement implémentables. De plus, le jeu pouvant vraiment être complet, le format de carte est un choix important du projet.
+\paragraph{} La SDL nous étant imposés, il fallait la comprendre et surtout l'utiliser le plus simplement possible (dans le sens que le code devait rester logique) pour avoir un projet le plus modulable.
+
+\subsection{Solutions}
+\subsubsection{Orienté Objet}
+
+\paragraph{} Pour la modularité du projet, on a opté pour un approche objet du problème. Bien que le C n'est pas un langage orienté objet, on a pu utilisé les concepts de bases d'un code orienté objet, à savoir :
+\begin{itemize}
+	\item Le principe d'héritage
+	\item Le principe de polymorphisme
+	\item Les méthodes et attributs
+\end{itemize}
+
+\paragraph{} Pour l'héritage, nous avons tout simplement profiter des caractéristiques des structures en langage C, à savoir que l'on peut caster et avoir accès aux N premiers bits d'une structure comme si celle ci était un autre type de données.
+\paragraph{} Pour le polymorphisme, les pointeurs sur fonctions étaient ce qui semblaient le plus appropriées. On a juste à changer ce pointeur (qui fait partie des attributs de la structure) vers la bonne méthode et tout fonctionnera.
+\paragraph{} Enfin, on accèdes aux attributs de la classe mère via des cast (principe qui consiste à changer dynamiquement le type d'une variable) et donc d'y accéder. En effet pour le compilateur, les attributs ne sont tout simplement que des décalages de mémoires depuis le début de son adresse et une taille associé à un nom d'attributs. Caster donc une variable nous permet donc d'utiliser ces noms et donc de changement / récupérer les attributs de la classe mère. Pour les méthodes, on a choisie la convention suivante : <type> Classe_nomFonction(<type> nomAttributs); qui nous semblait le plus lisible.
+
+\subsubsection{Moteur de jeu}
+
+\paragraph{} Avec le concept d'objet utilisable, nous avons pu développer un petit mais fonctionnel moteur de jeu. Les animations, textes, sprites, Widgets sont utilisables dans l'ensemble, et ne dépende pas du jeu lui même.
+\paragraph{} On a de plus utilisé le concept de Context afin d'avoir des parties du code bien définie. Un Context est tout simplement un morceau du jeu qui se suffit à lui même. Le menu Start, le menu d'Options et le jeu en lui même (InGame) sont des Contexts qui ne dépendent de personnes pour subsister. Les variables qu'ils échangent sont enregistré dans globalVar.c / globalVar.h
+\paragraph{} Pour décompiler la carte, nous avons utiliser expat \footnote{\url{http://expat.sourceforge.net/}} qui est un parser évènementiel. À chaque fois qu'il rencontre une balise ouvrantes (fermantes), il appelera la fonction correspondante définie par XML_SetElementHandler en donnant en paramètre une donnée qu'on aura choisi (ici se sera notre structure Map), les attributs de la balise et son nom. Le format de la carte est donné en commentaire dans include/Map.h.
+\paragraph{} Nous en avons profité pour créer un parser CSV basiques. En effet, les rangés de blocs sont écrites en CSV, et il nous fallait donc écrire un parser.
+
+\subsubsection{Les évènements}
+
+\paragraph{} Pour les évènements, nous n'avons pas voulu qu'une seul entité gère tout les évènements. Nous donnons donc successivement les évènements aux objets qui peuvent potentiellement récupérer à la voler cet évènement et laisser cette entité gérer son évènement toute seul. Comme les évènements au clavier ne sont pas continues, nous utilisons des variables en plus pour connaître le dernier état d'un évènement (par exemple stillDown dans Player.h qui permet de savoir si on est encore appuyé sur la touche).
