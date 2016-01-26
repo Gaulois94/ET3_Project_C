@@ -9,7 +9,7 @@ typedef struct
 	Ennemy base;
 }Goomba;
 
-Tile* Goomba_create(const SDL_Rect* dest, SDL_Texture* texture, SDL_Rect* rectAnimation, uint32_t maxN, uint32_t currentN, uint32_t nbFrame);
-void  Goomba_init(Goomba* self, const SDL_Rect* dest, SDL_Texture* texture, SDL_Rect* rectAnimation, uint32_t maxN, uint32_t currentN, uint32_t nbFrame);
+Tile* Goomba_create(const SDL_Rect* dest, SDL_Texture* texture, const SDL_Rect** rectAnimation, uint32_t maxN, uint32_t currentN, uint32_t nbFrame);
+void  Goomba_init(Goomba* self, const SDL_Rect* dest, SDL_Texture* texture, const SDL_Rect** rectAnimation, uint32_t maxN, uint32_t currentN, uint32_t nbFrame);
 
 #endif

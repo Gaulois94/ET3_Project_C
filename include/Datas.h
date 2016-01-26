@@ -6,6 +6,7 @@
 #include "List.h"
 #include "Objects/Object.h"
 #include "stdint.h"
+#include "csv.h"
 
 typedef struct
 {
@@ -26,7 +27,7 @@ typedef struct
 typedef struct
 {
 	List* tileRects;
-	Tile*(*createDynamicTile)(const SDL_Rect*, SDL_Texture*, SDL_Rect*, uint32_t, uint32_t, uint32_t);
+	Tile*(*createDynamicTile)(const SDL_Rect*, SDL_Texture*, const SDL_Rect**, uint32_t, uint32_t, uint32_t);
 }DynamicEntity;
 
 ObjectDatas* ObjectDatas_create();

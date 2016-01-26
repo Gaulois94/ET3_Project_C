@@ -77,7 +77,7 @@ bool Window_initSDL()
 		return 0;
 	}
 
-    if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 4, 1024) == -1 )
+    if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1 )
     {
         return 0;    
     }

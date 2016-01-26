@@ -22,6 +22,7 @@ void Button_init(Button* self, void(*callback)(void*), void* data, const SDL_Rec
 	((Active*)self)->autoDisactive = true;
 	self->sprite = image;
 	self->text = text;
+	rect = Drawable_getRect((Drawable*)self);
 
 	if(rect->w == 0 && rect->h == 0)
 	{

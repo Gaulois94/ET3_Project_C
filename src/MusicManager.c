@@ -11,9 +11,7 @@ MusicManager* MusicManager_create()
 
 	self->coin = Mix_LoadWAV("Resources/Sounds/coin.wav");
 	self->jump = Mix_LoadWAV("Resources/Sounds/jump.wav");
-	self->background = Mix_LoadMUS("Resources/Sounds/background.wav");
-	printf("Mix_LoadWAV: %s\n", Mix_GetError());
-	Mix_ExpireChannel(-1, 1000);
+//	self->background = Mix_LoadMUS("Resources/Sounds/background.wav");
 
 	return self;
 }

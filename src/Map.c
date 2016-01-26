@@ -10,6 +10,7 @@ Map* Map_create(const char* path)
 	map->files        = List_create();
 	map->staticFiles  = List_create();
 	map->staticTraces = List_create();
+	map->dynamicTraces = List_create();
 	map->dynamicFiles = List_create();
 	map->objects      = List_create();
 	map->startX       = 0;
@@ -65,6 +66,12 @@ void Map_draw(Map* self, Window* window)
 	{
 		StaticTrace* st = (StaticTrace*)List_getData(self->staticTraces, i);
 		StaticTrace_draw(st, window);
+	}
+
+	for(i=0; i < List_getLen(self->dynamicTraces); i++)
+	{
+		DynamicTrace* dt = (DynamicTrace*)List_getData(self->dynamicTraces, i);
+		DynamicTrace_draw(dt, window);
 	}
 }
 
@@ -226,29 +233,30 @@ void startElementFiles(void *data, const char* name, const char** attrs)
 				}
 			}
 		}
-	}
 
-	else if(XML_depth == 4) //We know that we are handling DynamicTiles
-	{
-		DynamicFile* df = (DynamicFile*)List_getData(map->dynamicFiles, List_getLen(map->dynamicFiles)-1);
-		DynamicEntity* de = (DynamicEntity*)malloc(sizeof(DynamicEntity));
-		List_addData(df->dynamicEntities, (void*)de);
-
-		uint32_t i;
-		for(i=0; attrs[i]; i+=2)
+		else
 		{
-			if(!strcmp(attrs[i], "name"))
+			DynamicFile* df = (DynamicFile*)List_getData(map->dynamicFiles, List_getLen(map->dynamicFiles)-1);
+			DynamicEntity* de = (DynamicEntity*)malloc(sizeof(DynamicEntity));
+			de->tileRects = List_create();
+
+			uint32_t i;
+			for(i=0; attrs[i]; i+=2)
 			{
-				if(!strcmp(attrs[i+1], "goomba"))
-					de->createDynamicTile = &Goomba_create;
+				if(!strcmp(attrs[i], "name"))
+				{
+					if(!strcmp(attrs[i+1], "goomba"))
+						de->createDynamicTile = &Goomba_create;
+					ResourcesManager_addData(df->dynamicEntities, "goomba", (void*)de);
+				}
 			}
 		}
 	}
 
-	else if(XML_depth == 5)
+	else if(XML_depth == 4)
 	{
 		DynamicFile* df = (DynamicFile*)List_getData(map->dynamicFiles, List_getLen(map->dynamicFiles)-1);
-		DynamicEntity* de = (DynamicEntity*)List_getData(df->dynamicEntities, List_getLen(df->dynamicEntities)-1);
+		DynamicEntity* de = (DynamicEntity*)ResourcesManager_getDataByID(df->dynamicEntities, ResourcesManager_getLen(df->dynamicEntities)-1);
 		SDL_Rect* rect = (SDL_Rect*)malloc(sizeof(SDL_Rect));
 		uint32_t i;
 		for(i=0; attrs[i]; i+=2)
@@ -337,9 +345,8 @@ void startElementTraces(void *data, const char* name, const char** attrs)
 		
 		else if(!strcmp(name, "DynamicTrace"))
 		{
-			DynamicTrace* dt = DynamicTrace_create();
-			//List_addData
-
+			DynamicTrace* dt = DynamicTrace_create(self->nbCasesX, self->nbCasesY, self->caseSizeX, self->caseSizeY);
+			List_addData(self->dynamicTraces, (void*)dt);
 		}
 	}
 
@@ -436,7 +443,52 @@ void startElementTraces(void *data, const char* name, const char** attrs)
 			CSVParser_destroy(objectCSVID);
 			XML_NthColumn++;
 		}
+
+		else if(!strcmp(name, "DynamicTile"))
+		{
+			char name[50];
+			uint32_t fileID;
+			int32_t posX, posY;
+			uint32_t tileID;
+
+			uint32_t i;
+			for(i=0; attrs[i]; i+=2)
+			{
+				if(!strcmp(attrs[i], "tileID"))
+					tileID = atoi(attrs[i+1]);
+				else if(!strcmp(attrs[i], "position"))
+					getXYFromStr(attrs[i+1], &posX, &posY);
+				else if(!strcmp(attrs[i], "fileID"))
+					fileID = atoi(attrs[i+1]);
+				else if(!strcmp(attrs[i], "animName"))
+					strcpy(name, attrs[i+1]);
+			}
+
+			DynamicTrace* dt = (DynamicTrace*)List_getData(self->dynamicTraces, List_getLen(self->dynamicTraces)-1);
+			DynamicFile* df = List_getData(self->dynamicFiles, fileID - List_getLen(self->staticFiles));
+			if(df)
+			{
+				uint32_t i;
+				DynamicEntity* de = (DynamicEntity*)ResourcesManager_getData(df->dynamicEntities, name);
+				SDL_Rect* textureRect = (SDL_Rect*)List_getData(de->tileRects, tileID);
+
+				SDL_Rect dest;
+				dest.x = posX;
+				dest.y = posY;
+				dest.w = textureRect->w;
+				dest.h = textureRect->h;
+
+				const SDL_Rect** subRects = (const SDL_Rect**)malloc(sizeof(SDL_Rect*)*List_getLen(de->tileRects));
+				for(i=0; i < List_getLen(de->tileRects); i++)
+					subRects[i] = (SDL_Rect*)List_getData(de->tileRects, i);
+				
+				Tile* tile = de->createDynamicTile(&dest, File_getTexture(df->file), subRects, List_getLen(de->tileRects), 0, 8);
+				DynamicTrace_addTile(dt, tile);
+				free(subRects);
+			}
+		}
 	}
+
 	XML_depth++;
 }
 
@@ -479,6 +531,14 @@ void Map_destroy(Map* map)
 	for(i=0; i < List_getLen(map->staticFiles); i++)
 		StaticFile_destroy((StaticFile*)List_getData(map->staticFiles, i));
 	List_destroy(map->staticFiles);
+
+	for(i=0; i < List_getLen(map->dynamicTraces); i++)
+		DynamicTrace_destroy((DynamicTrace*)List_getData(map->dynamicTraces, i));
+	List_destroy(map->dynamicTraces);
+
+	for(i=0; i < List_getLen(map->objects); i++)
+		ObjectDatas_destroy((ObjectDatas*)List_getData(map->objects, i));
+	List_destroy(map->objects);
 
 	free(map);
 }
@@ -547,8 +607,17 @@ DynamicFile* DynamicFile_create(File* file)
 		return NULL;
 	}
 	df->file = file;
-	df->dynamicEntities = List_create();
+	df->dynamicEntities = ResourcesManager_create();
 	return df;
+}
+
+void DynamicFile_destroy(DynamicFile* self)
+{
+	uint32_t i;
+	for(i=0; i < ResourcesManager_getLen(self->dynamicEntities); i++)
+		free(ResourcesManager_getDataByID(self->dynamicEntities, i));
+	ResourcesManager_destroy(self->dynamicEntities);
+	free(self);
 }
 
 void  StaticFile_destroy(StaticFile* self)
@@ -557,5 +626,6 @@ void  StaticFile_destroy(StaticFile* self)
 	for(i=0; i < List_getLen(self->tileDatas); i++)
 		free(List_getData(self->tileDatas, i));
  	List_destroy(self->tileDatas);
+
 	free(self);
 }

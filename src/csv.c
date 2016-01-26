@@ -64,15 +64,17 @@ bool CSVParser_parse(CSVParser* self, const char* string)
 	return CSVParser_parse(self, &(string[stringIndice+1]));
 }
 
-const int32_t*   CSVParser_getValues(CSVParser* self)
+const int32_t* CSVParser_getValues(CSVParser* self)
 {
 	return self->values;
 }
-int32_t    CSVParser_getLen(CSVParser* self)
+
+int32_t CSVParser_getLen(CSVParser* self)
 {
 	return self->nbValue;
 }
-void       CSVParser_destroy(CSVParser* self)
+
+void CSVParser_destroy(CSVParser* self)
 {
 	if(self->values)
 		free(self->values);

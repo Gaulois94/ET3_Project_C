@@ -9,6 +9,6 @@ typedef struct
 	Tile base;
 }Ennemy;
 
-void Ennemy_init(Ennemy* self);
+void Ennemy_init(Ennemy* self, SDL_Texture* texture, const SDL_Rect* subRect);
 
 #endif

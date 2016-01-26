@@ -21,6 +21,7 @@
 #include "List.h"
 #include "File.h"
 #include "SDL2/SDL_image.h"
+#include "SDL2/SDL.h"
 #include "Datas.h"
 
 typedef struct
@@ -37,7 +38,7 @@ typedef struct
 typedef struct
 {
 	File* file;
-	List* dynamicEntities;
+	ResourcesManager* dynamicEntities;
 }DynamicFile;
 
 typedef struct
@@ -57,6 +58,7 @@ typedef struct
 	List* files;
 	List* staticFiles;
 	List* staticTraces;
+	List* dynamicTraces;
 	List* dynamicFiles;
 	List* objects;
 }Map;
@@ -123,6 +125,7 @@ Tile*        StaticFile_createTile(StaticFile* self, int32_t tileID, bool def);
 void         StaticFile_destroy(StaticFile* self);
 
 DynamicFile* DynamicFile_create(File* file);
+void DynamicFile_destroy(DynamicFile* self);
 
 extern uint32_t XML_depth;
 extern uint32_t XML_NthColumn;

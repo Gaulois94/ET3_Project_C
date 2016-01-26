@@ -129,3 +129,76 @@ void StaticTrace_destroy(StaticTrace* self, bool deleteTiles)
 	free(self->objects);
 	free(self);
 }
+
+DynamicTrace* DynamicTrace_create(uint32_t xTiles, uint32_t yTiles, uint32_t xSize, uint32_t ySize)
+{
+	DynamicTrace* dt = (DynamicTrace*)malloc(sizeof(DynamicTrace));
+	if(dt == NULL)
+	{
+		perror("Error in malloc \n");
+		return NULL;
+	}
+
+	dt->xTiles = xTiles;
+	dt->yTiles = yTiles;
+	dt->xSize  = xSize;
+	dt->ySize  = ySize;
+
+	dt->tiles = (List***)malloc(sizeof(List**)*xTiles);
+	uint32_t i, j;
+	for(i=0; i < xTiles; i++)
+	{
+		dt->tiles[i] = (List**)malloc(sizeof(List*)*yTiles);
+		for(j=0; j < yTiles; j++)
+			dt->tiles[i][j] = List_create();
+	}
+
+	return dt;
+}
+
+void DynamicTrace_addTile(DynamicTrace* self, Tile* tile)
+{
+	Drawable* tileDrawable;
+	const SDL_Rect* tileRect = Drawable_getRect(tileDrawable);
+	uint32_t xIndice, yIndice;
+	xIndice = tileRect->x / self->xSize;
+	yIndice = tileRect->y / self->ySize;
+	List_addData(self->tiles[xIndice][yIndice], (void*)tile);
+}
+
+void DynamicTrace_draw(DynamicTrace* self, Window* window)
+{
+	uint32_t i, j, k;
+	for(i=0; i < self->xTiles; i++)
+	{
+		for(j=0; j < self->yTiles; j++)
+		{
+			for(k=0; k < List_getLen(self->tiles[i][j]); k++)
+			{
+				Tile* tile = (Tile*)List_getData(self->tiles[i][j], k);
+				if(tile)
+					((Drawable*)tile)->draw((Drawable*)tile, window);
+			}
+		}
+	}
+}
+
+void DynamicTrace_destroy(DynamicTrace* self)
+{
+	uint32_t i, j, k;
+	for(i=0; i < self->xTiles; i++)
+	{
+		for(j=0; j < self->yTiles; j++)
+		{
+			for(k=0; k < List_getLen(self->tiles[i][j]); k++)
+			{
+				Drawable* tile = List_getData(self->tiles[i][j], k);
+				tile->destroy(tile);
+			}
+			List_destroy(self->tiles[i][j]);
+		}
+		free(self->tiles[i]);
+	}
+	free(self->tiles);
+	free(self);
+}

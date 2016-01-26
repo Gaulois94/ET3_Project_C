@@ -31,7 +31,7 @@ typedef struct Tile
 	uint32_t info;
 }Tile;
 
-void     Tile_init(Tile* self, SDL_Texture* texture, const SDL_Rect* subRect);
+void     Tile_init(Tile* self, SDL_Texture* texture, const SDL_Rect* rect);
 void     Tile_setPosition(Drawable* self, int32_t x, int32_t y);
 void     Tile_setSize(Drawable* self, uint32_t width, uint32_t height);
 void     Tile_setStatic(Drawable* self, bool isStatic);
