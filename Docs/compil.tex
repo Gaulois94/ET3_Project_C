@@ -1,0 +1,15 @@
+\section{Comment l'utiliser ?}
+
+\paragraph{} Le choix de l'outil pour compiler est cmake \footnote{\url{https://cmake.org/}}. Il permet de créer un Makefile adapté à notre machine (donc utilisable sous Windows, Linux et Mac), en plus de rajouter des fonctionnalités tel que la copie de dossier comme Resources et libs si on est sous Windows. Les libraries et includes sous Windows sont fournis dans l'archive. Cependant pour linux, il vous faudra les bibliothèques suivantes :
+
+\begin{itemize}
+	\item SDL2
+	\item SDL2_image
+	\item SDL2_ttf
+	\item SDL2_mixer
+	\item expat
+\end{itemize}
+
+\paragraph{} L'utilisation de cmake est définis dans le README pour linux. Sous windows, merci de lire ceci : \url{https://cmake.org/runningcmake/}. En pratique, il suffira de dire où sont les sources, où es-ce que vous voulez compiler, d'appuyer sur configure et ok. Le Makefile sera ainsi créé et vous pourrez compiler via mingw32-make par exemple.
+\paragraph{} Le code source est disponible sur \url{https://github.com/Gaulois94/ET3\_Project\_C} ou en ligne de commande sous linux : git clone https://github.com/Gaulois94/ET3\_Project\_C.git
+\paragraph{} Les touches du jeu sont définies dans le context Options. Vous pouvez changer les touches en cliquant sur leur valeur (par défaut c'est GAUCHE, DROIT et HAUT pour ce déplacer). Start lancera le jeu et Quit (ou Alt+F4 / croix / killall / etc.) fermera le programme. Le programme aura été testé sous valgrind et possèdera donc théoriquement aucune fuites mémoires.
