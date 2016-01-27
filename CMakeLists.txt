@@ -11,7 +11,7 @@ set(CMAKE_BUILD_TYPE "Debug")
 set(sdl_name "SDL2" CACHE STRING "Name of the lib")
 set(sdl_image_name "SDL2_image" CACHE STRING "Name of sdl image lib")
 set(sdl_ttf_name "SDL2_ttf" CACHE STRING "Name of sdl ttf lib")
-set(sdl_mixer_name "SDL_mixer" CACHE STRING "Name of sdl mixer lib")
+set(sdl_mixer_name "SDL2_mixer" CACHE STRING "Name of sdl mixer lib")
 set(expat_name "expat" CACHE STRING "Name of expat lib")
 
 IF(WIN32)

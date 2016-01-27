@@ -17,6 +17,11 @@ SDL_Color CYAN = {.r=0, .g=255, .b=255};
 SDL_Color BLACK = {.r=0, .g=0, .b=0};
 SDL_Color WHITE = {.r=255, .g=255, .b=255};
 
+bool rectCollision(const SDL_Rect* rect1, const SDL_Rect* rect2)
+{
+	return false;
+}
+
 void globalVar_destroy()
 {
 	if(globalVar_window)

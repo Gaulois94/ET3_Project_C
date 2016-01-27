@@ -195,6 +195,8 @@ void InGame_drawUI(InGame* self)
 
 void InGame_updateEnnemies(InGame* self)
 {
+	if(!self->map)
+		return;
 
 }
 
@@ -205,10 +207,15 @@ void InGame_updatePlayer(InGame* self)
 
 	const SDL_Rect* pRect = Drawable_getRect((Drawable*)self->player);
 
-	Tile* topLeftTile=NULL;
-	Tile* topRightTile=NULL;
-	Tile* bottomLeftTile=NULL;
-	Tile* bottomRightTile=NULL;
+	Tile* topLeftTile         = NULL;
+	Tile* topRightTile        = NULL;
+	Tile* bottomLeftTile      = NULL;
+	Tile* bottomRightTile     = NULL;
+
+	List* topLeftEnnemies     = NULL;
+	List* topRightEnnemies    = NULL;
+	List* bottomLeftEnnemies  = NULL;
+	List* bottomRightEnnemies = NULL;
 
 	//Update the player gravity
 	Player_updateGravity(self->player);
@@ -260,6 +267,38 @@ void InGame_updatePlayer(InGame* self)
 
 	else
 		Player_setSpeedY(self->player, Player_getSpeedY(self->player) + GRAVITY);
+
+    //Then Check if we are stomping on ennemies
+/*     bottomLeftEnnemies  = Map_getEnnemies(self->map, pRect->x, pRect->y + pRect->h);
+    bottomRightEnnemies = Map_getEnnemies(self->map, pRect->x + pRect->w, pRect->y + pRect->h);
+
+    bool stomp = false;
+    uint32_t i;
+
+    if(bottomLeftEnnemies != NULL)
+    {
+        for(i=0; i < List_getLen(bottomLeftEnnemies); i++)
+        {
+            Ennemy* ennemy = (Ennemy*)List_getData(bottomLeftEnnemies, i);
+            if(ennemy)
+            {
+                const SDL_Rect* ennemyRect = Drawable_getRect((Drawable*)ennemy);
+            }
+        }
+    }
+
+    if(!stomp && bottomRightEnnemies != NULL && bottomLeftEnnemies != bottomRightEnnemies)
+    {
+        for(i=0; i < List_getLen(bottomLeftEnnemies); i++)
+        {
+            Ennemy* ennemy = (Ennemy*)List_getData(bottomLeftEnnemies, i);
+            if(ennemy)
+            {
+                const SDL_Rect* ennemyRect = Drawable_getRect((Drawable*)ennemy);
+            }
+        }
+    }
+	*/
 
 	//Check if something solid is on our side
 	Player_updateMovement(self->player);
@@ -423,11 +462,6 @@ void InGame_updateTime(InGame* self)
 	int32_t value = TIMEOUT-(self->currentTime - self->initTime)/1000;
 	sprintf(t, "%03d", (value > 0) ? value : 0);
 	Text_setText(self->timeLabel, globalVar_window, t);
-}
-
-bool InGame_updateLoose(InGame* self)
-{
-	return false;
 }
 
 void InGame_destroy(InGame* self)

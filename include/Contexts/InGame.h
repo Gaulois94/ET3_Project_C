@@ -58,5 +58,4 @@ void        InGame_updateEvent(Context* context, SDL_Event* event);
 void        InGame_loadMap(InGame* self, const char* path);
 void        InGame_destroy(InGame* self);
 
-
 #endif

@@ -20,6 +20,8 @@ typedef struct Drawable
 	bool isStatic;
 }Drawable;
 
+/* \
+ * */
 void Drawable_init(Drawable* self, const SDL_Rect* destRect);
 void Drawable_draw(Drawable* self, Window* window); //This function does nothing, but is necessary for the pointer Drawable::draw. We keep the Window as a parameter, even if globalVar_window exist, for the modularity of the code. Indeed, the class Drawable and others class like this one could be reused in other projects.
 const SDL_Rect* Drawable_getRect(const Drawable* self);

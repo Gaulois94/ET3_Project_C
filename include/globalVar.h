@@ -16,6 +16,8 @@ typedef enum
 
 void globalVar_destroy();
 
+bool rectCollision(const SDL_Rect* rect1, const SDL_Rect* rect2);
+
 extern Window*           globalVar_window;
 extern ResourcesManager* globalVar_fonts;
 extern MusicManager*     globalVar_musics;
