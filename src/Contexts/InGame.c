@@ -17,8 +17,6 @@ InGame* InGame_create()
 void InGame_init(InGame* self)
 {
 	self->map        = NULL;
-	self->ennemies   = NULL;
-	self->nbEnnemies = 0;
 	SDL_Rect scoreRect;
 	scoreRect.x = 10;
 	scoreRect.y = 20;
@@ -196,39 +194,30 @@ void InGame_drawUI(InGame* self)
 		((Drawable*)(self->winLabel))->draw((Drawable*)(self->winLabel), globalVar_window);
 }
 
-void InGame_updateEnnemies(InGame* self)
-{
-	if(!self->map)
-		return;
-
-}
-
 void InGame_updatePlayer(InGame* self)
 {
 	if(!self->map)
 		return;
-
-	const SDL_Rect* pRect = Drawable_getRect((Drawable*)self->player);
 
 	Tile* topLeftTile         = NULL;
 	Tile* topRightTile        = NULL;
 	Tile* bottomLeftTile      = NULL;
 	Tile* bottomRightTile     = NULL;
 
-	List* topLeftDynamics     = NULL;
-	List* topRightDynamics    = NULL;
-	List* bottomLeftDynamics  = NULL;
-	List* bottomRightDynamics = NULL;
+	Tile* topLeftDynamics     = NULL;
+	Tile* topRightDynamics    = NULL;
+	Tile* bottomLeftDynamics  = NULL;
+	Tile* bottomRightDynamics = NULL;
 
 	//Update the player gravity
 	Player_updateGravity(self->player);
 
 	//Then check collisions
-	pRect           = Drawable_getRect((Drawable*)self->player);
-	bottomLeftTile  = Map_getTileInfo(self->map, pRect->x, pRect->y + pRect->h + 1); //+1 are here to check if we will be on collision if we move the player by gravity of 1 pixel.
-	bottomRightTile = Map_getTileInfo(self->map, pRect->x + pRect->w, pRect->y + pRect->h + 1);
-	topLeftTile     = Map_getTileInfo(self->map, pRect->x, pRect->y);
-	topRightTile    = Map_getTileInfo(self->map, pRect->x + pRect->w, pRect->y);
+	const SDL_Rect* pRect = Drawable_getRect((Drawable*)self->player);
+	bottomLeftTile        = Map_getTileInfo(self->map, pRect->x, pRect->y + pRect->h + 1); //+1 are here to check if we will be on collision if we move the player by gravity of 1 pixel.
+	bottomRightTile       = Map_getTileInfo(self->map, pRect->x + pRect->w, pRect->y + pRect->h + 1);
+	topLeftTile           = Map_getTileInfo(self->map, pRect->x, pRect->y);
+	topRightTile          = Map_getTileInfo(self->map, pRect->x + pRect->w, pRect->y);
 
 	if(bottomLeftTile && (Tile_getInfo(bottomLeftTile) & SOLID) ||
 	   bottomRightTile && (Tile_getInfo(bottomRightTile) & SOLID))
@@ -272,45 +261,36 @@ void InGame_updatePlayer(InGame* self)
 		Player_setSpeedY(self->player, Player_getSpeedY(self->player) + GRAVITY);
 
     //Then Check on dynamic side
-    bottomLeftDynamics  = Map_getDynamicList(self->map, pRect->x, pRect->y + pRect->h);
-    bottomRightDynamics = Map_getDynamicList(self->map, pRect->x + pRect->w, pRect->y + pRect->h);
+    bottomLeftDynamics  = Map_getDynamicTile(self->map, pRect->x, pRect->y + pRect->h);
+    bottomRightDynamics = Map_getDynamicTile(self->map, pRect->x + pRect->w, pRect->y + pRect->h);
 
-    bool stomp = false;
     uint32_t i;
 
-	List* dynamicList[4];
-	dynamicList[0] = bottomLeftDynamics;
-	dynamicList[1] = bottomRightDynamics;
-	dynamicList[2] = NULL;
-	dynamicList[3] = NULL;
-	uint32_t dynamicListID, sizeDynamicList = 4;
+	Tile* dynamicTile[4];
+	dynamicTile[0] = bottomLeftDynamics;
+	dynamicTile[1] = bottomRightDynamics;
+	dynamicTile[2] = NULL;
+	dynamicTile[3] = NULL;
+	uint32_t dynamicTileID, sizeDynamicTile = 4;
 	const SDL_Rect* r = Drawable_getRect((Drawable*)self->player);
-	for(dynamicListID=0; dynamicListID < sizeDynamicList; dynamicListID++)
+	for(dynamicTileID=0; dynamicTileID < sizeDynamicTile; dynamicTileID++)
 	{
-		if(!dynamicList[dynamicListID])
+		if(!dynamicTile[dynamicTileID])
 			continue;
-		for(i=0; i < List_getLen(dynamicList[dynamicListID]); i++)
-		{
-			Tile* tile = (Tile*)List_getData(dynamicList[dynamicListID], i);
-			if(!tile)
-				continue;
+		Tile* tile = dynamicTile[dynamicTileID];
+		if(!tile)
+			continue;
 
-			else if(!(Tile_getInfo(tile) & ENNEMY))
-				continue;
-			else if(tile && !tile->canDestroy)
+		else if(!(Tile_getInfo(tile) & ENNEMY))
+			continue;
+		else if(tile && !tile->canDestroy)
+		{
+			const SDL_Rect* tileRect = Drawable_getRect((Drawable*)tile);
+			if(rectCollision(tileRect, pRect))
 			{
-				const SDL_Rect* tileRect = Drawable_getRect((Drawable*)tile);
-				if(rectCollision(tileRect, Drawable_getRect((Drawable*)self->player)))
-				{
-					if(self->player->speedY <= 0)
-					{
-						self->hasDied = true;
-						printf("die ! \n");
-						return;
-					}
-					InGame_addScore(self, 100);
-					tile->canDestroy = true;
-				}
+				InGame_addScore(self, 100);
+				tile->canDestroy = true;
+				Player_setSpeedY(self->player, JUMP_SPEED);
 			}
 		}
 	}
@@ -429,39 +409,34 @@ void InGame_updatePlayer(InGame* self)
 	}
 
 	//Then recheck on dynamic trace
-    bottomLeftDynamics  = Map_getDynamicList(self->map, pRect->x, pRect->y + pRect->h);
-    bottomRightDynamics = Map_getDynamicList(self->map, pRect->x + pRect->w, pRect->y + pRect->h);
-    topLeftDynamics  = Map_getDynamicList(self->map, pRect->x, pRect->y);
-    topRightDynamics = Map_getDynamicList(self->map, pRect->x + pRect->w, pRect->y);
+    bottomLeftDynamics  = Map_getDynamicTile(self->map, pRect->x, pRect->y + pRect->h);
+    bottomRightDynamics = Map_getDynamicTile(self->map, pRect->x + pRect->w, pRect->y + pRect->h);
+    topLeftDynamics  = Map_getDynamicTile(self->map, pRect->x, pRect->y);
+    topRightDynamics = Map_getDynamicTile(self->map, pRect->x + pRect->w, pRect->y);
 
-	dynamicList[0] = bottomLeftDynamics;
-	dynamicList[1] = bottomRightDynamics;
-	dynamicList[2] = topRightDynamics;
-	dynamicList[3] = topLeftDynamics;
-	for(dynamicListID=0; dynamicListID < sizeDynamicList; dynamicListID++)
+	dynamicTile[0] = bottomLeftDynamics;
+	dynamicTile[1] = bottomRightDynamics;
+	dynamicTile[2] = topRightDynamics;
+	dynamicTile[3] = topLeftDynamics;
+	for(dynamicTileID=0; dynamicTileID < sizeDynamicTile; dynamicTileID++)
 	{
-		if(!dynamicList[dynamicListID])
+		if(!dynamicTile[dynamicTileID])
 			continue;
-		for(i=0; i < List_getLen(dynamicList[dynamicListID]); i++)
+		Tile* tile = dynamicTile[dynamicTileID];
+		if(!tile)
+			continue;
+
+		else if(!(Tile_getInfo(tile) & ENNEMY))
+			continue;
+
+		else if(tile && !tile->canDestroy)
 		{
-			Tile* tile = (Tile*)List_getData(dynamicList[dynamicListID], i);
-			if(!tile)
-				continue;
-
-			else if(!(Tile_getInfo(tile) & (ENNEMY | DAMAGE)))
+			const SDL_Rect* tileRect = Drawable_getRect((Drawable*)tile);
+			if(rectCollision(tileRect, pRect))
 			{
-				printf("continue \n");
-				continue;
-			}
-
-			else if(tile && !tile->canDestroy)
-			{
-				const SDL_Rect* tileRect = Drawable_getRect((Drawable*)tile);
-				if(rectCollision(tileRect, Drawable_getRect((Drawable*)self->player)))
-				{
-					self->hasDied = true;
-					return;
-				}
+				self->hasDied = true;
+				printf("Killed ! \n");
+				return;
 			}
 		}
 	}

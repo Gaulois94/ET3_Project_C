@@ -18,9 +18,6 @@ typedef struct
 {
 	Context  base;
 
-	Ennemy** ennemies;
-	uint32_t nbEnnemies;
-
 	uint32_t nbLifes;
 
 	Player*  player;
@@ -50,7 +47,6 @@ EnumContext InGame_run(Context* self);
 void        InGame_drawUI(InGame* self);
 void        InGame_addScore(InGame* self, uint32_t score);
 void        InGame_setLifeLabel(InGame* self);
-void        InGame_updateEnnemies(InGame* self);
 void        InGame_updatePlayer(InGame* self);
 void        InGame_updateCamera(InGame* self);
 void        InGame_updateTime(InGame* self);

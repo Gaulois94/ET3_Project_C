@@ -54,12 +54,10 @@ void basicIA(Tile* tile, void* game)
 			if(ennemy->moveX < -1)
 				ennemy->moveX += 1;
 			Drawable_move((Drawable*)tile, ennemy->moveX, 0);
-			printf("ennemy->moveX %f \n", ennemy->moveX);
 
 			bottomLeftTile  = Map_getTileInfo(inGame->map, pRect->x, pRect->y + pRect->h + 1); //+1 are here to check if we will be on collision if we move the ennemy by gravity of 1 pixel.
 			if(!bottomLeftTile || !(Tile_getInfo(bottomLeftTile) & SOLID))
 			{
-				printf("Change !\n");
 				Drawable_move((Drawable*)tile, 1, 0);
 				ennemy->direction = DRIGHT;
 			}
@@ -75,7 +73,6 @@ void basicIA(Tile* tile, void* game)
 			bottomRightTile = Map_getTileInfo(inGame->map, pRect->x + pRect->w, pRect->y + pRect->h + 1);
 			if(!bottomRightTile || !(Tile_getInfo(bottomRightTile) & SOLID))
 			{
-				printf("Change !\n");
 				Drawable_move((Drawable*)tile, -1, 0);
 				ennemy->direction = DLEFT;
 			}

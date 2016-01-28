@@ -19,6 +19,8 @@ void List_addData(List* self, void* data)
 	elem->next     = NULL;
 	elem->data     = data;
 
+	List_removeData(self, data);
+
 	if(self->len == 0)
 		self->head = elem;
 	else
@@ -76,24 +78,19 @@ void* List_getData(List* self, uint32_t id)
 
 void List_removeData(List* self, void* data)
 {
+	if(data == NULL)
+		return;
 	ListElem* elem = self->head;
-	ListElem* tmp  = NULL;
 	uint32_t i;
 	for(i=0; i < self->len; i++)
 	{
 		if(elem->data == data)
 		{
-			if(tmp != NULL)
-				tmp->next = elem->next;
-			else
-				self->head = elem->next;
-			free(elem);
+			List_removeDataByID(self,i);
 			return;
 		}
-		tmp = elem;
 		elem = elem->next;
 	}
-	self->len--;
 }
 
 void* List_removeDataByID(List* self, uint32_t id)

@@ -76,6 +76,14 @@ void Map_draw(Map* self, Window* window)
 	}
 }
 
+Tile* Map_getDynamicTile(Map* self, uint32_t x, uint32_t y)
+{
+	DynamicTrace* dt = (DynamicTrace*)List_getData(self->dynamicTraces, 0);
+	if(!dt)
+		return NULL;
+	return DynamicTrace_getTile(dt, x, y);
+}
+
 List* Map_getDynamicList(Map* self, uint32_t x, uint32_t y)
 {
 	DynamicTrace* dt = (DynamicTrace*)List_getData(self->dynamicTraces, 0);

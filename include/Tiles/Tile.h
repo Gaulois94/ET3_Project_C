@@ -23,6 +23,7 @@ typedef struct Tile
 	Drawable  base;
 	Sprite* sprite;
 	bool hasMove;
+	bool hasDraw;
 
 	uint32_t(*updateCollision)(struct Tile*);
 
