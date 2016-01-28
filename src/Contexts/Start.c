@@ -1,4 +1,5 @@
 #include "Contexts/Start.h"
+#include "globalVar.h"
 
 Start* Start_create()
 {
@@ -47,6 +48,7 @@ void Start_reinit(Context* context)
 	Start* self = (Start*)context;
 	self->nextContext = NOTHING;
 	Window_setCameraCoords(globalVar_window, 0, 0);
+	MusicManager_setSound(globalVar_musics, false);
 }
 
 EnumContext Start_run(Context* context)

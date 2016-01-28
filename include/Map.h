@@ -6,7 +6,6 @@
 #include "stdio.h"
 #include "string.h"
 #include "expat.h"
-#include "globalVar.h"
 #include "ResourcesManager.h"
 #include "Tiles/Tile.h"
 #include "Tiles/Ground.h"
@@ -14,6 +13,7 @@
 #include "Tiles/DefaultTile.h"
 #include "Tiles/TileStart.h"
 #include "Ennemies/Goomba.h"
+#include "IAs/basic.h"
 #include "Objects/Object.h"
 #include "Objects/Finish.h"
 #include "Trace.h"
@@ -112,6 +112,7 @@ void getXYFromStr(const char* str, uint32_t* x, uint32_t* y);
 void Map_draw(Map* self, Window* window);
 
 
+List*     Map_getDynamicList(Map* self, uint32_t x, uint32_t y);
 SDL_Rect  Map_getRect(Map* self);
 Tile*     Map_getTileInfo(Map* self, int32_t x, int32_t y);
 Object*   Map_getObjectInfo(Map* self, int32_t x, int32_t y);

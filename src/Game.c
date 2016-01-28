@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "globalVar.h"
 
 Game* Game_create()
 {
@@ -6,6 +7,7 @@ Game* Game_create()
 	globalVar_window = Window_init(SCREEN_WIDTH, SCREEN_HEIGHT, "Mario Like");
 	globalVar_fonts  = ResourcesManager_create();
 	globalVar_musics = MusicManager_create();
+	globalVar_game   = game;
 	game->currentContext = NULL;
 	game->quit = false;
 	TTF_Font* font = TTF_OpenFont("Resources/DejaVuSansMono.ttf", 15);

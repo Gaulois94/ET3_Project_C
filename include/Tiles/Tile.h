@@ -22,6 +22,7 @@ typedef struct Tile
 {
 	Drawable  base;
 	Sprite* sprite;
+	bool hasMove;
 
 	uint32_t(*updateCollision)(struct Tile*);
 
@@ -29,6 +30,9 @@ typedef struct Tile
 	bool doDamages;
 	bool canDestroy;
 	uint32_t info;
+
+	void* data;
+	void(*update)(struct Tile*, void*);
 }Tile;
 
 void     Tile_init(Tile* self, SDL_Texture* texture, const SDL_Rect* rect);
@@ -39,5 +43,6 @@ void     Tile_draw(Drawable* self, Window* window);
 void     Tile_destroy(Drawable* self);
 uint32_t Tile_getInfo(Tile* tile);
 uint32_t Tile_updateCollision(Tile* self);
+void     Tile_setUpdate(Tile* tile, void(*update)(Tile*, void*), void* data);
 
 #endif

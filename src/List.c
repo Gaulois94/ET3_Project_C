@@ -93,6 +93,7 @@ void List_removeData(List* self, void* data)
 		tmp = elem;
 		elem = elem->next;
 	}
+	self->len--;
 }
 
 void* List_removeDataByID(List* self, uint32_t id)
@@ -109,6 +110,7 @@ void* List_removeDataByID(List* self, uint32_t id)
 	else
 		queueBefore->next = queue->next;
 	free(queue);
+	self->len--;
 			
 	return data;
 }

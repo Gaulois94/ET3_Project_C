@@ -1,4 +1,5 @@
 #include "File.h"
+#include "globalVar.h"
 
 File* File_create(const char* path)
 {

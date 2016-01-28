@@ -25,6 +25,7 @@ void Player_init(Player* self, int32_t x, int32_t y)
 	self->animLength = 4;
 	self->speedY     = 0;
 	self->jump       = true;
+	self->justHasJump=false;
 
 	self->playerImage = File_create("Resources/Mario.png");
 	if(self->playerImage == NULL)
@@ -77,6 +78,7 @@ void Player_draw(Drawable* drawable, Window* window)
 {
 	Player* self = (Player*)drawable;
 	((Drawable*)(self->staticAnimation[self->idAnimation]))->draw((Drawable*)(self->staticAnimation[self->idAnimation]), window);
+	self->justHasJump = false;
 }
 
 void Player_update(Active* active)
@@ -139,7 +141,9 @@ bool Player_howActive(Active* active, const SDL_Event* e)
 			self->action = RIGHT;
 
 		else if(e->key.keysym.scancode == self->jumpScancode)
+		{
 			self->jump = true;
+		}
 		else
 			return false;
 		return true;
@@ -164,7 +168,10 @@ void Player_activeIt(Active* active, const SDL_Event* e)
 			if(self->speedY != 0)
 				return;
 			else
+			{
 				self->speedY = JUMP_SPEED;
+				self->justHasJump = true;
+			}
 			return;
 		}
 

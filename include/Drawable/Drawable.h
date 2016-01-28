@@ -33,6 +33,8 @@ void Drawable_setSize(Drawable* self, uint32_t width, uint32_t height);
 void Drawable_setPosition(Drawable* self, int32_t x, int32_t y);
 void Drawable_setStatic(Drawable* self, bool isStatic);
 
+void Drawable_move(Drawable* self, int32_t x, int32_t y);
+
 void copyRect(SDL_Rect* dest, const SDL_Rect* src);
 const SDL_Rect* evaluateRect(const SDL_Rect* rect);
 

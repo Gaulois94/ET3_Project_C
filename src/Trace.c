@@ -130,7 +130,7 @@ void StaticTrace_destroy(StaticTrace* self, bool deleteTiles)
 	free(self);
 }
 
-DynamicTrace* DynamicTrace_create(uint32_t xTiles, uint32_t yTiles, uint32_t xSize, uint32_t ySize)
+DynamicTrace* DynamicTrace_create(uint32_t nbCasesX, uint32_t nbCasesY, uint32_t sizeX, uint32_t sizeY)
 {
 	DynamicTrace* dt = (DynamicTrace*)malloc(sizeof(DynamicTrace));
 	if(dt == NULL)
@@ -139,17 +139,17 @@ DynamicTrace* DynamicTrace_create(uint32_t xTiles, uint32_t yTiles, uint32_t xSi
 		return NULL;
 	}
 
-	dt->xTiles = xTiles;
-	dt->yTiles = yTiles;
-	dt->xSize  = xSize;
-	dt->ySize  = ySize;
+	dt->nbCasesX = nbCasesX;
+	dt->nbCasesY = nbCasesY;
+	dt->sizeX  = sizeX;
+	dt->sizeY  = sizeY;
 
-	dt->tiles = (List***)malloc(sizeof(List**)*xTiles);
+	dt->tiles = (List***)malloc(sizeof(List**)*nbCasesX);
 	uint32_t i, j;
-	for(i=0; i < xTiles; i++)
+	for(i=0; i < nbCasesX; i++)
 	{
-		dt->tiles[i] = (List**)malloc(sizeof(List*)*yTiles);
-		for(j=0; j < yTiles; j++)
+		dt->tiles[i] = (List**)malloc(sizeof(List*)*nbCasesY);
+		for(j=0; j < nbCasesY; j++)
 			dt->tiles[i][j] = List_create();
 	}
 
@@ -161,39 +161,71 @@ void DynamicTrace_addTile(DynamicTrace* self, Tile* tile)
 	Drawable* tileDrawable;
 	const SDL_Rect* tileRect = Drawable_getRect(tileDrawable);
 	uint32_t xIndice, yIndice;
-	xIndice = tileRect->x / self->xSize;
-	yIndice = tileRect->y / self->ySize;
+	xIndice = tileRect->x / self->sizeX;
+	yIndice = tileRect->y / self->sizeY;
 	List_addData(self->tiles[xIndice][yIndice], (void*)tile);
 }
 
 void DynamicTrace_draw(DynamicTrace* self, Window* window)
 {
 	uint32_t i, j, k;
-	for(i=0; i < self->xTiles; i++)
+	for(i=0; i < self->nbCasesX; i++)
 	{
-		for(j=0; j < self->yTiles; j++)
+		for(j=0; j < self->nbCasesY; j++)
 		{
 			for(k=0; k < List_getLen(self->tiles[i][j]); k++)
 			{
 				Tile* tile = (Tile*)List_getData(self->tiles[i][j], k);
 				if(tile)
+				{
+					if(tile->hasMove)
+					{
+						List_removeDataByID(self->tiles[i][j], k);
+						const SDL_Rect* tileRect = Drawable_getRect((Drawable*)tile);
+						uint32_t xIndice, yIndice;
+						xIndice = tileRect->x / self->sizeX;
+						yIndice = tileRect->y / self->sizeY;
+
+						if(xIndice > self->nbCasesX, yIndice > self->nbCasesY);
+						List_addData(self->tiles[xIndice][yIndice], tile);
+
+						tile->hasMove = false;
+					}
+
 					((Drawable*)tile)->draw((Drawable*)tile, window);
+					if(tile->canDestroy)
+					{
+						List_removeDataByID(self->tiles[i][j], k);
+						((Drawable*)tile)->destroy((Drawable*)tile);
+					}
+				}
 			}
 		}
 	}
 }
 
+List* DynamicTrace_getList(DynamicTrace* self, uint32_t x, uint32_t y)
+{
+	uint32_t xIndice, yIndice;
+	xIndice = x / self->sizeX;
+	yIndice = y / self->sizeY;
+	if(xIndice < self->nbCasesX && yIndice < self->nbCasesY)
+		return self->tiles[xIndice][yIndice];
+	return NULL;
+}
+
 void DynamicTrace_destroy(DynamicTrace* self)
 {
 	uint32_t i, j, k;
-	for(i=0; i < self->xTiles; i++)
+	for(i=0; i < self->nbCasesX; i++)
 	{
-		for(j=0; j < self->yTiles; j++)
+		for(j=0; j < self->nbCasesY; j++)
 		{
 			for(k=0; k < List_getLen(self->tiles[i][j]); k++)
 			{
 				Drawable* tile = List_getData(self->tiles[i][j], k);
-				tile->destroy(tile);
+				if(tile)
+					tile->destroy(tile);
 			}
 			List_destroy(self->tiles[i][j]);
 		}

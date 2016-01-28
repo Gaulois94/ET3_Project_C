@@ -1,4 +1,5 @@
 #include "Contexts/InGame.h"
+#include "globalVar.h"
 
 InGame* InGame_create()
 {
@@ -60,6 +61,7 @@ void InGame_init(InGame* self)
 
 void InGame_reinit(Context* context)
 {
+	MusicManager_playBackground(globalVar_musics);
     InGame* self = (InGame*)context;
     Player_setSpeedY(self->player, 0);
 	Player_setScancode(self->player, globalVar_jumpscancode, globalVar_leftscancode, globalVar_rightscancode);
@@ -138,6 +140,7 @@ EnumContext InGame_run(Context* context)
 		{
 			self->hasActivedGameOver = false;
 			self->hasDied = false;
+			InGame_addScore(self, -self->score);
 		}
 	}
 
@@ -175,7 +178,7 @@ void InGame_updateEvent(Context* context, SDL_Event* event)
 		Active* player = (Active*)self->player;
 		if(Active_updateEvents(player, event))
 		{
-			if(event->type == SDL_KEYDOWN && event->key.keysym.scancode == SDL_SCANCODE_UP)
+			if(self->player->justHasJump)
 				MusicManager_playSound(globalVar_musics, JUMP);
 			return;
 		}
@@ -212,10 +215,10 @@ void InGame_updatePlayer(InGame* self)
 	Tile* bottomLeftTile      = NULL;
 	Tile* bottomRightTile     = NULL;
 
-	List* topLeftEnnemies     = NULL;
-	List* topRightEnnemies    = NULL;
-	List* bottomLeftEnnemies  = NULL;
-	List* bottomRightEnnemies = NULL;
+	List* topLeftDynamics     = NULL;
+	List* topRightDynamics    = NULL;
+	List* bottomLeftDynamics  = NULL;
+	List* bottomRightDynamics = NULL;
 
 	//Update the player gravity
 	Player_updateGravity(self->player);
@@ -268,37 +271,49 @@ void InGame_updatePlayer(InGame* self)
 	else
 		Player_setSpeedY(self->player, Player_getSpeedY(self->player) + GRAVITY);
 
-    //Then Check if we are stomping on ennemies
-/*     bottomLeftEnnemies  = Map_getEnnemies(self->map, pRect->x, pRect->y + pRect->h);
-    bottomRightEnnemies = Map_getEnnemies(self->map, pRect->x + pRect->w, pRect->y + pRect->h);
+    //Then Check on dynamic side
+    bottomLeftDynamics  = Map_getDynamicList(self->map, pRect->x, pRect->y + pRect->h);
+    bottomRightDynamics = Map_getDynamicList(self->map, pRect->x + pRect->w, pRect->y + pRect->h);
 
     bool stomp = false;
     uint32_t i;
 
-    if(bottomLeftEnnemies != NULL)
-    {
-        for(i=0; i < List_getLen(bottomLeftEnnemies); i++)
-        {
-            Ennemy* ennemy = (Ennemy*)List_getData(bottomLeftEnnemies, i);
-            if(ennemy)
-            {
-                const SDL_Rect* ennemyRect = Drawable_getRect((Drawable*)ennemy);
-            }
-        }
-    }
+	List* dynamicList[4];
+	dynamicList[0] = bottomLeftDynamics;
+	dynamicList[1] = bottomRightDynamics;
+	dynamicList[2] = NULL;
+	dynamicList[3] = NULL;
+	uint32_t dynamicListID, sizeDynamicList = 4;
+	const SDL_Rect* r = Drawable_getRect((Drawable*)self->player);
+	for(dynamicListID=0; dynamicListID < sizeDynamicList; dynamicListID++)
+	{
+		if(!dynamicList[dynamicListID])
+			continue;
+		for(i=0; i < List_getLen(dynamicList[dynamicListID]); i++)
+		{
+			Tile* tile = (Tile*)List_getData(dynamicList[dynamicListID], i);
+			if(!tile)
+				continue;
 
-    if(!stomp && bottomRightEnnemies != NULL && bottomLeftEnnemies != bottomRightEnnemies)
-    {
-        for(i=0; i < List_getLen(bottomLeftEnnemies); i++)
-        {
-            Ennemy* ennemy = (Ennemy*)List_getData(bottomLeftEnnemies, i);
-            if(ennemy)
-            {
-                const SDL_Rect* ennemyRect = Drawable_getRect((Drawable*)ennemy);
-            }
-        }
-    }
-	*/
+			else if(!(Tile_getInfo(tile) & ENNEMY))
+				continue;
+			else if(tile && !tile->canDestroy)
+			{
+				const SDL_Rect* tileRect = Drawable_getRect((Drawable*)tile);
+				if(rectCollision(tileRect, Drawable_getRect((Drawable*)self->player)))
+				{
+					if(self->player->speedY <= 0)
+					{
+						self->hasDied = true;
+						printf("die ! \n");
+						return;
+					}
+					InGame_addScore(self, 100);
+					tile->canDestroy = true;
+				}
+			}
+		}
+	}
 
 	//Check if something solid is on our side
 	Player_updateMovement(self->player);
@@ -411,6 +426,44 @@ void InGame_updatePlayer(InGame* self)
 	{
 		topRightObject->updateCollision(topRightObject);
 		self->hasWon = true;
+	}
+
+	//Then recheck on dynamic trace
+    bottomLeftDynamics  = Map_getDynamicList(self->map, pRect->x, pRect->y + pRect->h);
+    bottomRightDynamics = Map_getDynamicList(self->map, pRect->x + pRect->w, pRect->y + pRect->h);
+    topLeftDynamics  = Map_getDynamicList(self->map, pRect->x, pRect->y);
+    topRightDynamics = Map_getDynamicList(self->map, pRect->x + pRect->w, pRect->y);
+
+	dynamicList[0] = bottomLeftDynamics;
+	dynamicList[1] = bottomRightDynamics;
+	dynamicList[2] = topRightDynamics;
+	dynamicList[3] = topLeftDynamics;
+	for(dynamicListID=0; dynamicListID < sizeDynamicList; dynamicListID++)
+	{
+		if(!dynamicList[dynamicListID])
+			continue;
+		for(i=0; i < List_getLen(dynamicList[dynamicListID]); i++)
+		{
+			Tile* tile = (Tile*)List_getData(dynamicList[dynamicListID], i);
+			if(!tile)
+				continue;
+
+			else if(!(Tile_getInfo(tile) & (ENNEMY | DAMAGE)))
+			{
+				printf("continue \n");
+				continue;
+			}
+
+			else if(tile && !tile->canDestroy)
+			{
+				const SDL_Rect* tileRect = Drawable_getRect((Drawable*)tile);
+				if(rectCollision(tileRect, Drawable_getRect((Drawable*)self->player)))
+				{
+					self->hasDied = true;
+					return;
+				}
+			}
+		}
 	}
 }
 

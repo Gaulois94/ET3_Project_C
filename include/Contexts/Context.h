@@ -1,7 +1,16 @@
 #ifndef  CONTEXT_INC
 #define  CONTEXT_INC
 
-#include "globalVar.h"
+#include "SDL2/SDL.h"
+
+typedef enum
+{
+	NOTHING,
+	START,
+	INGAME,
+	OPTION,
+	QUIT
+}EnumContext;
 
 typedef struct Context
 {
@@ -11,7 +20,7 @@ typedef struct Context
 }Context;
 
 EnumContext Context_run(Context* self);
-void Context_updateEvent(Context* self, SDL_Event* event;);
+void Context_updateEvent(Context* self, SDL_Event* event);
 void Context_reinit(Context* self);
 
 #endif

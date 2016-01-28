@@ -1,4 +1,5 @@
 #include "Map.h"
+#include "globalVar.h"
 
 uint32_t XML_depth = 0;
 uint32_t XML_NthColumn = 0;
@@ -73,6 +74,14 @@ void Map_draw(Map* self, Window* window)
 		DynamicTrace* dt = (DynamicTrace*)List_getData(self->dynamicTraces, i);
 		DynamicTrace_draw(dt, window);
 	}
+}
+
+List* Map_getDynamicList(Map* self, uint32_t x, uint32_t y)
+{
+	DynamicTrace* dt = (DynamicTrace*)List_getData(self->dynamicTraces, 0);
+	if(!dt)
+		return NULL;
+	return DynamicTrace_getList(dt, x, y);
 }
 
 Tile* Map_getTileInfo(Map* self, int32_t x, int32_t y)
@@ -239,6 +248,8 @@ void startElementFiles(void *data, const char* name, const char** attrs)
 			DynamicFile* df = (DynamicFile*)List_getData(map->dynamicFiles, List_getLen(map->dynamicFiles)-1);
 			DynamicEntity* de = (DynamicEntity*)malloc(sizeof(DynamicEntity));
 			de->tileRects = List_create();
+			de->update = NULL;
+			de->data = NULL;
 
 			uint32_t i;
 			for(i=0; attrs[i]; i+=2)
@@ -246,7 +257,11 @@ void startElementFiles(void *data, const char* name, const char** attrs)
 				if(!strcmp(attrs[i], "name"))
 				{
 					if(!strcmp(attrs[i+1], "goomba"))
+					{
 						de->createDynamicTile = &Goomba_create;
+						de->update = &basicIA;
+						de->data = globalVar_game;
+					}
 					ResourcesManager_addData(df->dynamicEntities, "goomba", (void*)de);
 				}
 			}
@@ -483,6 +498,7 @@ void startElementTraces(void *data, const char* name, const char** attrs)
 					subRects[i] = (SDL_Rect*)List_getData(de->tileRects, i);
 				
 				Tile* tile = de->createDynamicTile(&dest, File_getTexture(df->file), subRects, List_getLen(de->tileRects), 0, 8);
+				Tile_setUpdate(tile, de->update, de->data);
 				DynamicTrace_addTile(dt, tile);
 				free(subRects);
 			}

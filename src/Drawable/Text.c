@@ -1,4 +1,5 @@
 #include "Drawable/Text.h"
+#include "globalVar.h"
 
 Text* Text_create(const SDL_Rect* destRect, Window* window, SDL_Color* color, TTF_Font*font, const char* text)
 {

@@ -3,6 +3,7 @@
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_mixer.h"
+#include "typedefine.h"
 #ifndef WIN32
     #include <sys/types.h>
 #endif
@@ -23,6 +24,7 @@ MusicManager* MusicManager_create();
 void MusicManager_playBackground(MusicManager* self);
 void MusicManager_playSound(MusicManager* self, SoundEnum choice);
 void MusicManager_stopBackground(MusicManager* self);
-void MusicManager_clear(MusicManager* self);
+void MusicManager_setSound(MusicManager* self, bool sound);
+void MusicManager_destroy(MusicManager* self);
 
 #endif

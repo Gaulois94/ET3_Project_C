@@ -28,6 +28,8 @@ typedef struct
 {
 	List* tileRects;
 	Tile*(*createDynamicTile)(const SDL_Rect*, SDL_Texture*, const SDL_Rect**, uint32_t, uint32_t, uint32_t);
+	void(*update)(Tile*, void*);
+	void* data;
 }DynamicEntity;
 
 ObjectDatas* ObjectDatas_create();

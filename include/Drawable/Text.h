@@ -5,7 +5,6 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
 #include "ResourcesManager.h"
-#include "globalVar.h"
 
 /* \struct Text
  * \brief structure for drawing and handling texts */

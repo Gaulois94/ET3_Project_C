@@ -24,6 +24,7 @@ typedef struct
 	uint8_t    lifes;
 	bool stillDown;
 	bool jump;
+	bool justHasJump;
 	Action action;
 	float      speedY;
 

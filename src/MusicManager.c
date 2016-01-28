@@ -1,4 +1,5 @@
 #include "MusicManager.h"
+#include "globalVar.h"
 
 MusicManager* MusicManager_create()
 {
@@ -11,17 +12,20 @@ MusicManager* MusicManager_create()
 
 	self->coin = Mix_LoadWAV("Resources/Sounds/coin.wav");
 	self->jump = Mix_LoadWAV("Resources/Sounds/jump.wav");
-//	self->background = Mix_LoadMUS("Resources/Sounds/background.wav");
+	self->background = Mix_LoadMUS("Resources/Sounds/background.wav");
+	MusicManager_playBackground(self);
 
 	return self;
 }
 
 void MusicManager_playSound(MusicManager* self, SoundEnum choice)
 {
+	if(!globalVar_hasSound)
+		return;
 	switch(choice)
 	{
 		case COIN_SOUND:
-			printf("%d \n", Mix_PlayChannel(-1, self->coin, 0));
+			Mix_PlayChannel(-1, self->coin, 0);
 			break;
 		case JUMP:
 			printf("%d \n", Mix_PlayChannel(-1, self->jump, 0));
@@ -31,10 +35,26 @@ void MusicManager_playSound(MusicManager* self, SoundEnum choice)
 
 void MusicManager_stopBackground(MusicManager* self)
 {
-//	Mix_HaltMusic();
+	Mix_HaltMusic();
 }
 
 void MusicManager_playBackground(MusicManager* self)
 {
-//	Mix_PlayMusic(self->background, -1);
+	if(globalVar_hasSound)
+		Mix_PlayMusic(self->background, -1);
+}
+
+void MusicManager_setSound(MusicManager* self, bool sound)
+{
+	if(sound == false)
+		MusicManager_stopBackground(self);
+}
+
+void MusicManager_destroy(MusicManager* self)
+{
+	Mix_FreeChunk(self->jump);
+	Mix_FreeChunk(self->coin);
+	Mix_FreeMusic(self->background);
+	free(self);
+
 }

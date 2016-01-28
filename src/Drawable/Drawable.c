@@ -101,6 +101,17 @@ void Drawable_destroy(Drawable* self)
 	free(self);
 }
 
+void Drawable_move(Drawable* self, int32_t x, int32_t y)
+{
+	if(!self->setPosition)
+	{
+		self->rect.x += x;
+		self->rect.y += y;
+	}
+	else
+		self->setPosition(self, self->rect.x + x, self->rect.y + y);
+}
+
 bool pointOnRect(const SDL_Rect* rect, const SDL_Point* p)
 {
 	return (p->x >= rect->x && p->x <= rect->x + rect->w &&

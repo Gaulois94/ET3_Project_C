@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "Window.h"
+#include "globalVar.h"
 
 int main()
 {

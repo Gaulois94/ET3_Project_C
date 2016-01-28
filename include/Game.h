@@ -5,7 +5,6 @@
 #include "Contexts/Context.h"
 #include "Contexts/Option.h"
 #include "Contexts/Start.h"
-#include "globalVar.h"
 #include "SDL2/SDL.h"
 #include "Player.h"
 #include "Contexts/InGame.h"

@@ -1,4 +1,5 @@
 #include "Contexts/Option.h"
+#include "globalVar.h"
 
 Option* Option_create()
 {
@@ -78,6 +79,8 @@ Option* Option_create()
 
 	self->quitOption = false;
 
+	Active_setActive((Active*)self->soundBox, true);
+
 	return self;
 }
 
@@ -121,6 +124,7 @@ void Option_reinit(Context* context)
 	Button_setText(self->jumpButton, self->jumpCommand, true);
 	Button_setText(self->leftButton, self->leftCommand, true);
 	Button_setText(self->rightButton, self->rightCommand, true);
+	MusicManager_setSound(globalVar_musics, false);
 }
 
 void Option_updateEvent(Context* context, SDL_Event* event)
@@ -134,7 +138,10 @@ void Option_updateEvent(Context* context, SDL_Event* event)
 	else if(Active_updateEvents((Active*)self->rightButton, event))
 		return;
 	else if(Active_updateEvents((Active*)self->soundBox, event))
+	{
+		globalVar_setSound(Active_isActive((Active*)self->soundBox));
 		return;
+	}
 	else if(Active_updateEvents((Active*)self->quitButton, event))
 	{
 		self->quitOption = true;

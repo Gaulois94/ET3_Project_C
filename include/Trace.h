@@ -21,16 +21,17 @@ typedef struct
 typedef struct
 {
 	List*** tiles;
-	uint32_t xSize;
-	uint32_t ySize;
-	uint32_t xTiles;
-	uint32_t yTiles;
+	uint32_t sizeX;
+	uint32_t sizeY;
+	uint32_t nbCasesX;
+	uint32_t nbCasesY;
 }DynamicTrace;
 
-DynamicTrace* DynamicTrace_create(uint32_t xTiles, uint32_t yTiles, uint32_t xSize, uint32_t ySize);
+DynamicTrace* DynamicTrace_create(uint32_t nbCasesX, uint32_t nbCasesY, uint32_t sizeX, uint32_t sizeY);
 void DynamicTrace_addTile(DynamicTrace* self, Tile* tile);
 void DynamicTrace_draw(DynamicTrace* self, Window* window);
 void DynamicTrace_destroy(DynamicTrace* self);
+List* DynamicTrace_getList(DynamicTrace* self, uint32_t x, uint32_t y);
 
 StaticTrace* StaticTrace_create(uint32_t sizeX, uint32_t sizeY, uint32_t nbCasesX, uint32_t nbCasesY,
 								  uint32_t padX, uint32_t padY);
