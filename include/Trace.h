@@ -6,6 +6,8 @@
 #include "Datas.h"
 #include "File.h"
 
+/** \struct StaticTrace
+ * \brief Static trace is a Trace about static tiles. The map is squared such as static traces. Each tile has the same size and a position on the squared trace*/
 typedef struct
 {
 	Tile*** tiles; //2D array which place tiles on the map
@@ -18,6 +20,8 @@ typedef struct
 	uint32_t padY;
 }StaticTrace;
 
+/** \struct DynamicTrace
+ * \brief Dynamic Trace is for dynamic traces. Each tile has an absolute position and isn't bind to a squared position. But for collisions, we keep squared the dynamic trace.*/
 typedef struct
 {
 	List*** tiles;

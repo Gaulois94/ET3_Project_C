@@ -16,13 +16,13 @@ InGame* InGame_create()
 
 void InGame_init(InGame* self)
 {
+	//Initialise all the variables
 	self->map        = NULL;
 	SDL_Rect scoreRect;
 	scoreRect.x = 10;
 	scoreRect.y = 20;
 
-	uint32_t nbLifes = DEFAULT_LIFE;
-
+	//All the text
 	self->scoreLabel       = Text_create(&scoreRect, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "00000000");
 	((Drawable*)(self->scoreLabel))->setStatic((Drawable*)(self->scoreLabel), true);
 	
@@ -43,8 +43,10 @@ void InGame_init(InGame* self)
 	((Drawable*)(self->winLabel))->setPosition((Drawable*)(self->winLabel), 360, 290);
 	((Drawable*)(self->lifeText))->setPosition((Drawable*)(self->lifeText), 380, 20);
 
+	//The player
 	self->player             = Player_create(0, 0);
 
+	//Use reinit for not redo the work twice
 	InGame_reinit((Context*)self);
 	if(self->player == NULL)
 	{
@@ -52,6 +54,7 @@ void InGame_init(InGame* self)
 		return;
 	}
 
+	//Set polymorphisme functions
 	((Context*)self)->run         = &InGame_run;
 	((Context*)self)->updateEvent = &InGame_updateEvent;
 	((Context*)self)->reinit      = &InGame_reinit;
@@ -59,20 +62,31 @@ void InGame_init(InGame* self)
 
 void InGame_reinit(Context* context)
 {
+	//Play the musique
 	MusicManager_playBackground(globalVar_musics);
+
+	//Init the player (gravity, button events)
     InGame* self = (InGame*)context;
     Player_setSpeedY(self->player, 0);
 	Player_setScancode(self->player, globalVar_jumpscancode, globalVar_leftscancode, globalVar_rightscancode);
+
+	//The time
 	self->initTime = self->currentTime = SDL_GetTicks();
+
+	//Destroy a map if we have one
     if(self->map)
     {
         Map_destroy(self->map);
         self->map = NULL;
     }
+
+	//All events of the InGame context are reinit.
 	self->hasDied            = false;
 	self->hasActivedGameOver = false;
 	self->hasWon             = false;
 	self->hasActivedWin      = false;
+
+	//The score
 	self->score              = 0;
 	InGame_addScore(self, 0);
 	MusicManager_playBackground(globalVar_musics);
@@ -92,6 +106,8 @@ EnumContext InGame_run(Context* context)
 {
 	SDL_SetRenderDrawColor(globalVar_window->renderer, 0x93, 0xbb, 0xec, 0xff);
 	InGame* self = (InGame*)context;
+
+	//If we haven't the map, we recreate it
 	if(self->map == NULL)
 	{
 		InGame_loadMap(self, "Resources/Tile.xml");
@@ -102,38 +118,38 @@ EnumContext InGame_run(Context* context)
 		((Drawable*)self->player)->setPosition((Drawable*)self->player, start.x, start.y + self->map->caseSizeX - playerRect->h-1);
 	}
 
-	//We first update our datas
-//	InGame_updateEnnemies(self);
-	
+	//If the game continues
 	if(!self->hasDied && !self->hasWon)
 	{
+		//Update it
 		InGame_updatePlayer(self);
 		InGame_updateTime(self);
 		InGame_updateCamera(self);
 	}
 
+	//Look is we are outside the map
 	const SDL_Rect* rect = Drawable_getRect((Drawable*)self->player);
 	if(Map_isOutside(self->map, rect->x, rect->y + rect->h) && Map_isOutside(self->map, rect->x + rect->w, rect->y + rect->h) || TIMEOUT-(self->currentTime - self->initTime)/1000 == 0)
     {
+		//Then we die
 		self->hasDied = true;
 		Player_stop(self->player);
     }
 
 	//Then we display them;
 	Map_draw(self->map, globalVar_window);
-/* 	uint32_t i;
- 	for(i=0; i < self->nbEnnemies; i++)
-		self->ennemies[i]->draw(self->ennemies[i], globalVar_window->window);
-*/
 	Player_draw((Drawable*)(self->player), globalVar_window);
 	InGame_drawUI(self);
 
+	//We we have validate the game over
 	if(self->hasActivedGameOver)
 	{
+		//We look about our current life
 		self->nbLifes--;
 		InGame_setLifeLabel(self);
 		if(self->nbLifes == 0)
-			return START;
+			return START; //And call the Start context if we loose
+		//Or we redo the game
 		else
 		{
 			self->hasActivedGameOver = false;
@@ -151,12 +167,13 @@ void InGame_updateEvent(Context* context, SDL_Event* event)
 {
 	InGame* self = (InGame*)context;
 
+	//If we have die and the game over statement is activate
 	if(self->hasDied && event->type == SDL_KEYDOWN)
 	{
 		self->hasActivedGameOver = true;
 		if(self->nbLifes > 0)
 		{
-			if(self->map)
+			if(self->map) //Destroy the map. It will be recreated in run function
 			{
 				Map_destroy(self->map);
 				self->map = NULL;
@@ -165,6 +182,7 @@ void InGame_updateEvent(Context* context, SDL_Event* event)
 		return;
 	}
 
+	//If we won and the win statement is activated
 	else if(self->hasWon && event->type == SDL_KEYDOWN)
 	{
 		self->hasActivedWin = true;
@@ -173,11 +191,12 @@ void InGame_updateEvent(Context* context, SDL_Event* event)
 
 	else
 	{
+		//Update the player
 		Active* player = (Active*)self->player;
 		if(Active_updateEvents(player, event))
 		{
 			if(self->player->justHasJump)
-				MusicManager_playSound(globalVar_musics, JUMP);
+				MusicManager_playSound(globalVar_musics, JUMP); //Play the sound "JUMP" if we have jump
 			return;
 		}
 	}
@@ -199,6 +218,7 @@ void InGame_updatePlayer(InGame* self)
 	if(!self->map)
 		return;
 
+	//4 tiles / object / dynamic tiles are needed because the rect player has 4 points.
 	Tile* topLeftTile         = NULL;
 	Tile* topRightTile        = NULL;
 	Tile* bottomLeftTile      = NULL;
@@ -219,25 +239,29 @@ void InGame_updatePlayer(InGame* self)
 	topLeftTile           = Map_getTileInfo(self->map, pRect->x, pRect->y);
 	topRightTile          = Map_getTileInfo(self->map, pRect->x + pRect->w, pRect->y);
 
+	//If the tile on our foot is something SOLID, such as ground
 	if(bottomLeftTile && (Tile_getInfo(bottomLeftTile) & SOLID) ||
 	   bottomRightTile && (Tile_getInfo(bottomRightTile) & SOLID))
     {
+		//Get the tile rect on where we entered in collision
 		const SDL_Rect* tileRect;
 		if(bottomRightTile)
 		{
 			bottomRightTile->updateCollision(bottomRightTile);
 			tileRect = Drawable_getRect((Drawable*)bottomRightTile);
 		}
-		if(bottomLeftTile)
+
+		else if(bottomLeftTile)
 		{
 			bottomLeftTile->updateCollision(bottomLeftTile);
 			tileRect = Drawable_getRect((Drawable*)bottomLeftTile);
 		}
 		int32_t y = tileRect->y - 1;
-		((Drawable*)self->player)->setPosition((Drawable*)self->player, pRect->x, y - pRect->h);
-		Player_setSpeedY(self->player, 0);
+		((Drawable*)self->player)->setPosition((Drawable*)self->player, pRect->x, y - pRect->h); //The reposition the player correctly
+		Player_setSpeedY(self->player, 0); //And set its gravity to 0
     }
 
+	//The same for tile on our head
 	else if(topLeftTile && (Tile_getInfo(topLeftTile) & SOLID) ||
 	        topRightTile && (Tile_getInfo(topRightTile) & SOLID))
     {
@@ -257,15 +281,17 @@ void InGame_updatePlayer(InGame* self)
 		Player_setSpeedY(self->player, 0);
     }
 
+	//We we aren't not on something, then we fall.
 	else
 		Player_setSpeedY(self->player, Player_getSpeedY(self->player) + GRAVITY);
 
-    //Then Check on dynamic side
+    //Check on dynamic side
     bottomLeftDynamics  = Map_getDynamicTile(self->map, pRect->x, pRect->y + pRect->h);
     bottomRightDynamics = Map_getDynamicTile(self->map, pRect->x + pRect->w, pRect->y + pRect->h);
 
     uint32_t i;
 
+	//Useful for not doing the work 4 times (we can use a loop)
 	Tile* dynamicTile[4];
 	dynamicTile[0] = bottomLeftDynamics;
 	dynamicTile[1] = bottomRightDynamics;
@@ -273,21 +299,28 @@ void InGame_updatePlayer(InGame* self)
 	dynamicTile[3] = NULL;
 	uint32_t dynamicTileID, sizeDynamicTile = 4;
 	const SDL_Rect* r = Drawable_getRect((Drawable*)self->player);
+
+	//Loop for checking collisions with all dynamic tiles
 	for(dynamicTileID=0; dynamicTileID < sizeDynamicTile; dynamicTileID++)
 	{
+		//If we haven't a dynamic tile on this case
 		if(!dynamicTile[dynamicTileID])
 			continue;
+
 		Tile* tile = dynamicTile[dynamicTileID];
-		if(!tile)
+
+		//Or if the dynamic tile is not an ennemy
+		if(!(Tile_getInfo(tile) & ENNEMY))
 			continue;
 
-		else if(!(Tile_getInfo(tile) & ENNEMY))
-			continue;
+		//Or if the ennemy isn't destroyd yet (it lives)
 		else if(tile && !tile->canDestroy)
 		{
+			//Look if indeed we are on collision. It is needed because dynamic tiles don't fit all the dynamic cases (definition of dynamic cases : all the tiles can be nowhere of any size.
 			const SDL_Rect* tileRect = Drawable_getRect((Drawable*)tile);
 			if(rectCollision(tileRect, pRect))
 			{
+				//If we fall, then the ennemy is killed
 				if(self->player->speedY > 0)
 				{
 					InGame_addScore(self, 100);
@@ -298,13 +331,14 @@ void InGame_updatePlayer(InGame* self)
 		}
 	}
 
-	//Check if something solid is on our side
+	//Check if something solid is on our side. We do the same thing that for falling.
 	Player_updateMovement(self->player);
 	pRect           = Drawable_getRect((Drawable*)self->player);
 	bottomLeftTile  = Map_getTileInfo(self->map, pRect->x, pRect->y + pRect->h);
 	bottomRightTile = Map_getTileInfo(self->map, pRect->x + pRect->w, pRect->y + pRect->h);
 	topLeftTile     = Map_getTileInfo(self->map, pRect->x, pRect->y);
 	topRightTile    = Map_getTileInfo(self->map, pRect->x + pRect->w, pRect->y);
+
 	//on left
 	if(bottomLeftTile && (Tile_getInfo(bottomLeftTile) & SOLID) ||
 	   topLeftTile && (Tile_getInfo(topLeftTile) & SOLID))
@@ -358,65 +392,43 @@ void InGame_updatePlayer(InGame* self)
 	Object* topRightObject    = Map_getObjectInfo(self->map, pRect->x + pRect->w, pRect->y);
 
 	//Then check if we are on a coin
-	if(bottomLeftTile && (Tile_getInfo(bottomLeftTile) & SCORE))
+	Tile* tiles[4];
+	tiles[0] = bottomLeftTile;
+	tiles[1] = bottomRightTile;
+	tiles[2] = topRightTile;
+	tiles[3] = topLeftTile;
+	for(i=0; i < 4; i++)
 	{
-		//Destroy it and add the score to the actual score.
-		bottomLeftTile->updateCollision(bottomLeftTile);
-		MusicManager_playSound(globalVar_musics, COIN_SOUND);
-		InGame_addScore(self, 100);
-	}
-	   
-	if(bottomRightTile && (Tile_getInfo(bottomRightTile) & SCORE) && bottomRightTile != bottomLeftTile)
-	{
-		bottomRightTile->updateCollision(bottomRightTile);
-		MusicManager_playSound(globalVar_musics, COIN_SOUND);
-		InGame_addScore(self, 100);
-	}
-
-	if(topLeftTile && (Tile_getInfo(topLeftTile) & SCORE) && topLeftTile != bottomLeftTile && topLeftTile != bottomRightTile)
-	{
-		topLeftTile->updateCollision(topLeftTile);
-		MusicManager_playSound(globalVar_musics, COIN_SOUND);
-		InGame_addScore(self, 100);
-	}
-	   
-	if(topRightTile && (Tile_getInfo(topRightTile) & SCORE) && topRightTile != bottomLeftTile && topRightTile != bottomRightTile && topRightTile != topLeftTile)
-	{
-		topRightTile->updateCollision(topRightTile);
-		MusicManager_playSound(globalVar_musics, COIN_SOUND);
-		InGame_addScore(self, 100);
+		if(tiles[i] && !tiles[i]->canDestroy && Tile_getInfo(tiles[i]) & SCORE)
+		{
+			tiles[i]->updateCollision(tiles[i]);
+			MusicManager_playSound(globalVar_musics, COIN_SOUND);
+			InGame_addScore(self, 100);
+		}
 	}
 
-	if(bottomLeftObject && (Object_getInfo(bottomLeftObject) & FINISH))
+	Object* objects[4];
+	objects[0] = bottomLeftObject;
+	objects[1] = bottomRightObject;
+	objects[2] = topLeftObject;
+	objects[3] = topRightObject;
+
+	for(i=0; i < 4; i++)
 	{
-		bottomLeftObject->updateCollision(bottomLeftObject);
-		self->hasWon = true;
+		if(objects[i] && (Object_getInfo(objects[i]) & FINISH) && !self->hasWon)
+		{
+			objects[i]->updateCollision(objects[i]);
+			self->hasWon = true;
+		}
 	}
 	   
-	if(bottomRightObject && (Object_getInfo(bottomRightObject) & FINISH) && bottomRightObject != bottomLeftObject)
-	{
-		bottomRightObject->updateCollision(bottomRightObject);
-		self->hasWon = true;
-	}
-
-	if(topLeftObject && (Object_getInfo(topLeftObject) & FINISH) && topLeftObject != bottomLeftObject && topLeftObject != bottomRightObject)
-	{
-		topLeftObject->updateCollision(topLeftObject);
-		self->hasWon = true;
-	}
-	   
-	if(topRightObject && (Object_getInfo(topRightObject) & FINISH) && topRightObject != bottomLeftObject && topRightObject != bottomRightObject && topRightObject != topLeftObject)
-	{
-		topRightObject->updateCollision(topRightObject);
-		self->hasWon = true;
-	}
-
 	//Then recheck on dynamic trace
     bottomLeftDynamics  = Map_getDynamicTile(self->map, pRect->x, pRect->y + pRect->h);
     bottomRightDynamics = Map_getDynamicTile(self->map, pRect->x + pRect->w, pRect->y + pRect->h);
     topLeftDynamics  = Map_getDynamicTile(self->map, pRect->x, pRect->y);
     topRightDynamics = Map_getDynamicTile(self->map, pRect->x + pRect->w, pRect->y);
 
+	//Same thing that for falling
 	dynamicTile[0] = bottomLeftDynamics;
 	dynamicTile[1] = bottomRightDynamics;
 	dynamicTile[2] = topRightDynamics;
@@ -426,19 +438,17 @@ void InGame_updatePlayer(InGame* self)
 		if(!dynamicTile[dynamicTileID])
 			continue;
 		Tile* tile = dynamicTile[dynamicTileID];
-		if(!tile)
-			continue;
 
-		else if(!(Tile_getInfo(tile) & ENNEMY))
+		if(!(Tile_getInfo(tile) & ENNEMY))
 			continue;
 
 		else if(tile && !tile->canDestroy)
 		{
+			//Except that we die if we touch an ennemy
 			const SDL_Rect* tileRect = Drawable_getRect((Drawable*)tile);
 			if(rectCollision(tileRect, pRect))
 			{
 				self->hasDied = true;
-				printf("Killed ! \n");
 				return;
 			}
 		}
@@ -447,24 +457,31 @@ void InGame_updatePlayer(InGame* self)
 
 void InGame_updateCamera(InGame* self)
 {
+	//We first put the player on the center of the window
 	const SDL_Rect* playerRect = Drawable_getRect((Drawable*)self->player);
 	Window_setCameraCoords(globalVar_window, -SCREEN_WIDTH/2+playerRect->x+playerRect->w/2, -SCREEN_HEIGHT/2+playerRect->y+playerRect->h/2);
 
+	//Then if we have a map we look if the camera isn't showing things outside of the map
 	if(self->map)
 	{
 		SDL_Rect mapRect = Map_getRect(self->map);
-		if(globalVar_window->cameraX < mapRect.x)
+		if(globalVar_window->cameraX < mapRect.x) //If we are far on the left
 			Window_setCameraCoords(globalVar_window, mapRect.x, globalVar_window->cameraY);
-		else if(globalVar_window->cameraX + SCREEN_WIDTH > mapRect.x + mapRect.w)
+		else if(globalVar_window->cameraX + SCREEN_WIDTH > mapRect.x + mapRect.w) //Or far on the right
 			Window_setCameraCoords(globalVar_window, mapRect.x + mapRect.w - SCREEN_WIDTH, globalVar_window->cameraY);
 
+		//If we are far on the bottom
 		if(globalVar_window->cameraY + SCREEN_HEIGHT > mapRect.y + mapRect.h)
 			Window_setCameraCoords(globalVar_window, globalVar_window->cameraX, mapRect.y + mapRect.h - SCREEN_HEIGHT);
+		//Or far on the top
+		else if(globalVar_window->cameraY < 0)
+			Window_setCameraCoords(globalVar_window, globalVar_window->cameraX, 0);
 	}
 }
 
 void InGame_addScore(InGame* self, uint32_t add)
 {
+	//Set the Text score
 	char score[9];
 	sprintf(score, "%08d", add + self->score);
 	self->score += add;
@@ -473,21 +490,23 @@ void InGame_addScore(InGame* self, uint32_t add)
 
 void InGame_loadMap(InGame* self, const char* path)
 {
+	//Check if we have a map
 	if(self->map)
 		Map_destroy(self->map);
-
-	self->map = NULL;
+	//Then create it
 	self->map = Map_create(path);
 	if(self->map == NULL)
 	{
 		perror("Error while loading the map \n");
 		return;
 	}
+	//Reinit the time
 	self->initTime = self->currentTime = SDL_GetTicks();
 }
 
 void InGame_updateTime(InGame* self)
 {
+	//Update the text time and its value
 	self->currentTime = SDL_GetTicks();
 	char t[4];
 	int32_t value = TIMEOUT-(self->currentTime - self->initTime)/1000;
@@ -497,9 +516,7 @@ void InGame_updateTime(InGame* self)
 
 void InGame_destroy(InGame* self)
 {
-	uint32_t i;
-//	for(i=0; i < self->nbEnnemies; i++)
-//		Ennemy_destroy(self->ennemies[i]);
+	//Destroy everything
 	if(self->map != NULL)
 		Map_destroy(self->map);
 	if(self->player != NULL)
@@ -510,5 +527,9 @@ void InGame_destroy(InGame* self)
 		Text_destroy((Drawable*)(self->timeLabel));
 	if(self->gameOver != NULL)
 		Text_destroy((Drawable*)(self->gameOver));
+	if(self->winLabel != NULL)
+		Text_destroy((Drawable*)(self->winLabel));
+	if(self->lifeText)
+		Text_destroy((Drawable*)(self->lifeText));
 	free(self);
 }

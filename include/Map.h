@@ -78,7 +78,7 @@ typedef struct
  *  </Traces>
  * </map> 
  *
- * each fileID et tileID are represented in csv format for StaticTrace. It earns us some time process and file spaces
+ * each fileID et tileID are represented in csv format for StaticTrace. It earns us some time process and file spaces. This couple tells us which tile it is (which file and which tile in this file)
  * axb = coordX . coordY
  * */
 typedef struct

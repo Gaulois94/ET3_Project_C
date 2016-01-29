@@ -8,11 +8,16 @@
 #include "stdint.h"
 #include "csv.h"
 
+/** \struct StaticTileDatas
+ * \brief keep datas about static File. In fact it keeps a pointer to the create function about a Tile.
+ * */
 typedef struct
 {
 	Tile*(*createStaticTile)(SDL_Texture*, const SDL_Rect*);
 }StaticTileDatas;
 
+/** \struct ObjectDatas
+ * \brief jeeo datas about objects. In fact, it keeps CSV string about tiles and files (where to look for creating tiles which will create the Object), and the Object characteristics, such as tileSize and nbCases*/
 typedef struct
 {
 	Object*(*createObject)(uint32_t, uint32_t, uint32_t, uint32_t);
@@ -24,6 +29,8 @@ typedef struct
 	uint32_t tileSizeY;
 }ObjectDatas;
 
+/** \struct DynamicEntity
+ * \brief Keep dynamic entitiy information.*/
 typedef struct
 {
 	List* tileRects;
@@ -32,6 +39,7 @@ typedef struct
 	void* data;
 }DynamicEntity;
 
+/** \brief create and initialise an Object*/
 ObjectDatas* ObjectDatas_create();
 void ObjectDatas_destroy(ObjectDatas* objDatas);
 

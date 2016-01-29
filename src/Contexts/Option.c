@@ -10,21 +10,25 @@ Option* Option_create()
 		return NULL;
 	}
 
+	//Init texts
 	self->sound = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "SOUND");
 	self->jump  = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "JUMP");
 	self->left  = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "LEFT");
 	self->right = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "RIGHT");
 	self->quit  = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "QUIT");
 
+	//Button texts
 	self->jumpCommand = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "UP");
 	self->leftCommand = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "LEFT");
 	self->rightCommand = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "RIGHT");
 
+	//Then place all the texts statement
 	((Drawable*)self->sound)->setPosition((Drawable*)self->sound, 200, 100);
 	((Drawable*)self->jump)->setPosition((Drawable*)self->jump, 200, 200);
 	((Drawable*)self->left)->setPosition((Drawable*)self->left, 200, 300);
 	((Drawable*)self->right)->setPosition((Drawable*)self->right, 200, 400);
 
+	//Init buttons
 	const SDL_Rect* commandRect = Drawable_getRect((Drawable*)self->jump);
 	commandRect = Drawable_getRect((Drawable*)self->jumpCommand);
 	SDL_Rect rect;
@@ -50,7 +54,7 @@ Option* Option_create()
 	rect.y = 100;
 	rect.w = 50;
 	rect.h = 50;
-	self->soundBox = CheckBox_create(NULL, NULL, &rect);
+	self->soundBox = CheckBox_create(NULL, NULL, &rect); //Init the sound box
 
 	commandRect = Drawable_getRect((Drawable*)self->rightCommand);
 	rect.x = 350;
@@ -59,6 +63,7 @@ Option* Option_create()
 	rect.h = commandRect->h;
 	self->quitButton = Button_create(NULL, NULL, &rect, NULL, self->quit);
 
+	//Set all buttons callback
 	Active_setActiveFunc((Active*)self->leftButton, Option_callback);
 	Active_setActiveData((Active*)self->leftButton, (void*)self);
 
@@ -70,8 +75,10 @@ Option* Option_create()
 
 	self->actived = NULL;
 
+	//Tap text (for entering a new value of key)
 	self->tapCommand = Text_create(NULL, globalVar_window, &WHITE, (TTF_Font*)ResourcesManager_getData(globalVar_fonts, "dejavu"), "Tap Command");
 
+	//Set polymorphisme function
 	((Context*)self)->reinit = &Option_reinit;
 	((Context*)self)->run    = &Option_run;
 	((Context*)self)->updateEvent = &Option_updateEvent;
@@ -87,6 +94,7 @@ Option* Option_create()
 EnumContext Option_run(Context* context)
 {
 	SDL_SetRenderDrawColor(globalVar_window->renderer, 0x00, 0x00, 0x00, 0xff);
+	//Just draw everything
 	Option* self = (Option*)context;
 	((Drawable*)self->left)->draw((Drawable*)self->left, globalVar_window);
 	((Drawable*)self->right)->draw((Drawable*)self->right, globalVar_window);
@@ -100,8 +108,9 @@ EnumContext Option_run(Context* context)
 	((Drawable*)self->soundBox)->draw((Drawable*)self->soundBox, globalVar_window);
 	SDL_SetRenderDrawColor(globalVar_window->renderer, 0x00, 0x00, 0x00, 0xff);
 
+	//And see if we are leaving this context
 	if(self->quitOption)
-		return START;
+		return START; //Return to the Start context
 	return NOTHING;
 }
 
@@ -109,7 +118,10 @@ void Option_reinit(Context* context)
 {
 	Option* self = (Option*)context;
 	self->quitOption = false;
+	//Stop the music
 	MusicManager_stopBackground(globalVar_musics);
+
+	//Reset all the buttons texts
 	char text[20];
 
 	Option_scancodeToString(text, globalVar_jumpscancode);
@@ -131,6 +143,7 @@ void Option_updateEvent(Context* context, SDL_Event* event)
 {
 	Option* self = (Option*)context;
 
+	//Give the event at all our buttons and sound box
 	if(Active_updateEvents((Active*)self->jumpButton, event))
 		return;
 	else if(Active_updateEvents((Active*)self->leftButton, event))
@@ -148,6 +161,7 @@ void Option_updateEvent(Context* context, SDL_Event* event)
 		return;
 	}
 
+	//And see if we are changing the code of the button
 	if(self->actived != NULL && event->type == SDL_KEYDOWN)
 	{
 		char text[20];
@@ -228,6 +242,7 @@ void Option_scancodeToString(char* text, uint32_t scancode)
 			break;
 
 		default:
+			//Transforme scancode to letters
 			if(scancode >= 4 && scancode <= 30)
 			{
 				text[0] = 'A' - 4 + scancode;
@@ -243,6 +258,7 @@ void Option_callback(void* option, Active* active)
 {
 	Option* self = (Option*)option;
 
+	//Set the button text to tap command
 	if(self->actived)
 	{
 		if(self->actived == self->leftButton)
@@ -261,6 +277,7 @@ void Option_callback(void* option, Active* active)
 
 void Option_destroy(Option* option)
 {
+	//Destroy everything
 	((Drawable*)option->sound)->destroy((Drawable*)option->sound);
 	((Drawable*)option->jump)->destroy((Drawable*)option->jump);
 	((Drawable*)option->left)->destroy((Drawable*)option->left);
