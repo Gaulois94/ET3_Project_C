@@ -170,6 +170,7 @@ DynamicTrace* DynamicTrace_create(uint32_t nbCasesX, uint32_t nbCasesY, uint32_t
 void DynamicTrace_addTile(DynamicTrace* self, Tile* tile)
 {
 	Drawable* tileDrawable;
+	//Add the tile to a List following its position
 	const SDL_Rect* tileRect = Drawable_getRect(tileDrawable);
 	uint32_t xIndice, yIndice;
 	xIndice = tileRect->x / self->sizeX;
@@ -186,6 +187,8 @@ Tile* DynamicTrace_getTile(DynamicTrace* self, uint32_t x, uint32_t y)
 	yIndice = y / self->sizeY;
 	List* dynamicList[4]={NULL, NULL, NULL, NULL};
 
+	//Because the tile isn't in an absolute position, we need to check on 4 list if we have something on this position
+	//This is faster than searching for all the tiles is it in collision with the position x, y
 	if(xIndice < self->nbCasesX && yIndice < self->nbCasesY)
 		dynamicList[0] = self->tiles[xIndice][yIndice];
 	if(xIndice-1 < self->nbCasesX && xIndice > 0 && yIndice < self->nbCasesY)
@@ -220,6 +223,7 @@ Tile* DynamicTrace_getTile(DynamicTrace* self, uint32_t x, uint32_t y)
 void DynamicTrace_draw(DynamicTrace* self, Window* window)
 {
 	uint32_t i, j, k;
+	//Draw everything
 	for(i=0; i < self->nbCasesX; i++)
 	{
 		for(j=0; j < self->nbCasesY; j++)
@@ -229,6 +233,7 @@ void DynamicTrace_draw(DynamicTrace* self, Window* window)
 				Tile* tile = (Tile*)List_getData(self->tiles[i][j], k);
 				if(tile)
 				{
+					//and destroy it if needed
 					if(tile->canDestroy)
 					{
 						List_removeData(self->tiles[i][j], (void*)tile);
