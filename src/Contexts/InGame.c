@@ -288,9 +288,12 @@ void InGame_updatePlayer(InGame* self)
 			const SDL_Rect* tileRect = Drawable_getRect((Drawable*)tile);
 			if(rectCollision(tileRect, pRect))
 			{
-				InGame_addScore(self, 100);
-				tile->canDestroy = true;
-				Player_setSpeedY(self->player, JUMP_SPEED);
+				if(self->player->speedY > 0)
+				{
+					InGame_addScore(self, 100);
+					tile->canDestroy = true;
+					Player_setSpeedY(self->player, JUMP_SPEED);
+				}
 			}
 		}
 	}

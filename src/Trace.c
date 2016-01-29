@@ -218,26 +218,30 @@ void DynamicTrace_draw(DynamicTrace* self, Window* window)
 				Tile* tile = (Tile*)List_getData(self->tiles[i][j], k);
 				if(tile)
 				{
-					if(tile->hasMove)
-					{
-						List_removeDataByID(self->tiles[i][j], k);
-						const SDL_Rect* tileRect = Drawable_getRect((Drawable*)tile);
-						uint32_t xIndice, yIndice;
-						xIndice = tileRect->x / self->sizeX;
-						yIndice = tileRect->y / self->sizeY;
-
-						if(xIndice < self->nbCasesX && yIndice < self->nbCasesY)
-							List_addData(self->tiles[xIndice][yIndice], tile);
-
-						tile->hasMove = false;
-					}
-
-					((Drawable*)tile)->draw((Drawable*)tile, window);
 					if(tile->canDestroy)
 					{
-						List_removeDataByID(self->tiles[i][j], k);
+						List_removeData(self->tiles[i][j], (void*)tile);
 						((Drawable*)tile)->destroy((Drawable*)tile);
 					}
+
+					else
+					{ 
+						if(tile->hasMove)
+						{
+							List_removeData(self->tiles[i][j], (void*)tile);
+							const SDL_Rect* tileRect = Drawable_getRect((Drawable*)tile);
+							uint32_t xIndice, yIndice;
+							xIndice = tileRect->x / self->sizeX;
+							yIndice = tileRect->y / self->sizeY;
+
+							if(xIndice < self->nbCasesX && yIndice < self->nbCasesY)
+								List_addData(self->tiles[xIndice][yIndice], tile);
+
+							tile->hasMove = false;
+						}
+						((Drawable*)tile)->draw((Drawable*)tile, window);
+					}
+
 				}
 			}
 		}
