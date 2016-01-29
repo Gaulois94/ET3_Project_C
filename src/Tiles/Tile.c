@@ -20,6 +20,7 @@ void Tile_init(Tile* self, SDL_Texture* texture, const SDL_Rect* rect)
 	self->update = NULL;
 	self->data   = NULL;
 	self->hasMove = false;
+	self->hasDraw = false;
 }
 
 void Tile_setPosition(Drawable* drawable, int32_t x, int32_t y)
@@ -57,6 +58,7 @@ void Tile_draw(Drawable* drawable, Window* window)
 		return;
 	const SDL_Rect* rect = Drawable_getRect((Drawable*)self->sprite);
 	((Drawable*)self->sprite)->draw(((Drawable*)self->sprite), window);
+	self->hasDraw = true;
 }
 
 void Tile_destroy(Drawable* drawable)

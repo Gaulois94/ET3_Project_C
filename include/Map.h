@@ -111,7 +111,7 @@ void endElement(void *map, const char* name);
 void getXYFromStr(const char* str, uint32_t* x, uint32_t* y);
 void Map_draw(Map* self, Window* window);
 
-
+Tile*     Map_getDynamicTile(Map* self, uint32_t x, uint32_t y);
 List*     Map_getDynamicList(Map* self, uint32_t x, uint32_t y);
 SDL_Rect  Map_getRect(Map* self);
 Tile*     Map_getTileInfo(Map* self, int32_t x, int32_t y);

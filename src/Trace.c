@@ -163,7 +163,47 @@ void DynamicTrace_addTile(DynamicTrace* self, Tile* tile)
 	uint32_t xIndice, yIndice;
 	xIndice = tileRect->x / self->sizeX;
 	yIndice = tileRect->y / self->sizeY;
-	List_addData(self->tiles[xIndice][yIndice], (void*)tile);
+	if(xIndice < self->nbCasesX && yIndice < self->nbCasesY)
+		List_addData(self->tiles[xIndice][yIndice], (void*)tile);
+}
+
+Tile* DynamicTrace_getTile(DynamicTrace* self, uint32_t x, uint32_t y)
+{
+	uint32_t i, j;
+	uint32_t xIndice, yIndice;
+	xIndice = x / self->sizeX;
+	yIndice = y / self->sizeY;
+	List* dynamicList[4]={NULL, NULL, NULL, NULL};
+
+	if(xIndice < self->nbCasesX && yIndice < self->nbCasesY)
+		dynamicList[0] = self->tiles[xIndice][yIndice];
+	if(xIndice-1 < self->nbCasesX && xIndice > 0 && yIndice < self->nbCasesY)
+		dynamicList[1] = self->tiles[xIndice-1][yIndice];
+	if(xIndice < self->nbCasesX && yIndice -1 < self->nbCasesY && yIndice > 0)
+		dynamicList[2] = self->tiles[xIndice][yIndice-1];
+	if(xIndice-1 < self->nbCasesX && xIndice > 0 && yIndice -1 < self->nbCasesY && yIndice > 0)
+		dynamicList[3] = self->tiles[xIndice-1][yIndice-1];
+
+	for(i=0; i < 4; i++)
+	{
+		if(dynamicList[i])
+		{
+			for(j=0; j < List_getLen(dynamicList[i]); j++)
+			{
+				SDL_Point p;
+				p.x = x;
+				p.y = y;
+				Tile* tile = (Tile*)List_getData(dynamicList[i], j);
+				if(tile)
+				{
+					if(pointOnRect(Drawable_getRect((Drawable*)tile), &p))
+						return tile;
+				}
+			}
+		}
+	}
+
+	return NULL;
 }
 
 void DynamicTrace_draw(DynamicTrace* self, Window* window)
@@ -186,8 +226,8 @@ void DynamicTrace_draw(DynamicTrace* self, Window* window)
 						xIndice = tileRect->x / self->sizeX;
 						yIndice = tileRect->y / self->sizeY;
 
-						if(xIndice > self->nbCasesX, yIndice > self->nbCasesY);
-						List_addData(self->tiles[xIndice][yIndice], tile);
+						if(xIndice < self->nbCasesX && yIndice < self->nbCasesY)
+							List_addData(self->tiles[xIndice][yIndice], tile);
 
 						tile->hasMove = false;
 					}

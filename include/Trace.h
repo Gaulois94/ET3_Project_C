@@ -32,6 +32,7 @@ void DynamicTrace_addTile(DynamicTrace* self, Tile* tile);
 void DynamicTrace_draw(DynamicTrace* self, Window* window);
 void DynamicTrace_destroy(DynamicTrace* self);
 List* DynamicTrace_getList(DynamicTrace* self, uint32_t x, uint32_t y);
+Tile* DynamicTrace_getTile(DynamicTrace* self, uint32_t x, uint32_t y);
 
 StaticTrace* StaticTrace_create(uint32_t sizeX, uint32_t sizeY, uint32_t nbCasesX, uint32_t nbCasesY,
 								  uint32_t padX, uint32_t padY);
