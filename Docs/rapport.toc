@@ -1,0 +1,34 @@
+\select@language {french}
+\contentsline {section}{\numberline {1}Comment l'utiliser ?}{1}{section.0.1}
+\contentsline {paragraph}{}{1}{section*.2}
+\contentsline {paragraph}{}{1}{section*.3}
+\contentsline {paragraph}{}{1}{section*.4}
+\contentsline {paragraph}{}{1}{section*.5}
+\contentsline {section}{\numberline {2}Objectifs}{1}{section.0.2}
+\contentsline {paragraph}{}{1}{section*.6}
+\contentsline {section}{\numberline {3}Qui fait quoi ?}{1}{section.0.3}
+\contentsline {subsection}{\numberline {3.1}Stacy GROMAT}{1}{subsection.0.3.1}
+\contentsline {paragraph}{}{1}{section*.7}
+\contentsline {subsection}{\numberline {3.2}Micka\IeC {\"e}l SERENO}{2}{subsection.0.3.2}
+\contentsline {paragraph}{}{2}{section*.8}
+\contentsline {subsection}{\numberline {3.3}Ensemble}{2}{subsection.0.3.3}
+\contentsline {paragraph}{}{2}{section*.9}
+\contentsline {subsection}{\numberline {3.4}Internet}{2}{subsection.0.3.4}
+\contentsline {paragraph}{}{2}{section*.10}
+\contentsline {section}{\numberline {4}Difficult\IeC {\'e}s / Solutions}{2}{section.0.4}
+\contentsline {subsection}{\numberline {4.1}Difficult\IeC {\'e}s}{2}{subsection.0.4.1}
+\contentsline {paragraph}{}{2}{section*.11}
+\contentsline {paragraph}{}{2}{section*.12}
+\contentsline {subsection}{\numberline {4.2}Solutions}{2}{subsection.0.4.2}
+\contentsline {subsubsection}{Orient\IeC {\'e} Objet}{2}{section*.13}
+\contentsline {paragraph}{}{2}{section*.14}
+\contentsline {paragraph}{}{2}{section*.15}
+\contentsline {paragraph}{}{2}{section*.16}
+\contentsline {paragraph}{}{3}{section*.17}
+\contentsline {subsubsection}{Moteur de jeu}{3}{section*.18}
+\contentsline {paragraph}{}{3}{section*.19}
+\contentsline {paragraph}{}{3}{section*.20}
+\contentsline {paragraph}{}{3}{section*.21}
+\contentsline {paragraph}{}{3}{section*.22}
+\contentsline {subsubsection}{Les \IeC {\'e}v\IeC {\`e}nements}{3}{section*.23}
+\contentsline {paragraph}{}{3}{section*.24}
