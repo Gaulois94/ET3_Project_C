@@ -65,6 +65,12 @@ bool Window_initSDL()
 		return 0;
 	}
 
+	if(IMG_Init(IMG_INIT_PNG) == -1)
+	{
+		perror("Error in SDL IMG Init");
+		return 0;
+	}
+
 	if(TTF_Init() == -1)
     {
         return 0;    
