@@ -13,6 +13,7 @@ StaticTrace* StaticTrace_create(uint32_t sizeX, uint32_t sizeY, uint32_t nbCases
 	self->nbCasesX = nbCasesX;
 	self->nbCasesY = nbCasesY;
 
+	//Init the array for tiles and objects
 	self->tiles = (Tile***)malloc(nbCasesX * sizeof(Tile**));
 	self->objects = (Object***)malloc(nbCasesX * sizeof(Object**));
 	uint32_t i,j;
@@ -32,18 +33,22 @@ StaticTrace* StaticTrace_create(uint32_t sizeX, uint32_t sizeY, uint32_t nbCases
 
 void StaticTrace_draw(StaticTrace* self, Window* window)
 {
+	//Draw every tiles and objects
 	uint32_t i, j;
 	for(i=0; i < self->nbCasesX; i++)
 	{
 		for(j=0; j < self->nbCasesY; j++)
 		{
+			//If it exists
 			if(self->tiles[i][j])
 			{
+				//Destroy it if needed
 				if(self->tiles[i][j]->canDestroy)
 				{
 					((Drawable*)self->tiles[i][j])->destroy((Drawable*)(self->tiles[i][j]));
 					self->tiles[i][j] = NULL;
 				}
+				//Else draw it
 				else
 					((Drawable*)self->tiles[i][j])->draw((Drawable*)self->tiles[i][j], window);
 			}
@@ -55,9 +60,13 @@ void StaticTrace_draw(StaticTrace* self, Window* window)
 
 void StaticTrace_addTile(StaticTrace* self, Tile* tile, uint32_t x, uint32_t y)
 {
+	//if the position is correct
 	if(x < self->nbCasesX && y < self->nbCasesY && tile)
 	{
+		//Add the tile
 		self->tiles[x][y] = tile;
+
+		//And set its position
 		Drawable* tileDrawable = (Drawable*)tile;
 		tileDrawable->setPosition(tileDrawable, self->padX + x*self->sizeX, self->padY + y*self->sizeY);
 	}
@@ -65,6 +74,7 @@ void StaticTrace_addTile(StaticTrace* self, Tile* tile, uint32_t x, uint32_t y)
 
 void StaticTrace_addObject(StaticTrace* self, Object* object, uint32_t x, uint32_t y)
 {
+	//Same that addTiles but for object
 	if(x < self->nbCasesX && y < self->nbCasesY && object)
 	{
 		self->objects[x][y] = object;
@@ -90,6 +100,7 @@ Object* StaticTrace_getObject(StaticTrace* self, int32_t x, int32_t y)
 	uint32_t indiceX = (x - self->padX)/self->sizeX;
 	uint32_t indiceY = (y - self->padY)/self->sizeY;
 	uint32_t i, j;
+	//Need to look for every object from 0 to indiceX / Y
 	for(i=0; i <= indiceX; i++)
 	{
 		for(j=0; j <= indiceY; j++)
