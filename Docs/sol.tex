@@ -16,7 +16,6 @@
 
 \paragraph{} Pour l'héritage, nous avons tout simplement profité des caractéristiques des structures en langage C, à savoir que l'on peut caster et avoir accès aux N premiers bits d'une structure comme si celle-ci était un autre type de données.
 \paragraph{} Pour le polymorphisme, les pointeurs sur fonctions étaient ce qui semblaient le plus approprié. Il suffit juste de changer ce pointeur (qui fait partie des attributs de la structure) vers la bonne méthode et tout fonctionnera.
-\paragraph{} Enfin, on accède aux attributs de la classe mère via des cast (principe qui consiste à changer dynamiquement le type d'une variable et donc d'y accéder). En effet pour le compilateur, les attributs ne sont tout simplement que des décalages de mémoires depuis le début de son adresse et une taille associé à un nom d'attributs. Caster une variable nous permet donc d'utiliser ces noms et de changer / récupérer les attributs de la classe mère. Pour les méthodes, nous avons choisi la convention suivante : <type>Classe\_nomFonction(<type> nomAttributs); qui nous semblait le plus lisible.
 
 \subsubsection{Moteur de jeu}
 

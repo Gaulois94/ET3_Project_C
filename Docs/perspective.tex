@@ -1,5 +1,15 @@
-\section{Perspectives}
+﻿\section{Perspectives}
+
+\subsection{À faire}
 
 \paragraph{} Les perspectives seront tout d'abord de terminer ce qui était prévu dans le cahier des charges, à savoir une gestion des records et de plusieurs cartes.
-\paragraph{} Ensuite, nous pourrions prendre en compte plusieurs blocs, comme ceux qui font des dégàts, ou encore des blocs bonus. Des nouveaux ennemies seront aussi appréciables.
-\paragraph{} Des animations de début, de fin, une meilleur introduction seront des plus visuelles conséquents pour un jeu vidéo. Revoir donc le côté artistique serait donc fort appréciable.
+\paragraph{} Ensuite, nous pourrions prendre en compte plusieurs blocs, comme ceux qui font des dégats, ou encore des blocs bonus. De nouveaux ennemis seront aussi appréciables.
+\paragraph{} Des animations de début, de fin, une meilleur introduction seront des plus visuels conséquents pour un jeu vidéo. Revoir donc le côté artistique serait donc fort appréciable.
+
+\subsection{Ce qui permet de le faire}
+
+\paragraph{} Certaines techniques d'algorithmes ont été mis en place pour faciliter l'amélioration du programme. On ne reviendra pas sur le côté objet qui est la principal.
+\paragraph{} On va d'abord parler des tableaux pour faire des traitements identiques. Prenons par exemple notre manière de gérer les collisions. Nous avons 4 points remarquable pour chaque personnages / ennemis qui sont les 4 coins d'un rectangle, et nous testons pas exemple chaque point pour voir s'il n'est pas en collision avec une pièce (pour notre personnage). Ce que nous avons fait c'est créé un tableau temporaire remplit avec les pointeurs sur les tiles présentent sur chacun des points du rectangle, et nous testons dans une boucle toutes les tiles du tableaux, en vérifiant si la tile est toujours disponible (l'utilité de la variable Tile$::$canDestroy)
+\paragraph{} Prenons maintenant le cas des containers. Nous avons recréé la classe std$::$map présent en C++ dans sa version la plus basique qui s'appelle dans notre code ResourcesManager. On ne l'utilise qu'une seul fois pour garder en mémoire les Fonts. En absolue on n'utilise qu'une seul font dans notre projet, mais supposons que nous en voulons plusieurs. Le cas de ResourcesManager est justement la pour régler ce problème, faire en sorte que les resources soient le plus simplement possible accéssible et avoir le minimum de variables répétitives.
+\paragraph{} Les techniques de callback sont aussi utilisées. En effet les pointeurs sur fonctions pour tout les objets Active servent à que plusieurs objets appellent la même fonction si besoin. Ici pour un développement assez faible il n'est pas très utile, mais plus le jeu sera poussé, plus le nombre de répétitions risquent de s'agrandir. Par exemple si plusieurs ennemies utilisent la même IA, mais sont fondamentalement différentes, les pointeurs sur fonctions IA prennent tout leur sens.
+\paragraph{} La technique de Context est aussi l'une des techniques permettant par exemple de rajouter des Menus pause, une introduction animée de notre programme de manière très simple (au Context près). Par exemple pour l'introduction, il suffira de créer un context introduction, d'y faire une animation dans la fonction Context$::$run puis de retourner le prochain Context (par exemple START) une fois l'animation terminée. Chaque Context est indépendant et se comporte comme un mini programme (au données global près).
