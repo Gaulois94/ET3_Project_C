@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-W -Wall -I include
+CFLAGS= -Wall -pedantic -std=c99 -D_GNU_SOURCE -I include
 LDFLAGS= -lexpat -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lm
 EXEC=MarioLike
 SRC= $(wildcard src/*.c src/*/*.c)
