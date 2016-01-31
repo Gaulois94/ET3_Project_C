@@ -1,0 +1,15 @@
+Pour compiler le projet sous linux, merci d'utiliser la commande suivante :
+
+cmake . -G "Unix Makefiles"          pour créer le makefile
+make                                 pour compiler
+./MarioLike                          pour l'executer. 
+
+Merci de vérifier que le dossier Resources est présent dans le même dossier que l'executable lui même.
+Un Makefile basique est aussi fournis. Il sera utile si vous n'avez pas cmake (qui est recommandé). 
+Les dépendances pour le projet sont :
+
+expat (normalement déjà présent dans votre système)
+SDL2
+SDL2_Image
+SDL2_TTF
+SDL2_Mixer
