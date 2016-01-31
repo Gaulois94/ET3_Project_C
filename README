@@ -13,3 +13,5 @@ SDL2
 SDL2_Image
 SDL2_TTF
 SDL2_Mixer
+
+Pour windows, le dossier embarque déjà les fichiers .dll et include requis pour la compilation. CMake vous permettra de faire un projet codeblock / visual studio / Makefile pour mingw sans problème, et vous permettra de compiler directement le projet sans le configurer. Toutefois il se peut qu'il y ait des erreurs de chemin d'accès lors de l'execution du programme MarioLike... Par manque de temps, nous n'avons pas réglé ce problème. Nous vous conseillons donc de l'executer sous Linux.
